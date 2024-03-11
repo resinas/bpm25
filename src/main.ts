@@ -34,7 +34,7 @@ const app = createApp(App)
   .use(router);
 
 app.config.globalProperties.axios = axios;
-app.config.globalProperties.$backend = new Backend()
+app.config.globalProperties.$backend = new Backend();
 
 router.isReady().then(() => {
   app.mount('#app');
