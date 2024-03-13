@@ -41,6 +41,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'about',
         component: () => import('@/views/TabAbout.vue')
+      },
+      {
+        path: 'settings',
+        component: () => import('@/views/TabSettings.vue')
       }
     ]
   },
@@ -59,6 +63,11 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'register',
         component: () => import('@/views/AuthRegister.vue')
+      },
+      {
+        path: 'register/:token',
+        component: () => import('@/views/AuthRegister.vue'),
+        props: true, // Pass route.params to the component as props
       }
     ]
   }

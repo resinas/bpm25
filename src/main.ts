@@ -42,6 +42,21 @@ router.isReady().then(() => {
 
 defineCustomElements(window);
 
+// Code for always having the token in the header if there is a token stored
+axios.interceptors.request.use(
+    config => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    error => {
+      // Do something with request error
+      return Promise.reject(error);
+    }
+);
+
 // Code for automatically refreshing tokens if access to an endpoint is denied because of code 401
 axios.interceptors.response.use(
     response => response, // If the response is successful, just return it.

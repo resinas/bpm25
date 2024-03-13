@@ -12,7 +12,7 @@
         <p>Welcome</p>
       </div>
       <ion-list lines="full">
-        <ion-item button :routerLink="'/auth/register/'">
+        <ion-item button :routerLink="'/tabs/settings/'">
           <ion-label>
             <ion-icon :icon="settingsOutline" slot="start" />
             Settings
