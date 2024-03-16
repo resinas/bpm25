@@ -22,7 +22,7 @@
         Pages
       </p>
       <ion-list lines="full">
-        <ion-item button="true" v-for="page in pages" v-bind:key="page.id" :routerLink="'/tabs/page/' + page.id">
+        <ion-item button="true" v-for="page in pages" :key="page.id" :routerLink="`/tabs/page/${page.id}`">
           <ion-label >{{ page.name }}</ion-label>
           <ion-badge v-if="page.label" color="danger">{{ page.label }}</ion-badge>
         </ion-item>
@@ -36,21 +36,25 @@
 import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonBadge, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonMenu, IonList, IonItem, IonLabel, IonButtons, IonMenuButton} from '@ionic/vue';
 import SettingsMenu from "@/components/SettingsMenu.vue";
 import HeaderBar from "@/components/HeaderBar.vue";
-</script>
+import { onMounted, reactive } from 'vue';
+import axios from 'axios';
 
-<script lang="js">
-export default {
-  data() {
-    return {
-      pages: [
-        { id: 1, name: 'Messages from the organizers', label: 'Updated' },
-        { id: 2, name: 'Information about excursion'},
-        { id: 3, name: 'Travelling information', label: 'Updated'},
-        { id: 4, name: 'Conference venue'},
-        { id: 5, name: 'Food information'},
-      ]};
-    }
+const pages = reactive([]);
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/v1/pages')
+    pages.splice(0, pages.length, ...response.data.map(page => ({
+      id: page.id,
+      name: page.title,
+
+      //label: page.updated ??
+
+    })));
+  } catch (error) {
+  console.error('Failed to fetch pages', error);
   }
+});
 </script>
 
 <style scoped>

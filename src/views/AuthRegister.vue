@@ -110,7 +110,7 @@ const getUserInformation = async () => {
   try {
     const accessToken = Array.isArray(token) ? token[0] : token;
     localStorage.setItem('accessToken', accessToken);
-    const response = await axios.get("http://localhost:8080/api/v1/inactive/getUser");
+    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails");
     localStorage.setItem('accessToken', '');
     console.log(response.data);
     userInformation.value.email = response.data.email;
@@ -126,7 +126,7 @@ const sendUserInformation = async () => {
   try {
     const accessToken = Array.isArray(token) ? token[0] : token;
     localStorage.setItem('accessToken', accessToken);
-    await axios.post("http://localhost:8080/api/v1/inactive/setUser", userInformation.value);
+    await axios.post("http://localhost:8080/api/v1/account/update", userInformation.value);
     localStorage.setItem('accessToken', '');
     loginInformation.value.email = userInformation.value.email;
     loginInformation.value.password = userInformation.value.password

@@ -58,14 +58,14 @@ const user = ref({
 // Example function to fetch user settings (replace with actual API call)
 async function fetchUserSettings() {
   try {
-    const response = await axios.get("http://localhost:8080/api/v1/user/settings");
+    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails");
     console.log(response.data);
     user.value.email = response.data.email;
     user.value.password = response.data.password;
     user.value.firstname = response.data.firstname;
     user.value.lastname = response.data.lastname;
   } catch (error) {
-    console.error("Failed to fetch user settings:", error);
+    console.error("Failed to fetch user details:", error);
   }
 }
 </script>
