@@ -2,14 +2,7 @@
   <ion-page>
     <HeaderBar name="Register" />
     <ion-content>
-      <div v-if="!hasToken">
-        <form id="form" @submit.prevent="sendConfirmationEmail">
-          <ion-input placeholder="Email" v-model="userEmail.receiver"></ion-input>
-          <ion-button type="submit" expand="block" shape="round">Send Confirmation Email</ion-button>
-          <p>Already have an account? <router-link to="/auth/login">Login</router-link></p>
-        </form>
-      </div>
-      <form v-else @submit.prevent="sendUserInformation">
+      <form @submit.prevent="sendUserInformation">
         <ion-header>
           <ion-toolbar>
             <ion-title>Please verify the information below</ion-title>
@@ -39,13 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  IonPage, IonContent, IonInput, IonButton, IonHeader,
-  IonItem,
-  IonTitle,
-  IonToolbar,
-  IonList
-} from "@ionic/vue";
+import {IonPage, IonContent, IonInput, IonButton, IonHeader, IonItem, IonTitle, IonToolbar, IonList} from "@ionic/vue";
 import HeaderBar from "@/components/HeaderBar.vue";
 import {computed, onMounted, ref} from 'vue';
 import axios from 'axios';
@@ -53,10 +40,6 @@ import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
-
-const userEmail = ref({
-  receiver: ''
-});
 
 const userInformation = ref({
   email: '',
@@ -73,8 +56,7 @@ const loginInformation = ref({
 
 const token = route.params.token;
 
-const hasToken = computed(() => token !== undefined);
-const pageTitle = computed(() => hasToken.value ? "Verify Email" : "Register");
+const hasToken = computed(() => token !== '');
 
 onMounted(() => {
   if (hasToken.value) {
@@ -82,43 +64,20 @@ onMounted(() => {
   }
 });
 
-const sendConfirmationEmail = async () => {
-  try {
-    localStorage.setItem('accessToken', '');
-    await axios.post("http://localhost:8080/api/v1/auth/email", userEmail.value);
-    userEmail.value.receiver = '';
-    await router.push('/auth/login');
-
-  } catch (error:unknown) {
-    // Handle error, e.g., display a message to the user
-      // Assume error to be of type AxiosError for type checking. AxiosError is a type exported by axios.
-      if (axios.isAxiosError(error)) {
-        // Now TypeScript knows error is an AxiosError, allowing access to error.response safely
-        const message = error.response?.data.message || "An unknown error occurred";
-        console.error("Registration error:", message);
-        // Display the message to the user
-        alert(message);
-      } else {
-        // If the error is not an Axios error, it could be a network issue or something else
-        console.error("An unexpected error occurred", error);
-        alert("An unexpected error occurred. Please try again.");
-      }
-    }
-};
-
 const getUserInformation = async () => {
   try {
-    const accessToken = Array.isArray(token) ? token[0] : token;
-    localStorage.setItem('accessToken', accessToken);
-    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails");
-    localStorage.setItem('accessToken', '');
+    const setUpToken = Array.isArray(token) ? token[0] : token;
+    localStorage.setItem('setUpToken', setUpToken);
+    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails", {
+      headers: { Authorization: `Bearer ${setUpToken}` }});
+    localStorage.setItem('setUpToken', '');
     console.log(response.data);
     userInformation.value.email = response.data.email;
     userInformation.value.firstname = response.data.firstname;
     userInformation.value.lastname = response.data.lastname;
   } catch (error) {
     console.error("Failed to fetch user settings:", error);
-    await router.push('/auth/register');
+    await router.push('/auth/login');
   }
 };
 
@@ -144,14 +103,4 @@ const sendUserInformation = async () => {
 </script>
 
 <style scoped>
-ion-content {
-  #form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0 30px;
-    height: 100%;
-  }
-}
 </style>

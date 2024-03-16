@@ -46,7 +46,7 @@ defineCustomElements(window);
 axios.interceptors.request.use(
     config => {
       const token = localStorage.getItem('accessToken');
-      if (token) {
+      if (config.url && config.url.includes('/tabs/') && token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;

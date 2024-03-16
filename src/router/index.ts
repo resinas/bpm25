@@ -61,10 +61,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/AuthLogin.vue')
       },
       {
-        path: 'register',
-        component: () => import('@/views/AuthRegister.vue')
-      },
-      {
         path: 'register/:token',
         component: () => import('@/views/AuthRegister.vue'),
         props: true, // Pass route.params to the component as props
