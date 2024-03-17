@@ -9,7 +9,7 @@
             <ion-button expand="block" class="toggle-button" :class="{ 'active': !isActiveLogin }" @click="toggleActive">Register</ion-button>
           </div>
         </div>
-        <form id="form" @submit.prevent="login" v-if="isActiveLogin">
+        <form @submit.prevent="login" v-if="isActiveLogin">
           <label for="emailInput" class="input-label">Email</label>
           <ion-input
               id="emailInput"
@@ -26,12 +26,12 @@
               v-model="loginUser.password"
               required>
           </ion-input>
-          <router-link to="/auth/forgot-password" class="forgot-password">Forgot password?</router-link>
+          <router-link to="/auth/login/resetpassword" class="forgot-password">Forgot password?</router-link>
           <ion-button type="submit" expand="block" class="login-button">Sign in</ion-button>
           <!-- Display error message if login fails -->
           <p v-if="loginError" class="error-message">{{ loginError }}</p>
         </form>
-        <form id="form" @submit.prevent="sendConfirmationEmail" v-else>
+        <form @submit.prevent="sendConfirmationEmail" v-else>
           <label for="emailInput" class="input-label">Email</label>
           <ion-input
               id="emailInput"
@@ -162,7 +162,7 @@ const sendConfirmationEmail = async () => {
   color: white; /* Ensure text is visible on the blue background */
 }
 
-#form {
+form {
   text-align: left;
   margin-top: 2rem;
 }

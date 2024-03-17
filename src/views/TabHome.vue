@@ -33,17 +33,18 @@
 </template>
 
 <script setup lang="js">
-import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonBadge, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonMenu, IonList, IonItem, IonLabel, IonButtons, IonMenuButton} from '@ionic/vue';
+import {IonPage, IonContent, IonBadge, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonLabel} from '@ionic/vue';
 import SettingsMenu from "@/components/SettingsMenu.vue";
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
 import axios from 'axios';
 
 const pages = reactive([]);
+const token = localStorage.getItem("accessToken")
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/v1/pages')
+    const response = await axios.get('http://localhost:8080/api/v1/pages',{ headers: { Authorization: `Bearer ${token}` } });
     pages.splice(0, pages.length, ...response.data.map(page => ({
       id: page.id,
       name: page.title,

@@ -25,10 +25,11 @@ import axios from 'axios';
 
 const route = useRoute();
 const pageData = reactive({title: '', content: '', layoutId: null });
+const token = localStorage.getItem("accessToken")
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/pages/${route.params.id}`);
+    const response = await axios.get(`http://localhost:8080/api/v1/pages/${route.params.id}`,{ headers: { Authorization: `Bearer ${token}` } });
     Object.assign(pageData, response.data);
   } catch (error) {
     console.error('Failed to fetch page data', error);

@@ -47,6 +47,7 @@ onMounted(() => {
 });
 
 const route = useRoute();
+const token = localStorage.getItem("accessToken")
 
 const user = ref({
   email: '',
@@ -58,7 +59,7 @@ const user = ref({
 // Example function to fetch user settings (replace with actual API call)
 async function fetchUserSettings() {
   try {
-    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails");
+    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails",{ headers: { Authorization: `Bearer ${token}` } });
     console.log(response.data);
     user.value.email = response.data.email;
     user.value.password = response.data.password;

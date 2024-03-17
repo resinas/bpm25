@@ -63,7 +63,16 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'register/:token',
         component: () => import('@/views/AuthRegister.vue'),
-        props: true, // Pass route.params to the component as props
+        props: true // Pass route.params to the component as props
+      },
+      {
+        path: 'login/resetpassword',
+        component: () => import('@/views/AuthResetPassword.vue')
+      },
+      {
+        path: 'login/resetpassword/:token',
+        component: () => import('@/views/AuthResetPasswordWithToken.vue'),
+        props: true // Pass route.params to the component as props
       }
     ]
   }
