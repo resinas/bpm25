@@ -11,10 +11,10 @@
         </div>
         <form @submit.prevent="login" v-if="isActiveLogin">
           <label for="emailInput" class="input-label">Email</label>
+          <!-- type="email" missing in ion-input right below this line, literally the one on the next line: "15", this line is line: "14" for reference -->
           <ion-input
               id="emailInput"
               placeholder="Your email"
-              type="email"
               v-model="loginUser.email"
               required>
           </ion-input>
@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="js">
+
 import {IonPage, IonContent,IonButton,IonInput} from "@ionic/vue";
 import { ref, computed } from 'vue';
 import axios from 'axios';
