@@ -45,6 +45,16 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'settings',
         component: () => import('@/views/TabSettings.vue')
+      },
+      {
+        path: '/session/:id',
+        name: 'SessionDetail',
+        component: () => import('@/views/TabSessionDetails.vue')
+      },
+      {
+        path: '/calendar-view',
+        name: 'CalendarView',
+        component: () => import('@/views/TabCalendar.vue')
       }
     ]
   },
