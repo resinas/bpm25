@@ -21,10 +21,10 @@
             v-for="day in state.daysOfMonth"
             :key="day.dateString"
             :class="{ 'not-current': !day.isCurrentMonth }"
-            @click="dateClicked(day)"
+            @click="day.hasSession ? dateClicked(day): null"
         >
           <div class="date-text">{{ day.date }}</div>
-          <ion-icon v-if="day.hasSession" name="ellipse" class="session-dot"></ion-icon>
+          <ion-icon :icon="starOutline" v-if="day.hasSession" class="session-dot"></ion-icon>
         </div>
       </div>
     </ion-content>
@@ -48,10 +48,11 @@ import {
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { calendarNumber } from 'ionicons/icons';
+import { starOutline } from 'ionicons/icons';
+
+
 
 const router = useRouter();
-const calendarIcon = calendarNumber;
 const token = localStorage.getItem("accessToken");
 
 const today = new Date();
@@ -151,7 +152,7 @@ function dateClicked(day) {
   console.log('Date clicked (Locale):', clickedDate.toLocaleDateString());
 
   // Example redirection logic (adapt as needed)
-  router.push(`/agenda?date=${clickedDate.toISOString().slice(0, 10)}`);
+  router.push(`/tabs/calendar?date=${clickedDate.toISOString().slice(0, 10)}`);
 }
 
 
@@ -201,9 +202,10 @@ onMounted(fetchSessions);
   top: 50%; /* Centers the dot vertically */
   left: 50%; /* Centers the dot horizontally */
   transform: translate(-50%, -50%); /* Ensures the dot is perfectly centered */
-  width: 1em; /* Size of the dot in em for responsiveness */
-  height: 1em;
-  background-color: #009BFF; /* Color of the dot */
+  width: 1.5em; /* Size of the dot in em for responsiveness */
+  height: 1.5em;
+  color : #098BFF;
+  background-color: #2a2a2a; /* Color of the dot */
   border-radius: 50%; /* Makes the dot circular */
 }
 </style>

@@ -4,7 +4,12 @@
 
     <ion-toolbar>
       <ion-segment value="all" v-model="state.selectedDay">
-        <ion-segment-button v-for="day in state.uniqueDays" :value="day.value" :key="day.value">
+        <ion-segment-button
+            v-for="day in state.uniqueDays"
+            :value="day.value"
+            :key="day.value"
+            :class="{'day-without-session': !day.hasSession, 'day-with-session': day.hasSession}"
+            @click="day.hasSession ? selectDay(day.value) : null">
           <ion-label>
             <span class="day-name">{{ day.label.split(', ')[0] }}</span>
             <span class="day-date">{{ day.label.split(', ')[1] }}</span>
@@ -51,7 +56,7 @@
 
 
 <script setup>
-import { reactive, onMounted, computed } from 'vue';
+import { reactive, onMounted, computed , watch } from 'vue';
 import {
   IonPage,
   IonToolbar,
@@ -80,19 +85,19 @@ const state = reactive({
   sessions: [],
   uniqueDays: [],
   selectedDay: null,
-  weekStart: null,
-  weekEnd: null,
+  weekStart: new Date,
+  weekEnd: new Date
 })
 async function fetchSessions() {
   try {
+    // Fetch all sessions first.
     const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
-    const data = response.data;
+    const sessionsData = response.data;
 
-    state.sessions = data.map(session => ({
+    // Process sessions data.
+    const processedSessions = sessionsData.map(session => ({
       id: session.id.toString(),
       session_name: session.name,
       session_host: session.host,
@@ -101,43 +106,97 @@ async function fetchSessions() {
       end_time: session.endTime.replace('T', ' ').slice(0, -3),
     }));
 
-    // After sessions are fetched, compute uniqueDays
+    // Determine the week range either based on query date or the earliest session date.
+    let weekStart, weekEnd;
+    if (route.query.date) {
+      const queryDate = new Date(route.query.date);
+      const weekRange = determineWeek(queryDate);
+      weekStart = weekRange.startOfWeek;
+      weekEnd = weekRange.endOfWeek;
+    } else {
+      // Find the earliest session date from processedSessions.
+      const earliestSessionDate = processedSessions.reduce((earliest, session) => {
+        const sessionDate = new Date(session.start_time);
+        return !earliest || sessionDate < earliest ? sessionDate : earliest;
+      }, null);
+
+      // Calculate week range based on the earliest session date.
+      if (earliestSessionDate) {
+        const weekRange = determineWeek(earliestSessionDate);
+        weekStart = weekRange.startOfWeek;
+        weekEnd = weekRange.endOfWeek;
+      } else {
+        // Handle the case where there are no sessions or another default behavior is desired.
+        const today = new Date();
+        const weekRange = determineWeek(today);
+        weekStart = weekRange.startOfWeek;
+        weekEnd = weekRange.endOfWeek;
+      }
+    }
+
+    // Filter sessions that fall within the determined week range.
+    state.sessions = processedSessions.filter(session => {
+      const sessionDate = new Date(session.start_time);
+      return sessionDate >= weekStart && sessionDate <= weekEnd;
+    });
+
+    // After sessions are filtered, compute uniqueDays.
     uniqueDays();
   } catch (error) {
     console.error('Failed to fetch sessions:', error);
   }
 }
 
-// Function to determine the week range based on a given date
-function setWeekRange(date) {
-  const currentDate = date || new Date();
-  const first = currentDate.getDate() - currentDate.getDay();
-  const last = first + 6;
-
-  state.weekStart = new Date(currentDate.setDate(first));
-  state.weekEnd = new Date(currentDate.setDate(last));
-
-  // After setting the week range, update the uniqueDays to reflect the new range
-  uniqueDays();
-}
-
 function uniqueDays() {
-  const dates = state.sessions.map(session => session.start_time.split(' ')[0]);
-  const uniqueDates = [...new Set(dates)];
-  state.uniqueDays = uniqueDates.map(date => {
-    const [year, month, day] = date.split('-');
-    const dateObj = new Date(year, month - 1, day);
-    return {
-      value: date,
-      label: `${dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
-    };
+  state.uniqueDays = []; // Reset uniqueDays
+
+  // Find the earliest and latest session dates within the week
+  let earliestDate = null;
+  let latestDate = null;
+
+  state.sessions.forEach(session => {
+    const sessionDate = new Date(session.start_time.split(' ')[0]);
+    if (!earliestDate || sessionDate < earliestDate) {
+      earliestDate = sessionDate;
+    }
+    if (!latestDate || sessionDate > latestDate) {
+      latestDate = sessionDate;
+    }
   });
-  if (state.uniqueDays.length > 0) {
-    state.selectedDay = state.uniqueDays[0].value;
+
+  // Guard clause in case there are no sessions in the week
+  if (!earliestDate || !latestDate) return;
+
+  // Generate days between earliest and latest session dates
+  for (let d = new Date(earliestDate); d <= latestDate; d.setDate(d.getDate() + 1)) {
+    const formattedDate = d.toISOString().split('T')[0];
+    const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    state.uniqueDays.push({
+      value: formattedDate,
+      label: dayLabel,
+      hasSession: state.sessions.some(session => session.start_time.startsWith(formattedDate))
+    });
+  }
+
+  // Auto-select the first day with a session
+  const firstDayWithSession = state.uniqueDays.find(day => day.hasSession);
+  if (firstDayWithSession) {
+    state.selectedDay = firstDayWithSession.value;
   }
 }
 
+
 onMounted(fetchSessions);
+
+function determineWeek(date) {
+  const startOfWeek = new Date(date);
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1)); // Adjust to set Monday as the first day of the week
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  return { startOfWeek, endOfWeek };
+}
 
 // Compute sessions for the selected day
 const filteredSessions = computed(() => {
@@ -158,6 +217,12 @@ const groupedSessionsByTimeSlot = computed(() => {
   }
   return groups;
 });
+
+function selectDay(value) {
+  state.selectedDay = value;
+  // Any additional logic to display the sessions for the selected day
+}
+
 
 function goToCalendar() {
   router.push({name: 'CalendarView'});
@@ -191,5 +256,15 @@ function goToSession(sessionId) {
   width: 26px; /* Ensure width and height match the font-size for alignment */
   height: 26px;
 }
+
+.day-without-session {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.day-with-session ion-label {
+  color: #ffffff; /* Brighter color for days with sessions */
+}
+
 
 </style>
