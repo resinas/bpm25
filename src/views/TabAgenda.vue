@@ -3,8 +3,8 @@
     <HeaderBar name="Agenda" />
 
     <ion-toolbar>
-      <ion-segment value="all" v-model="selectedDay">
-        <ion-segment-button v-for="day in uniqueDays" :value="day.value" :key="day.value">
+      <ion-segment value="all" v-model="state.selectedDay">
+        <ion-segment-button v-for="day in state.uniqueDays" :value="day.value" :key="day.value">
           <ion-label>
             <span class="day-name">{{ day.label.split(', ')[0] }}</span>
             <span class="day-date">{{ day.label.split(', ')[1] }}</span>
@@ -20,7 +20,7 @@
 
 
     <ion-content id="main-content">
-      <div v-if="selectedDay">
+      <div v-if="state.selectedDay">
         <div v-for="(group, timeSlot) in groupedSessionsByTimeSlot" :key="timeSlot">
           <ion-item-divider color="light">
             <ion-label>
@@ -51,104 +51,101 @@
 
 
 <script setup>
-import {ref, computed} from 'vue';
+import { reactive, onMounted, computed } from 'vue';
 import {
   IonPage,
   IonToolbar,
   IonContent,
-  IonList,
-  IonItemGroup,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonButtons,
   IonItemDivider,
   IonSegment,
   IonSegmentButton,
   IonLabel
 } from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
-import {useRoute, useRouter} from 'vue-router';
-import {calendarNumber} from 'ionicons/icons';
+import { useRouter, useRoute } from 'vue-router';
+import { calendarNumber } from 'ionicons/icons';
+import axios from "axios";
 
-const route = useRoute();
 const router = useRouter();
+const route = useRoute();
+
 
 const calendarIcon = calendarNumber;
-const sessionId = ref(route.params.id);
+const token = localStorage.getItem("accessToken")
+const state = reactive({
+  sessions: [],
+  uniqueDays: [],
+  selectedDay: null,
+  weekStart: null,
+  weekEnd: null,
+})
+async function fetchSessions() {
+  try {
+    const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = response.data;
 
-function goToSession(sessionId) {
-  router.push({name: 'SessionDetail', params: {id: sessionId}});
+    state.sessions = data.map(session => ({
+      id: session.id.toString(),
+      session_name: session.name,
+      session_host: session.host,
+      session_location: session.location,
+      start_time: session.startTime.replace('T', ' ').slice(0, -3),
+      end_time: session.endTime.replace('T', ' ').slice(0, -3),
+    }));
+
+    // After sessions are fetched, compute uniqueDays
+    uniqueDays();
+  } catch (error) {
+    console.error('Failed to fetch sessions:', error);
+  }
 }
 
-function goToCalendar() {
-  router.push({name: 'CalendarView'});
+// Function to determine the week range based on a given date
+function setWeekRange(date) {
+  const currentDate = date || new Date();
+  const first = currentDate.getDate() - currentDate.getDay();
+  const last = first + 6;
+
+  state.weekStart = new Date(currentDate.setDate(first));
+  state.weekEnd = new Date(currentDate.setDate(last));
+
+  // After setting the week range, update the uniqueDays to reflect the new range
+  uniqueDays();
 }
 
-// Simulated sessions data
-const sessions = ref([
-  {
-    id: '1',
-    session_name: 'Session A',
-    session_host: 'Host 1',
-    session_location: 'Location 1',
-    start_time: '2024-03-27 09:00',
-    end_time: '2024-03-27 10:00'
-  },
-  {
-    id: '2',
-    session_name: 'Session D',
-    session_host: 'Host 1',
-    session_location: 'Location 1',
-    start_time: '2024-03-28 09:00',
-    end_time: '2024-03-28 10:00'
-  },
-  {
-    id: '3',
-    session_name: 'Session C',
-    session_host: 'Host 3',
-    session_location: 'Location 3',
-    start_time: '2024-03-27 09:00',
-    end_time: '2024-03-27 10:00'
-  },
-  {
-    id: '4',
-    session_name: 'Session B',
-    session_host: 'Host 2',
-    session_location: 'Location 2',
-    start_time: '2024-03-27 11:00',
-    end_time: '2024-03-27 12:30'
-  },
-  {
-    id: '5',
-    session_name: 'Session B',
-    session_host: 'Host 2',
-    session_location: 'Location 2',
-    start_time: '2024-03-27 09:00',
-    end_time: '2024-03-27 17:30'
-  },
-]);
-
-
-// Compute unique dates from sessions for the segment buttons
-const uniqueDays = computed(() => {
-  const dates = sessions.value.map(session => session.start_time.split(' ')[0]); // Extract date part
-  const uniqueDates = [...new Set(dates)]; // Remove duplicates
-  return uniqueDates.map(date => {
+function uniqueDays() {
+  const dates = state.sessions.map(session => session.start_time.split(' ')[0]);
+  const uniqueDates = [...new Set(dates)];
+  state.uniqueDays = uniqueDates.map(date => {
     const [year, month, day] = date.split('-');
-    const dateObj = new Date(year, month - 1, day); // Month is 0-indexed
+    const dateObj = new Date(year, month - 1, day);
     return {
-      value: date, // "YYYY-MM-DD" format
-      label: `${dateObj.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}`, // E.g., "Mon, Mar 27"
+      value: date,
+      label: `${dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
     };
   });
-});
+  if (state.uniqueDays.length > 0) {
+    state.selectedDay = state.uniqueDays[0].value;
+  }
+}
 
-// Selected day for filtering sessions
-const selectedDay = ref(null);
+onMounted(fetchSessions);
 
 // Compute sessions for the selected day
 const filteredSessions = computed(() => {
-  return sessions.value.filter(session => {
-    return session.start_time.startsWith(selectedDay.value);
+  return state.sessions.filter(session => {
+    return session.start_time.startsWith(state.selectedDay);
   }).sort((a, b) => new Date(a.start_time) - new Date(b.start_time)); // Ensure sorted by start time
 });
+
 
 const groupedSessionsByTimeSlot = computed(() => {
   const groups = {};
@@ -161,6 +158,14 @@ const groupedSessionsByTimeSlot = computed(() => {
   }
   return groups;
 });
+
+function goToCalendar() {
+  router.push({name: 'CalendarView'});
+}
+
+function goToSession(sessionId) {
+  router.push({name: 'SessionDetail', params: {id: sessionId}});
+}
 
 </script>
 

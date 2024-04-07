@@ -24,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'calendar',
+        name: 'agenda',
         component: () => import('@/views/TabAgenda.vue'),
       },
       {
