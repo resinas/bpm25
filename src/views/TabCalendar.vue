@@ -103,11 +103,13 @@ function changeMonth(change) {
   state.currentMonth = newDate.getMonth();
   state.currentYear = newDate.getFullYear();
 
+  // Recalculate days for the new month and update the state
+  state.daysOfMonth = getDaysOfMonth(state.currentYear, state.currentMonth);
+
   // Assuming sessions do not need to be re-fetched, just re-mark the days
   markDaysWithSessions(); // Ensure days are re-marked according to the new month
-
-  // If sessions need to be re-fetched per month, call fetchSessions() instead
 }
+
 
 
 async function fetchSessions() {
@@ -167,7 +169,7 @@ onMounted(fetchSessions);
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr); /* 7 columns for 7 days of the week */
-  gap: 2%; /* Space between each "day" box, adjusted to be responsive */
+  gap: 1%; /* Space between each "day" box, adjusted to be responsive */
 }
 
 .day, .date-box {
@@ -202,8 +204,8 @@ onMounted(fetchSessions);
   top: 50%; /* Centers the dot vertically */
   left: 50%; /* Centers the dot horizontally */
   transform: translate(-50%, -50%); /* Ensures the dot is perfectly centered */
-  width: 1.5em; /* Size of the dot in em for responsiveness */
-  height: 1.5em;
+  width: 35%; /* Size of the dot in em for responsiveness */
+  height: 35%;
   color : #098BFF;
   background-color: #2a2a2a; /* Color of the dot */
   border-radius: 50%; /* Makes the dot circular */
