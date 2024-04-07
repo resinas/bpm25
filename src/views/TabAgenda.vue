@@ -38,6 +38,11 @@
               :key="session.id"
               :routerLink="`/session/${session.id}`"
               button>
+            <ion-icon
+                :icon="iconForSessionType(session.type)"
+                style="color : #098BFF"
+                slot="end">
+            </ion-icon>
             <ion-label>
               <h3>{{ session.session_name }}</h3>
               <p>{{ session.session_host }}</p>
@@ -70,9 +75,16 @@ import {
   IonSegmentButton,
   IonLabel
 } from '@ionic/vue';
+import {
+  calendarNumber,
+  cafeOutline,
+  fastFoodOutline,
+  alertCircleOutline,
+  idCardOutline,
+  helpCircleOutline,
+} from 'ionicons/icons';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { useRouter, useRoute } from 'vue-router';
-import { calendarNumber } from 'ionicons/icons';
 import axios from "axios";
 
 const router = useRouter();
@@ -104,6 +116,7 @@ async function fetchSessions() {
       session_location: session.location,
       start_time: session.startTime.replace('T', ' ').slice(0, -3),
       end_time: session.endTime.replace('T', ' ').slice(0, -3),
+      type: session.type,
     }));
 
     // Determine the week range either based on query date or the earliest session date.
@@ -188,6 +201,25 @@ function uniqueDays() {
 
 
 onMounted(fetchSessions);
+
+
+function iconForSessionType(type) {
+  switch (type) {
+    case 'FOOD':
+      return fastFoodOutline;
+    case 'COFFEE':
+      return cafeOutline;
+    case 'KEYNOTE':
+      return alertCircleOutline;
+    case 'PRACTICAL':
+      return idCardOutline;
+    case 'QnA':
+      return helpCircleOutline;
+    default:
+      return; // Optionally return a default icon
+  }
+}
+
 
 function determineWeek(date) {
   const startOfWeek = new Date(date);
