@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import TabsPage from '../views/TabsPage.vue'
 import AuthPage from "@/views/AuthPage.vue";
+import ProfilesPage from "@/views/ProfilesPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -41,10 +42,20 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'about',
         component: () => import('@/views/TabAbout.vue')
+      }
+    ]
+  },
+  {
+    path: '/profile/',
+    component: ProfilesPage,
+    children: [
+      {
+        path:'',
+        redirect: '/profile/settings'
       },
       {
-        path: 'settings',
-        component: () => import('@/views/TabSettings.vue')
+        path:'settings',
+        component: () => import('@/views/ProfileSettings.vue')
       }
     ]
   },

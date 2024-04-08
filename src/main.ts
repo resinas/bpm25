@@ -29,6 +29,22 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 /* Theme variables */
 import './theme/variables.css';
 
+function applyTheme() {
+  // First, check if a theme is saved in localStorage
+  const savedTheme = localStorage.getItem('theme');
+
+  // If there's a saved theme, use it
+  if (savedTheme) {
+    document.body.classList.toggle('dark', savedTheme === 'dark');
+  } else {
+    // If no saved theme, use the system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.body.classList.toggle('dark', prefersDark);
+  }
+}
+// Apply the theme before mounting the app
+applyTheme();
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router);

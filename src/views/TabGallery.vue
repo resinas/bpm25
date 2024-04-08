@@ -11,7 +11,7 @@
       </ion-grid>
 
       <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-        <ion-fab-button @click="takePhoto()">
+        <ion-fab-button @click="takePhotoGallery()">
           <ion-icon :icon="camera"></ion-icon>
         </ion-fab-button>
       </ion-fab>
@@ -27,6 +27,6 @@ import { camera, trash, close } from 'ionicons/icons';
 import { usePhotoGallery, UserPhoto } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
 
-const { photos, takePhoto } = usePhotoGallery();
+const { photos, takePhotoGallery } = usePhotoGallery();
 
 </script>

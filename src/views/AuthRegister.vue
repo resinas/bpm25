@@ -63,6 +63,7 @@ const userInformation = ref({
   lastname: '',
   password: '',
   confirmPassword: ''
+
 })
 
 const loginInformation = ref({
