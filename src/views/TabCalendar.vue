@@ -24,7 +24,7 @@
             @click="day.hasSession ? dateClicked(day): null"
         >
           <div class="date-text">{{ day.date }}</div>
-          <ion-icon :icon="starOutline" v-if="day.hasSession" class="session-dot"></ion-icon>
+          <ion-icon :icon="star" v-if="day.hasSession" class="session-dot"></ion-icon>
         </div>
       </div>
     </ion-content>
@@ -48,7 +48,7 @@ import {
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { starOutline } from 'ionicons/icons';
+import { star } from 'ionicons/icons';
 
 
 
@@ -201,11 +201,11 @@ onMounted(fetchSessions);
 
 .session-dot {
   position: absolute;
-  top: 50%; /* Centers the dot vertically */
-  left: 50%; /* Centers the dot horizontally */
+  top: 15%; /* Centers the dot vertically */
+  left: 15%; /* Centers the dot horizontally */
   transform: translate(-50%, -50%); /* Ensures the dot is perfectly centered */
-  width: 35%; /* Size of the dot in em for responsiveness */
-  height: 35%;
+  width: 20%; /* Size of the dot in em for responsiveness */
+  height: 20%;
   color : #098BFF;
   background-color: #2a2a2a; /* Color of the dot */
   border-radius: 50%; /* Makes the dot circular */
