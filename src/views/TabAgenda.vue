@@ -24,6 +24,7 @@
     </ion-toolbar>
 
 
+
     <ion-content id="main-content">
       <div v-if="state.selectedDay">
         <div v-for="(group, timeSlot) in groupedSessionsByTimeSlot" :key="timeSlot">
