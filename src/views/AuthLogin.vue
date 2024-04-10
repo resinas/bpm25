@@ -50,7 +50,6 @@
 </template>
 
 <script setup lang="js">
-
 import {IonPage, IonContent,IonButton,IonInput} from "@ionic/vue";
 import { ref, computed } from 'vue';
 import axios from 'axios';

@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import TabsPage from '../views/TabsPage.vue'
 import AuthPage from "@/views/AuthPage.vue";
+import ProfilesPage from "@/views/ProfilesPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,6 +29,16 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/TabAgenda.vue'),
       },
       {
+        path: '/session/:id',
+        name: 'SessionDetail',
+        component: () => import('@/views/TabSessionDetails.vue')
+      },
+      {
+        path: '/calendar-view',
+        name: 'CalendarView',
+        component: () => import('@/views/TabCalendar.vue')
+      },
+      {
         path: 'attendees',
         component: () => import('@/views/TabAttendees.vue'),
       },
@@ -42,20 +53,20 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'about',
         component: () => import('@/views/TabAbout.vue')
+      }
+    ]
+  },
+  {
+    path: '/profile/',
+    component: ProfilesPage,
+    children: [
+      {
+        path:'',
+        redirect: '/profile/settings'
       },
       {
         path: 'settings',
         component: () => import('@/views/TabSettings.vue')
-      },
-      {
-        path: '/session/:id',
-        name: 'SessionDetail',
-        component: () => import('@/views/TabSessionDetails.vue')
-      },
-      {
-        path: '/calendar-view',
-        name: 'CalendarView',
-        component: () => import('@/views/TabCalendar.vue')
       }
     ]
   },
