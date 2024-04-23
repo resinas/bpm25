@@ -4,8 +4,8 @@
     <ion-content :fullscreen="true">
       <ion-grid>
         <ion-row>
-          <ion-col >
-
+          <ion-col size="4" v-for="(image, index) in images" :key="index">
+            <ion-img :src="getImageUrl(image)" class="gallery-image"></ion-img>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -22,21 +22,59 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/vue';
+import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
 import { add } from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from "axios";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
 
+const images = ref<string[]>([]);
+const hasMore = ref(true);
+const pageNr =ref(0);
+const pageSize = 10;
+
+onMounted(() => {
+  fetchGalleryMetadata();
+});
+
+const fetchGalleryMetadata = async () => {
+  if (!hasMore.value) return;
+  try {
+    const response = await axios.get(`http://localhost:8080/api/v1/gallery/images`, {
+      params: {
+        pageNr: pageNr.value,
+        pageSize: pageSize
+      },
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    });
+    console.log("This is the response data: " + response.data);
+    if (response.data.imagePaths.length > 0) {
+      images.value = [...images.value, ...response.data.imagePaths];
+      console.log("This is images.value: " +images.value);
+      pageNr.value++;
+    } else {
+      hasMore.value = false;
+    }
+  } catch (error) {
+    console.error('Error fetching gallery images:', error);
+  }
+}
+
+const getImageUrl = (filepath:string) => {
+  console.log("This is the image filepath: " +filepath)
+  return `http://localhost:8080/api/v1/gallery/image/${filepath}`;
+};
+
+
 const uploadGalleryImage = async () => {
   try {
-
     const photoBlob = await takePhotoGallery();
-
     // Create an instance of FormData
     const formData = new FormData();
 
@@ -62,3 +100,11 @@ const uploadGalleryImage = async () => {
 }
 
 </script>
+
+<style scoped>
+.gallery-image {
+  width: 100%; /* Responsive width */
+  height: 100px; /* Fixed height */
+  object-fit: cover; /* Cover the container without distorting the aspect ratio */
+}
+</style>
