@@ -325,13 +325,15 @@ const actionSheetButtons = [
     icon: camera,
     handler: async () => {
       try {
+
         const photoBlob = await takePhotoProfile();
+        console.log("This is the revised photoblob:" + photoBlob)
 
         // Create an instance of FormData
         const formData = new FormData();
 
         // Append the photo blob to the form data, the 'file' key should match the name expected in the backend
-        formData.append('file', photoBlob);
+        formData.append('file', photoBlob as Blob);
 
         // Make the POST request with the form data and proper headers
         const uploadResponse = await axios.post("http://localhost:8080/api/v1/account/uploadProfilePicture", formData, {
