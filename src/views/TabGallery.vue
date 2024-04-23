@@ -4,15 +4,15 @@
     <ion-content :fullscreen="true">
       <ion-grid>
         <ion-row>
-          <ion-col size="6" :key="photo.filepath" v-for="photo in photos">
-            <ion-img :src="photo.webviewPath"></ion-img>
+          <ion-col >
+
           </ion-col>
         </ion-row>
       </ion-grid>
 
       <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-        <ion-fab-button @click="takePhotoGallery()">
-          <ion-icon :icon="camera"></ion-icon>
+        <ion-fab-button @click="uploadGalleryImage">
+          <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -22,11 +22,43 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
-import { camera, trash, close } from 'ionicons/icons';
-import { usePhotoGallery, UserPhoto } from '@/composables/usePhotoGallery';
+import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/vue';
+import { add } from 'ionicons/icons';
+import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
+import axios from "axios";
+import {ref} from "vue";
 
-const { photos, takePhotoGallery } = usePhotoGallery();
+const { takePhotoGallery } = usePhotoGallery();
+const token = ref(localStorage.getItem("accessToken"))
+
+const uploadGalleryImage = async () => {
+  try {
+
+    const photoBlob = await takePhotoGallery();
+
+    // Create an instance of FormData
+    const formData = new FormData();
+
+    // Append the photo blob to the form data, the 'file' key should match the name expected in the backend
+    formData.append('file', photoBlob as Blob);
+
+    // Make the POST request with the form data and proper headers
+    const uploadResponse = await axios.post("http://localhost:8080/api/v1/gallery/images", formData, {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
+      }
+    });
+
+    if (uploadResponse.status === 200) {
+      console.log('Upload successful');
+
+    }
+
+  } catch (error) {
+    console.error('Error fetching signed URL:', error);
+  }
+}
 
 </script>
