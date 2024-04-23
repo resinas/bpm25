@@ -176,7 +176,7 @@ import {
 } from '@ionic/vue';
 
 import axios from "axios";
-import {camera, image, pencilOutline} from "ionicons/icons";
+import {camera, pencilOutline} from "ionicons/icons";
 import {usePhotoGallery} from '@/composables/usePhotoGallery';
 
 onMounted(() => {
@@ -229,9 +229,11 @@ const fetchUserSettings = async () => {
     user.value.sharingChoice = response.data.sharingChoice
 
     if (response.data.profilePicture) {
-      const retrieveResponse = await fetch(response.data.profilePicture);
-      const blob = await retrieveResponse.blob();
-      user.value.profilePicture = URL.createObjectURL(blob);
+      const retrieveResponse = await axios.get("http://localhost:8080/api/v1/account/getProfilePicture",
+          { headers: {
+            Authorization: `Bearer ${token.value}` },
+            responseType: 'blob'})
+      user.value.profilePicture = URL.createObjectURL(retrieveResponse.data);
     }
   } catch (error) {
     console.error("Failed to fetch user details:", error);
@@ -325,19 +327,21 @@ const actionSheetButtons = [
       try {
         const photoBlob = await takePhotoProfile();
 
-        const response = await axios.get("http://localhost:8080/api/v1/account/uploadProfilePicture",{ headers: { Authorization: `Bearer ${token.value}` } });
+        // Create an instance of FormData
+        const formData = new FormData();
 
-        const signedPostUrl = response.data;
+        // Append the photo blob to the form data, the 'file' key should match the name expected in the backend
+        formData.append('file', photoBlob);
 
-        const uploadResponse = await fetch(signedPostUrl, {
-          method: 'PUT',
+        // Make the POST request with the form data and proper headers
+        const uploadResponse = await axios.post("http://localhost:8080/api/v1/account/uploadProfilePicture", formData, {
           headers: {
-            'Content-Type': 'image/jpeg'
-          },
-          body: photoBlob
+            Authorization: `Bearer ${token.value}`,
+            'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
+          }
         });
 
-        if (uploadResponse.ok) {
+        if (uploadResponse.status === 200) {
           console.log('Upload successful');
 
           await fetchUserSettings();

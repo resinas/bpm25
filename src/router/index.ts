@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import TabsPage from '../views/TabsPage.vue'
 import AuthPage from "@/views/AuthPage.vue";
+import ProfilePage from "@/views/ProfilePage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -52,10 +53,6 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'about',
         component: () => import('@/views/TabAbout.vue')
-      },
-      {
-        path: 'profile',
-        component: () => import('@/views/TabProfile.vue')
       }
     ]
   },
@@ -84,6 +81,20 @@ const routes: Array<RouteRecordRaw> = [
         path: 'login/resetpassword/:token',
         component: () => import('@/views/AuthResetPasswordWithToken.vue'),
         props: true // Pass route.params to the component as props
+      }
+    ]
+  },
+  {
+    path: '/profile/',
+    component: ProfilePage,
+    children: [
+      {
+        path:'',
+        redirect: '/profile/settings'
+      },
+      {
+        path:'settings',
+        component: () => import('@/views/ProfileSettings.vue')
       }
     ]
   }
