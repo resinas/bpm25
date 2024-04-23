@@ -327,7 +327,6 @@ const actionSheetButtons = [
       try {
 
         const photoBlob = await takePhotoProfile();
-        console.log("This is the revised photoblob:" + photoBlob)
 
         // Create an instance of FormData
         const formData = new FormData();
