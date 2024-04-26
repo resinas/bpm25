@@ -109,7 +109,7 @@ const fetchGalleryMetadata = async () => {
 }
 
 const getImageUrl = (filepath:string) => {
-  return `http://localhost:8080/api/v1/gallery/image/${filepath}?format=webp`;
+  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
 };
 
 const loadMore = async (event?:InfiniteScrollCustomEvent) => {
@@ -139,7 +139,7 @@ const uploadGalleryImage = async () => {
       console.log('Upload successful');
     }
   } catch (error) {
-    console.error('Error fetching signed URL:', error);
+    console.error('Error uploading image:', error);
   }
 }
 
