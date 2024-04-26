@@ -1,18 +1,43 @@
 <template>
   <ion-page>
-    <HeaderBar name="Gallery" />
-    <ion-content :fullscreen="true">
+    <HeaderBar name="Gallery">
+      <template v-slot>
+        <ion-content>
+          <ion-list>
+            <ion-item button :routerLink="'/tabs/images/myGallery'">
+              <ion-label>
+                <ion-icon :icon="folder" slot="start" />
+                My gallery
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </template>
+    </HeaderBar>
+    <ion-content :fullscreen="true" ref="content">
       <ion-grid>
         <ion-row>
           <ion-col size="4" v-for="(image, index) in images" :key="index">
-            <ion-img :src="getImageUrl(image)" class="gallery-image"></ion-img>
+            <div @click="goToImage(image)">
+              <ion-img :src="getImageUrl(image)" class="gallery-image"></ion-img>
+            </div>
           </ion-col>
         </ion-row>
       </ion-grid>
+      <!-- Infinite Scroll -->
+      <ion-infinite-scroll @ionInfinite="loadMore" threshold="10%">
+        <ion-infinite-scroll-content
+            loading-spinner="bubbles"
+            loading-text="Loading more photos...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
 
-      <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+      <ion-fab vertical="bottom" horizontal="center" slot="fixed" class="custom-fab">
         <ion-fab-button @click="uploadGalleryImage">
           <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button :routerLink="'/tabs/images/myGallery'">
+          <ion-icon :icon="folder"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -22,12 +47,26 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
-import { add } from 'ionicons/icons';
+import {
+  IonPage,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonImg,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  InfiniteScrollCustomEvent, IonLabel, IonItem, IonList,
+} from '@ionic/vue';
+import {add, folder, settingsOutline} from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from "axios";
-import {onMounted, ref} from "vue";
+import {onMounted, Ref, ref} from "vue";
+import router from "@/router";
 
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
@@ -35,11 +74,14 @@ const token = ref(localStorage.getItem("accessToken"))
 const images = ref<string[]>([]);
 const hasMore = ref(true);
 const pageNr =ref(0);
-const pageSize = 10;
+const pageSize = 100;
+
+const content: Ref<InstanceType<typeof IonContent> | null> = ref(null);
 
 onMounted(() => {
-  fetchGalleryMetadata();
+  fetchGalleryMetadata()
 });
+
 
 const fetchGalleryMetadata = async () => {
   if (!hasMore.value) return;
@@ -67,10 +109,15 @@ const fetchGalleryMetadata = async () => {
 }
 
 const getImageUrl = (filepath:string) => {
-  console.log("This is the image filepath: " +filepath)
-  return `http://localhost:8080/api/v1/gallery/image/${filepath}`;
+  return `http://localhost:8080/api/v1/gallery/image/${filepath}?format=webp`;
 };
 
+const loadMore = async (event?:InfiniteScrollCustomEvent) => {
+  await fetchGalleryMetadata();
+  if (event) {
+    await event.target.complete();
+  }
+};
 
 const uploadGalleryImage = async () => {
   try {
@@ -88,16 +135,20 @@ const uploadGalleryImage = async () => {
         'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
       }
     });
-
     if (uploadResponse.status === 200) {
       console.log('Upload successful');
-
     }
-
   } catch (error) {
     console.error('Error fetching signed URL:', error);
   }
 }
+
+const goToImage = (imageId:string) => {
+  router.push(`/tabs/images/${imageId}`);
+}
+
+//Handlers for the popover:
+
 
 </script>
 
@@ -106,5 +157,14 @@ const uploadGalleryImage = async () => {
   width: 100%; /* Responsive width */
   height: 100px; /* Fixed height */
   object-fit: cover; /* Cover the container without distorting the aspect ratio */
+}
+.custom-fab {
+  display: flex;
+  flex-direction: row; /* Aligns children (fab buttons) in a row */
+  justify-content: center; /* Centers the buttons horizontally */
+  align-items: center; /* Aligns the buttons vertically at the center */
+}
+.custom-fab ion-fab-button:not(:last-child) {
+  margin-right: 10px; /* Adds space to the right of each button except the last one */
 }
 </style>
