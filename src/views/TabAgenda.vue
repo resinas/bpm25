@@ -3,6 +3,7 @@
     <HeaderBar name="Agenda" />
 
     <ion-toolbar>
+      <div class="segment-wrapper">
       <ion-segment value="all" v-model="state.selectedDay">
         <ion-segment-button
             v-for="day in state.uniqueDays"
@@ -16,6 +17,7 @@
           </ion-label>
         </ion-segment-button>
       </ion-segment>
+      </div>
       <ion-buttons slot="end">
         <ion-button @click="goToCalendar">
           <ion-icon :icon="calendarIcon" class="larger-icon" />
@@ -268,36 +270,67 @@ function goToSession(sessionId) {
 </script>
 
 <style scoped>
-.day-name, .day-date {
-  display: block; /* This makes each element take up the full width available, forcing a line break between them */
+/* Segment wrapper specific styles */
+.segment-wrapper {
+  overflow-x: auto; /* Enables horizontal scrolling for the segment */
+  white-space: nowrap; /* Keeps segment buttons in a single line */
+  -webkit-overflow-scrolling: touch; /* Smooths scrolling on touch devices */
 }
 
-.day-name {
-  /* Additional styling for the day name */
-  font-weight: bold;
+/* Segment button styles */
+ion-segment-button {
+  display: inline-flex; /* Uses flexbox to center content */
+  justify-content: center; /* Centers content horizontally */
+  min-width: 60px; /* Sets a minimum width for each segment button */
+  max-width: 100px; /* Limits the maximum width to ensure visibility on small screens */
+  margin: 0 2px; /* Adds horizontal spacing between buttons */
+  white-space: normal; /* Allows text wrapping within the button */
 }
 
-.day-date {
-  /* Additional styling for the date */
-  font-size: 0.75em; /* Smaller than the day name */
-  color: #686868; /* A grey tint for lower contrast */
-  margin-top: 4px; /* Adds space between the day name and the date */
+/* Styles for labels within the segment buttons */
+.segment-wrapper ion-label {
+  font-size: 0.8em; /* Smaller font size for the segment labels */
+  text-align: center; /* Centers the text within the segment */
+  color: #ffffff; /* Sets text color to white for better visibility */
 }
 
+/* Styling day names and dates within segment buttons */
+.segment-wrapper .day-name,
+.segment-wrapper .day-date {
+  display: block; /* Forces a new line for each element within the label */
+}
+
+.segment-wrapper .day-name {
+  font-weight: bold; /* Bold for day names to distinguish from dates */
+}
+
+.segment-wrapper .day-date {
+  font-size: 0.75em; /* Smaller font size for dates */
+  color: #686868; /* Subtle grey color for less emphasis */
+  margin-top: 4px; /* Space between day name and date */
+}
+
+/* Icon sizing for clarity and emphasis */
 .larger-icon {
-  font-size: 24px; /* or any size you prefer */
-  width: 26px; /* Ensure width and height match the font-size for alignment */
-  height: 26px;
+  font-size: 24px; /* Increases icon size for visibility */
+  width: 26px; /* Width matching font size to maintain aspect ratio */
+  height: 26px; /* Height matching font size to maintain aspect ratio */
 }
 
+/* Style modifications for days without sessions */
 .day-without-session {
-  opacity: 0.5;
-  pointer-events: none;
+  opacity: 0.5; /* Semi-transparent for days without any sessions */
+  pointer-events: none; /* Disables interactions for days without sessions */
 }
 
+/* Enhances visibility for labels on days with sessions */
 .day-with-session ion-label {
-  color: #ffffff; /* Brighter color for days with sessions */
+  color: #ffffff; /* White color for active day labels */
 }
 
-
+/* Session item styles - revert any global changes that might have affected sessions */
+ion-item {
+  text-align: left; /* Ensures session information aligns to the left */
+}
 </style>
+
