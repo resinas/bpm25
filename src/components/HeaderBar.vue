@@ -10,7 +10,7 @@
       <ion-buttons slot="end" v-if="name == 'Home'">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-buttons v-if="name == 'Gallery'" slot="end" id="click-trigger" class="gallery-dropdown">
+      <ion-buttons v-if="name == 'Gallery' || name== 'My Gallery'" slot="end" id="click-trigger" class="gallery-dropdown">
         <ion-icon :icon="ellipsisVertical" style="font-size: 26px;"></ion-icon>
       </ion-buttons>
       <ion-popover trigger="click-trigger" trigger-action="click">

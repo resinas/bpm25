@@ -10,7 +10,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-img :src="image"></ion-img>
+      <ion-img
+          :src="image" ionImgWillLoad
+      ></ion-img>
       <ion-card>
         <ion-card-content class="Published-text">
           Published by: {{ imageData.imageAuthor }}
