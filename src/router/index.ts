@@ -47,6 +47,14 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/TabGallery.vue')
       },
       {
+        path: 'images/myGallery',
+        component: () => import('@/views/TabMyGallery.vue')
+      },
+      {
+        path: 'images/:imageId',
+        component: () => import('@/views/TabGallerySingleImage.vue')
+      },
+      {
         path: 'page/:id',
         component: () => import('@/views/TabSinglePage.vue')
       },
