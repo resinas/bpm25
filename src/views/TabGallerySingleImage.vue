@@ -20,7 +20,7 @@
         <ion-card-content class="Likes-text">
           Likes: {{ imageData.imageLikes }}
         </ion-card-content>
-        <ion-card-content>
+        <ion-card-content >
           <ion-icon v-if="imageData.imageIsLiked" :icon="thumbsUp" class="like-icon" @click="changeLikeStatus"></ion-icon>
           <ion-icon v-else :icon="thumbsUpOutline" class="like-icon" @click="changeLikeStatus"></ion-icon>
         </ion-card-content>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {IonPage, IonContent, IonImg, IonButtons, IonBackButton, IonIcon} from "@ionic/vue";
+import {IonPage, IonContent, IonImg, IonButtons, IonBackButton, IonIcon, IonCard, IonCardContent, IonTitle, IonToolbar, IonHeader, } from "@ionic/vue";
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import HeaderBar from "@/components/HeaderBar.vue";
@@ -105,6 +105,10 @@ ion-card{
 }
 .Likes-text{
   font-size: 16px;
-  margin-top: -10%;
+  margin-top: -8%;
+}
+.like-icon{
+  color: #3880ff;
+  margin-top: -7%;
 }
 </style>
