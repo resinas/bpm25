@@ -1,15 +1,43 @@
 <template>
   <ion-page>
-    <HeaderBar name="Gallery" />
-    <ion-content :fullscreen="true">
+    <HeaderBar name="Gallery">
+      <template v-slot>
+        <ion-content>
+          <ion-list>
+            <ion-item button :routerLink="'/tabs/images/myGallery'">
+              <ion-label>
+                <ion-icon :icon="folder" slot="start" />
+                My gallery
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </template>
+    </HeaderBar>
+    <ion-content :fullscreen="true" ref="content">
       <ion-grid>
         <ion-row>
+          <ion-col size="4" v-for="(image, index) in images" :key="index">
+            <div @click="goToImage(image)">
+              <ion-img :src="getImageUrl(image)" class="gallery-image"></ion-img>
+            </div>
+          </ion-col>
         </ion-row>
       </ion-grid>
+      <!-- Infinite Scroll -->
+      <ion-infinite-scroll @ionInfinite="loadMore" threshold="10%">
+        <ion-infinite-scroll-content
+            loading-spinner="bubbles"
+            loading-text="Loading more photos...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
 
-      <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-        <ion-fab-button @click="takePhotoGallery()">
+      <ion-fab vertical="bottom" horizontal="center" slot="fixed" class="custom-fab">
+        <ion-fab-button @click="uploadGalleryImage">
           <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button :routerLink="'/tabs/images/myGallery'">
+          <ion-icon :icon="folder"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -19,11 +47,124 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
-import { add } from 'ionicons/icons';
-import { usePhotoGallery, UserPhoto } from '@/composables/usePhotoGallery';
+import {
+  IonPage,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonImg,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  InfiniteScrollCustomEvent, IonLabel, IonItem, IonList,
+} from '@ionic/vue';
+import {add, folder, settingsOutline} from 'ionicons/icons';
+import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
+import axios from "axios";
+import {onMounted, Ref, ref} from "vue";
+import router from "@/router";
 
 const { takePhotoGallery } = usePhotoGallery();
+const token = ref(localStorage.getItem("accessToken"))
+
+const images = ref<string[]>([]);
+const hasMore = ref(true);
+const pageNr =ref(0);
+const pageSize = 100;
+
+const content: Ref<InstanceType<typeof IonContent> | null> = ref(null);
+
+onMounted(() => {
+  fetchGalleryMetadata()
+});
+
+
+const fetchGalleryMetadata = async () => {
+  if (!hasMore.value) return;
+  try {
+    const response = await axios.get(`http://localhost:8080/api/v1/gallery/images`, {
+      params: {
+        pageNr: pageNr.value,
+        pageSize: pageSize
+      },
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    });
+    console.log("This is the response data: " + response.data);
+    if (response.data.imagePaths.length > 0) {
+      images.value = [...images.value, ...response.data.imagePaths];
+      console.log("This is images.value: " +images.value);
+      pageNr.value++;
+    } else {
+      hasMore.value = false;
+    }
+  } catch (error) {
+    console.error('Error fetching gallery images:', error);
+  }
+}
+
+const getImageUrl = (filepath:string) => {
+  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+};
+
+const loadMore = async (event?:InfiniteScrollCustomEvent) => {
+  await fetchGalleryMetadata();
+  if (event) {
+    await event.target.complete();
+  }
+};
+
+const uploadGalleryImage = async () => {
+  try {
+    const photoBlob = await takePhotoGallery();
+    // Create an instance of FormData
+    const formData = new FormData();
+
+    // Append the photo blob to the form data, the 'file' key should match the name expected in the backend
+    formData.append('file', photoBlob as Blob);
+
+    // Make the POST request with the form data and proper headers
+    const uploadResponse = await axios.post("http://localhost:8080/api/v1/gallery/images", formData, {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
+      }
+    });
+    if (uploadResponse.status === 200) {
+      console.log('Upload successful');
+    }
+  } catch (error) {
+    console.error('Error uploading image:', error);
+  }
+}
+
+const goToImage = (imageId:string) => {
+  router.push(`/tabs/images/${imageId}`);
+}
+
+//Handlers for the popover:
+
 
 </script>
+
+<style scoped>
+.gallery-image {
+  width: 100%; /* Responsive width */
+  height: 100px; /* Fixed height */
+  object-fit: cover; /* Cover the container without distorting the aspect ratio */
+}
+.custom-fab {
+  display: flex;
+  flex-direction: row; /* Aligns children (fab buttons) in a row */
+  justify-content: center; /* Centers the buttons horizontally */
+  align-items: center; /* Aligns the buttons vertically at the center */
+}
+.custom-fab ion-fab-button:not(:last-child) {
+  margin-right: 10px; /* Adds space to the right of each button except the last one */
+}
+</style>

@@ -4,16 +4,23 @@ import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 
 export const usePhotoGallery = () => {
     const takePhotoGallery = async () => {
-        const photo = await Camera.getPhoto({
+        const cameraPhoto = await Camera.getPhoto({
             resultType: CameraResultType.Uri,
             source: CameraSource.Camera,
             quality: 100,
         });
-        const fileName = Date.now() + '.jpeg';
-        const savedFileImage = {
-            filepath: fileName,
-            webviewPath: photo.webPath,
-        };
+        if (!cameraPhoto.webPath) {
+            throw new Error('Photo path is undefined');
+        }
+
+        const response = await fetch(cameraPhoto.webPath);
+        const originalBlob = await response.blob();
+
+        try {
+            return await processImage(originalBlob, 1, 2000, 2000);
+        }catch (e) {
+            return originalBlob;
+        }
 
     };
 
