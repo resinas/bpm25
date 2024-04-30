@@ -275,6 +275,7 @@ function goToSession(sessionId) {
   overflow-x: auto; /* Enables horizontal scrolling for the segment */
   white-space: nowrap; /* Keeps segment buttons in a single line */
   -webkit-overflow-scrolling: touch; /* Smooths scrolling on touch devices */
+  background-color: var(--background-color); /* Use variable for background */
 }
 
 /* Segment button styles */
@@ -285,19 +286,21 @@ ion-segment-button {
   max-width: 100px; /* Limits the maximum width to ensure visibility on small screens */
   margin: 0 2px; /* Adds horizontal spacing between buttons */
   white-space: normal; /* Allows text wrapping within the button */
+  color: var(--text-color); /* Use variable for text color */
 }
 
 /* Styles for labels within the segment buttons */
 .segment-wrapper ion-label {
   font-size: 0.8em; /* Smaller font size for the segment labels */
   text-align: center; /* Centers the text within the segment */
-  color: #ffffff; /* Sets text color to white for better visibility */
+  color: var(--text-color); /* Use variable for text color */
 }
 
 /* Styling day names and dates within segment buttons */
 .segment-wrapper .day-name,
 .segment-wrapper .day-date {
   display: block; /* Forces a new line for each element within the label */
+  color: var(--text-color); /* Use variable for text color */
 }
 
 .segment-wrapper .day-name {
@@ -306,7 +309,7 @@ ion-segment-button {
 
 .segment-wrapper .day-date {
   font-size: 0.75em; /* Smaller font size for dates */
-  color: #686868; /* Subtle grey color for less emphasis */
+  color: var(--secondary-text-color); /* Use variable for less emphasized text */
   margin-top: 4px; /* Space between day name and date */
 }
 
@@ -315,6 +318,7 @@ ion-segment-button {
   font-size: 24px; /* Increases icon size for visibility */
   width: 26px; /* Width matching font size to maintain aspect ratio */
   height: 26px; /* Height matching font size to maintain aspect ratio */
+  color: var(--icon-color); /* Use variable for icon color */
 }
 
 /* Style modifications for days without sessions */
@@ -325,12 +329,37 @@ ion-segment-button {
 
 /* Enhances visibility for labels on days with sessions */
 .day-with-session ion-label {
-  color: #ffffff; /* White color for active day labels */
+  color: var(--text-color); /* White color for active day labels */
 }
 
 /* Session item styles - revert any global changes that might have affected sessions */
 ion-item {
   text-align: left; /* Ensures session information aligns to the left */
+  color: var(--text-color); /* Use variable for text color */
 }
+
+/* Define basic color scheme variables */
+:root {
+  --text-color: #ffffff; /* Default text color */
+  --secondary-text-color: #686868; /* Less emphasized text */
+  --background-color: #2a2a2a; /* Dark background */
+  --icon-color: #098BFF; /* Icon color */
+
+  --light-text-color: #000000; /* Light mode text color */
+  --light-background-color: #ffffff; /* Light mode background */
+  --light-icon-color: #000000; /* Light mode icon color */
+}
+
+/* Media query for light mode */
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-color: var(--light-text-color);
+    --background-color: var(--light-background-color);
+    --icon-color: var(--light-icon-color);
+    --secondary-text-color: var(--light-text-color); /* Adjust if needed */
+  }
+}
+
 </style>
+
 

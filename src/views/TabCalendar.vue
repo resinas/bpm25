@@ -155,6 +155,9 @@ function dateClicked(day) {
 
   // Example redirection logic (adapt as needed)
   router.push(`/tabs/calendar?date=${clickedDate.toISOString().slice(0, 10)}`);
+  setTimeout(() => {
+    window.location.reload();
+  }, 50);
 }
 
 
@@ -164,8 +167,34 @@ onMounted(fetchSessions);
 </script>
 
 
+<style>
+:root {
+  --text-color: #ffffff; /* Default text color */
+  --secondary-text-color: #686868; /* Less emphasized text */
+  --background-color: #2a2a2a; /* Dark background */
+  --icon-color: #098BFF; /* Icon color */
+
+  --light-text-color: #000000; /* Light mode text color */
+  --light-background-color: #ffffff; /* Light mode background */
+  --light-box-color: #ffffff;
+  --light-icon-color: #000000; /* Light mode icon color */
+}
+
+@media (prefers-color-scheme: light) {
+  .calendar {
+    border: 5px solid hotpink; /* Temporary visual cue */
+  }
+  :root {
+    --text-color: var(--light-text-color);
+    --background-color: var(--light-background-color);
+    --icon-color: var(--light-icon-color);
+    --secondary-text-color: var(--light-text-color); /* Adjust if needed */
+  }
+}
+</style>
 
 <style scoped>
+
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr); /* 7 columns for 7 days of the week */
@@ -182,21 +211,21 @@ onMounted(fetchSessions);
   justify-content: center;
   align-items: center;
   background-color: transparent; /* No background for day names */
-  color: #fff; /* White color for the day names */
+  color: var(--text-color); /* White color for the day names */
 }
 
-.date-box {
+.calendar .date-box {
   justify-content: flex-end; /* Positions the date in the bottom-right */
   align-items: flex-end;
   padding: 5%; /* Responsive padding */
   cursor: pointer; /* Indicates the item is clickable */
-  background-color: #2a2a2a; /* Slight background color for date boxes */
+  background-color: var(--background-color); /* Slight background color for date boxes */
   border-radius: 5%; /* Responsive border radius */
 }
 
 .date-text {
   font-size: 1.2em; /* Slightly larger and responsive font size */
-  color: #fff; /* White color for the numbers */
+  color: var(--text-color); /* White color for the numbers */
 }
 
 .session-dot {
@@ -207,9 +236,11 @@ onMounted(fetchSessions);
   width: 20%; /* Size of the dot in em for responsiveness */
   height: 20%;
   color : #098BFF;
-  background-color: #2a2a2a; /* Color of the dot */
+  background-color: var(--background-color); /* Color of the dot */
   border-radius: 50%; /* Makes the dot circular */
 }
+
+
 </style>
 
 

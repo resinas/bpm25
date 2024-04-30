@@ -6,8 +6,8 @@
       <ion-list lines="full">
         <ion-item v-for="person in state.persons" :key="person.id" :router-link="`/attendee/${person.id}`" button>
           <ion-avatar slot="start">
-            <ion-icon v-if="!person.avatarpath" :icon="personCircle" size="large"></ion-icon>
-            <img v-else :src="person.avatarpath" :alt="`${person.firstname} ${person.lastname}`" />
+            <ion-icon v-if="!person.avatar_path" :icon="personCircle" size="large"></ion-icon>
+            <img v-else :src="person.avatar_path" :alt="`${person.firstname} ${person.lastname}`" />
           </ion-avatar>
 
           <ion-label>
