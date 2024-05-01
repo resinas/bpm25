@@ -6,8 +6,7 @@
       <ion-list lines="full">
         <ion-item v-for="person in state.persons" :key="person.id" :router-link="`/attendee/${person.id}`" button>
           <ion-avatar slot="start">
-            <ion-icon v-if="!person.avatar_path" :icon="personCircle" class="avatar-icon" size="large"></ion-icon>
-            <img v-else :src="person.imageURL" :alt="`${person.firstname} ${person.lastname}`" />
+            <img :src="person.imageURL || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
           </ion-avatar>
 
           <ion-label>
@@ -114,27 +113,7 @@ onMounted(fetchAttendees);
 </script>
 
 
-<style scoped>
-.ion-avatar {
-  display: grid;
-  place-items: center; /* This centers the child element */
-  width: 2.5em; /* Adjust to fit your design */
-  height: 2.5em;
-  border-radius: 50%;
-  overflow: hidden;
-}
 
-.ion-avatar img {
-  width: 100%; /* Full container width */
-  height: 100%; /* Full container height */
-  object-fit: cover; /* Ensure no distortion */
-}
-
-.ion-avatar ion-icon {
-  width: 300%; /* Scaled to fit, modify if needed */
-  height: auto; /* Maintain aspect ratio */
-}
-</style>
 
 
 
