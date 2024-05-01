@@ -3,7 +3,7 @@
     <HeaderBar name="Home" />
 
     <ion-content id="main-content" :fullscreen="true">
-      <img src="https://icpmconference.org/2024/wp-content/uploads/sites/9/2023/09/cph.jpg" />
+      <img src="https://icpmconference.org/2024/wp-content/uploads/sites/9/2023/09/cph.jpg"  alt=""/>
 
       <ion-card>
         <ion-card-header>
@@ -22,7 +22,7 @@
         Pages
       </p>
       <ion-list lines="full">
-        <ion-item button="true" v-for="page in pages" :key="page.id" :routerLink="`/tabs/page/${page.id}`">
+        <ion-item button v-for="page in pages" :key="page.id" :routerLink="`/tabs/page/${page.id}`">
           <ion-label >{{ page.name }}</ion-label>
           <ion-badge v-if="page.label" color="danger">{{ page.label }}</ion-badge>
         </ion-item>
@@ -33,14 +33,34 @@
 </template>
 
 <script setup lang="js">
-import {IonPage, IonContent, IonBadge, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonLabel} from '@ionic/vue';
-import SettingsMenu from "@/components/SettingsMenu.vue";
+import {
+  IonPage,
+  IonContent,
+  IonBadge,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  menuController
+} from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
 import axios from 'axios';
+import {onBeforeRouteLeave} from "vue-router";
 
 const pages = reactive([]);
 const token = localStorage.getItem("accessToken")
+
+const closeSettingsMenu = async () => {
+  await menuController.close('settings-menu');
+};
+
+onBeforeRouteLeave((to, from) => {
+  closeSettingsMenu();
+});
 
 onMounted(async () => {
   try {

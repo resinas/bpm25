@@ -11,7 +11,7 @@
     </ion-header>
     <ion-content :fullscreen="true">
       <ion-img
-          :src="image" ionImgWillLoad
+          :src="image"
       ></ion-img>
       <ion-card>
         <ion-card-content class="Published-text">
@@ -72,7 +72,7 @@ const getImageUrl = (filepath:string) => {
 const changeLikeStatus = async () => {
   try{
     console.log(imagePath);
-    await axios.put(`http://localhost:8080/api/v1/account/changeLikeStatusGalleyImage`, {
+    await axios.put(`http://localhost:8080/api/v1/gallery/changeLikeStatusGalleyImage`, {
       likes: !imageData.value.imageIsLiked,
       path: imagePath
     }, { headers: { Authorization: `Bearer ${token.value}` } })
