@@ -8,7 +8,9 @@
           id="logo" />
 
       <ion-buttons slot="end" v-if="name == 'Home'">
-        <ion-menu-button></ion-menu-button>
+        <ion-menu-button>
+
+        </ion-menu-button>
       </ion-buttons>
       <ion-buttons v-if="name == 'Gallery'" slot="end" id="click-trigger" class="gallery-dropdown">
         <ion-icon :icon="reload" style="font-size: 26px;margin-right: 10px;" @click="$emit('reloadPage')"></ion-icon>
@@ -20,7 +22,7 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  <SettingsMenu />
+  <SettingsMenu v-if="name == 'Home'" />
 </template>
 
 <script setup lang="ts">

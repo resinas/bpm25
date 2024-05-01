@@ -16,8 +16,6 @@
           Kgs. Lyngby, Denmark
         </ion-card-content>
       </ion-card>
-
-
       <p class="ion-padding" style="font-size: 1.5rem; margin-bottom: 0">
         Pages
       </p>
@@ -27,7 +25,6 @@
           <ion-badge v-if="page.label" color="danger">{{ page.label }}</ion-badge>
         </ion-item>
       </ion-list>
-
     </ion-content>
   </ion-page>
 </template>
