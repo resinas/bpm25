@@ -1,5 +1,5 @@
 <template>
-  <ion-menu side="end" contentId="main-content">
+  <ion-menu side="end" contentId="main-content" menuId="settings-menu">
     <ion-header>
       <ion-toolbar>
         <ion-title>Account</ion-title>

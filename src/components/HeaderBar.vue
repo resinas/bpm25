@@ -10,21 +10,30 @@
       <ion-buttons slot="end" v-if="name == 'Home'">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-buttons v-if="name == 'Gallery' || name== 'My Gallery'" slot="end" id="click-trigger" class="gallery-dropdown">
-        <ion-icon :icon="ellipsisVertical" style="font-size: 26px;"></ion-icon>
+      <ion-buttons v-if="name == 'Gallery'" slot="end" id="click-trigger" class="gallery-dropdown">
+        <ion-icon :icon="reload" style="font-size: 26px;margin-right: 10px;" @click="$emit('reloadPage')"></ion-icon>
+        <ion-icon :icon="ellipsisVertical" style="font-size: 26px;" @click="$emit('openActionSheet')"></ion-icon>
       </ion-buttons>
-      <ion-popover trigger="click-trigger" trigger-action="click">
-        <slot></slot>
-      </ion-popover>
+      <ion-buttons v-if="name == 'My Gallery'" slot="end" id="click-trigger" class="gallery-dropdown" >
+        <ion-icon :icon="reload" style="font-size: 26px;margin-right: 10px;" @click="$emit('reloadPage')"></ion-icon>
+        <ion-icon :icon="ellipsisVertical" style="font-size: 26px;" @click="$emit('openActionSheet')"></ion-icon>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
   <SettingsMenu />
 </template>
 
 <script setup lang="ts">
-import {IonButtons, IonHeader, IonMenuButton, IonTitle, IonToolbar, IonPopover, IonIcon} from "@ionic/vue";
+import {
+  IonButtons,
+  IonHeader,
+  IonMenuButton,
+  IonTitle,
+  IonToolbar,
+  IonIcon,
+} from "@ionic/vue";
 import SettingsMenu from "@/components/SettingsMenu.vue";
-import { ellipsisVertical } from 'ionicons/icons';
+import {ellipsisVertical, reload} from 'ionicons/icons';
 
 defineProps({
   name: String,

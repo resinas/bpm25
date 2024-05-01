@@ -1,26 +1,12 @@
 <template>
   <ion-page>
-    <HeaderBar name="Gallery">
-      <template v-slot>
-        <ion-content>
-          <ion-list>
-            <ion-item button :routerLink="'/tabs/images/myGallery'">
-              <ion-label>
-                <ion-icon :icon="folder" slot="start" />
-                My gallery
-              </ion-label>
-            </ion-item>
-          </ion-list>
-        </ion-content>
-      </template>
-    </HeaderBar>
+    <HeaderBar name="Gallery" @openActionSheet="openActionSheet" @reloadPage="reloadPage"></HeaderBar>
+
     <ion-content :fullscreen="true" ref="content">
       <ion-grid>
         <ion-row>
           <ion-col size="4" v-for="(image, index) in images" :key="index">
-            <div @click="goToImage(image)">
-              <ion-img :src="getImageUrl(image)" class="gallery-image"></ion-img>
-            </div>
+            <ion-img :src="getImageUrl(image)" class="gallery-image" :class="{ 'selected-image': imagesSelectedList.includes(image) }" @click="selectMultiple ? selectImage(image) : goToImage(image)"></ion-img>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -32,17 +18,15 @@
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
 
-      <ion-fab vertical="bottom" horizontal="center" slot="fixed" class="custom-fab">
-        <ion-fab-button @click="uploadGalleryImage">
-          <ion-icon :icon="add"></ion-icon>
+      <ion-fab v-if="selectMultiple" vertical="bottom" horizontal="center" slot="fixed" class="custom-fab">
+        <ion-fab-button  @click="untoggleSelectImage">
+          <ion-icon :icon="close"></ion-icon>
         </ion-fab-button>
-        <ion-fab-button :routerLink="'/tabs/images/myGallery'">
-          <ion-icon :icon="folder"></ion-icon>
+        <ion-fab-button  @click="downloadImages">
+          <ion-icon :icon="download"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
-
-
   </ion-page>
 </template>
 
@@ -59,9 +43,9 @@ import {
   IonImg,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent, IonLabel, IonItem, IonList,
+  InfiniteScrollCustomEvent,  actionSheetController,
 } from '@ionic/vue';
-import {add, folder, settingsOutline} from 'ionicons/icons';
+import {close, download} from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from "axios";
@@ -76,12 +60,46 @@ const hasMore = ref(true);
 const pageNr =ref(0);
 const pageSize = 100;
 
+const selectMultiple = ref(false);
+const imagesSelectedList = ref<string[]>([]);
+
 const content: Ref<InstanceType<typeof IonContent> | null> = ref(null);
 
 onMounted(() => {
   fetchGalleryMetadata()
 });
 
+
+const actionSheet = ref<HTMLIonActionSheetElement | null>(null);
+const openActionSheet = async () => {
+  actionSheet.value = await actionSheetController.create({
+    header: 'Gallery Options',
+    buttons: [{
+      text: 'Go to My Gallery',
+      handler: () => {
+        router.push('/tabs/images/myGallery');
+      }
+    }, {
+      text: 'Select Images',
+      handler: () => {
+        selectMultiple.value = true;
+      }
+    }, {
+      text: 'Upload image',
+      handler: () => {
+        uploadGalleryImage();
+      }
+    }]
+  });
+  return actionSheet.value.present();
+};
+
+const reloadPage = async () => {
+  images.value = [];
+  hasMore.value = true;
+  pageNr.value = 0;
+  await fetchGalleryMetadata();
+}
 
 const fetchGalleryMetadata = async () => {
   if (!hasMore.value) return;
@@ -95,10 +113,8 @@ const fetchGalleryMetadata = async () => {
         Authorization: `Bearer ${token.value}`
       }
     });
-    console.log("This is the response data: " + response.data);
     if (response.data.imagePaths.length > 0) {
       images.value = [...images.value, ...response.data.imagePaths];
-      console.log("This is images.value: " +images.value);
       pageNr.value++;
     } else {
       hasMore.value = false;
@@ -112,6 +128,10 @@ const getImageUrl = (filepath:string) => {
   return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
 };
 
+const getImageJPG = (filepath:string) => {
+  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
+};
+
 const loadMore = async (event?:InfiniteScrollCustomEvent) => {
   await fetchGalleryMetadata();
   if (event) {
@@ -122,7 +142,6 @@ const loadMore = async (event?:InfiniteScrollCustomEvent) => {
 const uploadGalleryImage = async () => {
   try {
     const photoBlob = await takePhotoGallery();
-    // Create an instance of FormData
     const formData = new FormData();
 
     // Append the photo blob to the form data, the 'file' key should match the name expected in the backend
@@ -143,16 +162,56 @@ const uploadGalleryImage = async () => {
   }
 }
 
+const downloadImage = (filePath:string) => {
+  const image = getImageJPG(filePath);
+  fetch(image)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filePath;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        self.postMessage('Download complete');
+      })
+      .catch(() => self.postMessage('Download failed'));
+}
+
+const downloadImages = () => {
+  if (imagesSelectedList.value.length === 0) {
+    console.log("Zero elements selected")
+    return;
+  }
+  for (const image of imagesSelectedList.value) {
+    downloadImage(image)
+  }
+  imagesSelectedList.value = [];
+}
+
+const selectImage = (imageId:string) => {
+  if (imagesSelectedList.value.includes(imageId)) {
+    imagesSelectedList.value = imagesSelectedList.value.filter(image => image !== imageId);
+    return;
+  }
+  imagesSelectedList.value.push(imageId);
+}
+
+const untoggleSelectImage = () => {
+  selectMultiple.value = false;
+  imagesSelectedList.value = [];
+}
+
 const goToImage = (imageId:string) => {
   router.push(`/tabs/images/${imageId}`);
 }
-
-//Handlers for the popover:
-
-
 </script>
 
 <style scoped>
+.selected-image {
+  border: 2px solid #3880ff; /* Adjust as needed */
+}
 .gallery-image {
   width: 100%; /* Responsive width */
   height: 100px; /* Fixed height */
