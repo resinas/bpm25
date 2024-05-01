@@ -36,7 +36,7 @@ import {
   IonRow,
   IonCol,
   IonImg,
-  actionSheetController,
+  actionSheetController, menuController,
 } from '@ionic/vue';
 import {trash, close, download} from "ionicons/icons";
 import axios from "axios";
@@ -44,6 +44,7 @@ import {usePhotoGallery} from "@/composables/usePhotoGallery";
 import {onMounted, ref} from "vue";
 import HeaderBar from "@/components/HeaderBar.vue";
 import router from "@/router";
+import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
 
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
@@ -54,6 +55,23 @@ const imagesSelectedList = ref<string[]>([]);
 
 onMounted(() => {
   fetchMyGalleryMetadata()
+});
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (to.path === '/tabs/images/myGallery') {
+    fetchMyGalleryMetadata();
+  }
+  next();
+});
+
+const resetMyGalleryData = async () => {
+  imagesList.value = [];
+  imagesSelectedList.value = [];
+  selectMultiple.value = false;
+};
+
+onBeforeRouteLeave((to, from) => {
+  resetMyGalleryData();
 });
 
 const actionSheet = ref<HTMLIonActionSheetElement | null>(null);

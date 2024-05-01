@@ -38,8 +38,5 @@ const closeSettingsMenu = async () => {
   await menuController.close('settings-menu');
 };
 
-onBeforeRouteLeave((to, from) => {
-  closeSettingsMenu();
-});
 
 </script>
