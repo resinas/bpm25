@@ -263,10 +263,6 @@ function goToCalendar() {
   router.push({name: 'CalendarView'});
 }
 
-function goToSession(sessionId) {
-  router.push({name: 'SessionDetail', params: {id: sessionId}});
-}
-
 </script>
 
 <style scoped>

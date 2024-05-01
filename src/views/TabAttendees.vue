@@ -6,8 +6,8 @@
       <ion-list lines="full">
         <ion-item v-for="person in state.persons" :key="person.id" :router-link="`/attendee/${person.id}`" button>
           <ion-avatar slot="start">
-            <ion-icon v-if="!person.avatar_path" :icon="personCircle" size="large"></ion-icon>
-            <img v-else :src="person.avatar_path" :alt="`${person.firstname} ${person.lastname}`" />
+            <ion-icon v-if="!person.avatar_path" :icon="personCircle" class="avatar-icon" size="large"></ion-icon>
+            <img v-else :src="person.imageURL" :alt="`${person.firstname} ${person.lastname}`" />
           </ion-avatar>
 
           <ion-label>
@@ -28,9 +28,10 @@
 
 
 <script setup>
-import { IonPage, IonContent, IonList, IonItem, IonAvatar, IonLabel, IonSearchbar, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/vue';
+import { IonIcon, IonPage, IonContent, IonList, IonItem, IonAvatar, IonLabel, IonSearchbar, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
-import { reactive, onMounted } from 'vue';
+import { watch, reactive, onMounted } from 'vue';
+import { debounce } from 'lodash';
 import axios from 'axios';
 import { personCircle } from 'ionicons/icons';
 
@@ -42,6 +43,7 @@ const state = reactive({
   loading: false
 });
 
+
 const fetchAttendees = async () => {
   const token = localStorage.getItem("accessToken");
   try {
@@ -49,11 +51,16 @@ const fetchAttendees = async () => {
     const response = await axios.get(`http://localhost:8080/api/v1/attendees?page=${state.page}&size=50&search=${state.searchQuery}`, {
       headers: { 'Authorization': `Bearer ${token}`}
     });
-    const data = response.data;
+    const persons = response.data.content;
+    await Promise.all(persons.map(async person => {
+      if (person.avatar_path) {
+        person.imageURL = await getImage(person);
+      }
+    }));
     if (state.page === 0) {
-      state.persons = data.content;
+      state.persons = persons;
     } else {
-      state.persons.push(...data.content);
+      state.persons.push(...persons);
     }
     state.page++;
     state.loading = false;
@@ -62,6 +69,33 @@ const fetchAttendees = async () => {
     state.loading = false;
   }
 };
+
+const debouncedFetchAttendees = debounce(fetchAttendees, 300);  // 300ms delay
+
+watch(() => state.searchQuery, async (newQuery, oldQuery) => {
+  if (newQuery !== oldQuery) {
+    state.page = 0;
+    debouncedFetchAttendees();
+  }
+}, { immediate: false });
+
+const getImage = async (person) => {
+  const token = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(`http://localhost:8080/api/v1/account/getProfilePicture/${person.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      params: {
+        format: 'webp'
+      },
+      responseType: 'blob'  // This tells axios to expect a binary response instead of JSON
+    });
+    return URL.createObjectURL(response.data);  // Convert the blob to a URL and return it
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    return '';  // Return an empty string or a default image path in case of error
+  }
+}
+
 
 const formatCompanyCountry = (person) => {
   let parts = [];
@@ -78,4 +112,32 @@ const loadMore = async (event) => {
 onMounted(fetchAttendees);
 
 </script>
+
+
+<style scoped>
+.ion-avatar {
+  display: grid;
+  place-items: center; /* This centers the child element */
+  width: 2.5em; /* Adjust to fit your design */
+  height: 2.5em;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.ion-avatar img {
+  width: 100%; /* Full container width */
+  height: 100%; /* Full container height */
+  object-fit: cover; /* Ensure no distortion */
+}
+
+.ion-avatar ion-icon {
+  width: 300%; /* Scaled to fit, modify if needed */
+  height: auto; /* Maintain aspect ratio */
+}
+</style>
+
+
+
+
+
 

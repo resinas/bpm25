@@ -209,6 +209,7 @@ const user = ref({
   company: '',
   country: '',
   profilePicture: '',
+  id: '',
   sharingChoice: false
 })
 
@@ -226,12 +227,16 @@ const fetchUserSettings = async () => {
     user.value.lastname = response.data.lastname;
     user.value.company = response.data.company;
     user.value.country = response.data.country;
+    user.value.id = response.data.id;
     user.value.sharingChoice = response.data.sharingChoice
 
     if (response.data.profilePicture) {
-      const retrieveResponse = await axios.get("http://localhost:8080/api/v1/account/getProfilePicture",
+      const retrieveResponse = await axios.get(`http://localhost:8080/api/v1/account/getProfilePicture/${user.value.id}`,
           { headers: {
             Authorization: `Bearer ${token.value}` },
+            params: {
+            format: 'webp'
+            },
             responseType: 'blob'})
       user.value.profilePicture = URL.createObjectURL(retrieveResponse.data);
     }
@@ -249,6 +254,7 @@ const updateUserInformation = async () => {
           company: user.value.company,
           country: user.value.country,
           sharingChoice: user.value.sharingChoice,
+          id: user.value.id,
           password: ''
           },{ headers: { Authorization: `Bearer ${token.value}` } });
     updateSuccess.value ="Information updated successfully";
