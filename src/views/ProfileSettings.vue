@@ -58,7 +58,6 @@
                   label="Company"
                   label-placement="stacked"
                   v-model="user.company"
-                  required
               ></ion-input>
             </ion-item>
             <ion-item>
@@ -66,7 +65,6 @@
                   label="Country"
                   label-placement="stacked"
                   v-model="user.country"
-                  required
               ></ion-input>
             </ion-item>
             <ion-item>

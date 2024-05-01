@@ -31,4 +31,12 @@
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet, IonBadge } from '@ionic/vue';
 import { home, calendar, people, images } from 'ionicons/icons';
+import { menuController } from '@ionic/vue';
+import { onBeforeRouteLeave } from 'vue-router';
+
+const closeSettingsMenu = async () => {
+  await menuController.close('settings-menu');
+};
+
+
 </script>
