@@ -1,6 +1,6 @@
 export default class Backend {
     constructor() {
-        this.url = "http://localhost8080/spring_security"
+        this.url = "https://localhost8080/spring_security"
     }
 
    signIn() {

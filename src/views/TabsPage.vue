@@ -21,7 +21,6 @@
         <ion-tab-button tab="images" href="/tabs/images">
           <ion-icon aria-hidden="true" :icon="images" />
           <ion-label>Gallery</ion-label>
-          <ion-badge color="danger">6</ion-badge>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
@@ -31,12 +30,7 @@
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet, IonBadge } from '@ionic/vue';
 import { home, calendar, people, images } from 'ionicons/icons';
-import { menuController } from '@ionic/vue';
-import { onBeforeRouteLeave } from 'vue-router';
 
-const closeSettingsMenu = async () => {
-  await menuController.close('settings-menu');
-};
 
 
 </script>

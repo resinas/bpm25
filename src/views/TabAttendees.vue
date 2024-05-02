@@ -48,7 +48,7 @@ const fetchAttendees = async () => {
   const token = localStorage.getItem("accessToken");
   try {
     state.loading = true;
-    const response = await axios.get(`http://localhost:8080/api/v1/attendees?page=${state.page}&size=50&search=${state.searchQuery}`, {
+    const response = await axios.get(`https://localhost:8080/api/v1/attendees?page=${state.page}&size=50&search=${state.searchQuery}`, {
       headers: { 'Authorization': `Bearer ${token}`}
     });
     const persons = response.data.content;
@@ -82,7 +82,7 @@ watch(() => state.searchQuery, async (newQuery, oldQuery) => {
 const getImage = async (person) => {
   const token = localStorage.getItem("accessToken");
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/account/getProfilePicture/${person.id}`, {
+    const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${person.id}`, {
       headers: { 'Authorization': `Bearer ${token}` },
       params: {
         format: 'webp'

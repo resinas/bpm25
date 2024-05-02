@@ -67,7 +67,7 @@ const resetPassword = async () => {
     }
     const resetToken = Array.isArray(token) ? token[0] : token;
     localStorage.setItem('resetToken', resetToken);
-    const response = await axios.post("http://localhost:8080/api/v1/account/resetPassword", resetInformation.value, { headers: { Authorization: `Bearer ${resetToken}` } });
+    const response = await axios.post("https://localhost:8080/api/v1/account/resetPassword", resetInformation.value, { headers: { Authorization: `Bearer ${resetToken}` } });
     localStorage.setItem('resetToken', '');
 
     await router.push('/auth/login');

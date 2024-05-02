@@ -106,7 +106,7 @@ const state = reactive({
 async function fetchSessions() {
   try {
     // Fetch all sessions first.
-    const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
+    const response = await axios.get('https://localhost:8080/api/v1/agenda/sessions', {
       headers: { 'Authorization': `Bearer ${token}` },
     });
     const sessionsData = response.data;

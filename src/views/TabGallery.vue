@@ -104,7 +104,7 @@ const reloadPage = async () => {
 const fetchGalleryMetadata = async () => {
   if (!hasMore.value) return;
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/gallery/images`, {
+    const response = await axios.get(`https://localhost:8080/api/v1/gallery/images`, {
       params: {
         pageNr: pageNr.value,
         pageSize: pageSize
@@ -125,11 +125,11 @@ const fetchGalleryMetadata = async () => {
 }
 
 const getImageUrl = (filepath:string) => {
-  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
 };
 
 const getImageJPG = (filepath:string) => {
-  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
+  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
 };
 
 const loadMore = async (event?:InfiniteScrollCustomEvent) => {
@@ -148,7 +148,7 @@ const uploadGalleryImage = async () => {
     formData.append('file', photoBlob as Blob);
 
     // Make the POST request with the form data and proper headers
-    const uploadResponse = await axios.post("http://localhost:8080/api/v1/gallery/images", formData, {
+    const uploadResponse = await axios.post("https://localhost:8080/api/v1/gallery/images", formData, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary

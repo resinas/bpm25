@@ -114,7 +114,7 @@ function changeMonth(change) {
 
 async function fetchSessions() {
   try {
-    const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
+    const response = await axios.get('https://localhost:8080/api/v1/agenda/sessions', {
       headers: { 'Authorization': `Bearer ${token}` },
     });
     state.sessions = response.data;

@@ -36,7 +36,7 @@ import {
   IonRow,
   IonCol,
   IonImg,
-  actionSheetController, menuController,
+  actionSheetController
 } from '@ionic/vue';
 import {trash, close, download} from "ionicons/icons";
 import axios from "axios";
@@ -105,7 +105,7 @@ const reloadPage = async () => {
 
 const fetchMyGalleryMetadata = async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/gallery/myImages`, {headers: {Authorization: `Bearer ${token.value}`}});
+    const response = await axios.get(`https://localhost:8080/api/v1/gallery/myImages`, {headers: {Authorization: `Bearer ${token.value}`}});
     if (response.data.imagePaths.length > 0) {
       imagesList.value = [...imagesList.value, ...response.data.imagePaths];
     }
@@ -124,7 +124,7 @@ const uploadGalleryImage = async () => {
     formData.append('file', photoBlob as Blob);
 
     // Make the POST request with the form data and proper headers
-    const uploadResponse = await axios.post("http://localhost:8080/api/v1/gallery/images", formData, {
+    const uploadResponse = await axios.post("https://localhost:8080/api/v1/gallery/images", formData, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
@@ -143,7 +143,7 @@ const deleteGalleryImage = async () => {
     return;
   }
   try {
-    await axios.delete("http://localhost:8080/api/v1/gallery/images", {
+    await axios.delete("https://localhost:8080/api/v1/gallery/images", {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'application/json'
@@ -188,10 +188,10 @@ const downloadImages = () => {
 }
 
 const getImageWebP = (filepath:string) => {
-  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
 };
 const getImageJPG = (filepath:string) => {
-  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
+  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
 };
 
 const goToImage = (imageId:string) => {
