@@ -3,6 +3,14 @@
     <HeaderBar name="Agenda" />
 
     <ion-toolbar>
+      <ion-segment value="all" v-model="agendaType">
+        <ion-segment-button value="all">
+          <ion-label>ICPM Agenda</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="personal">
+          <ion-label>Personalized Agenda</ion-label>
+        </ion-segment-button>
+      </ion-segment>
       <div class="segment-wrapper">
       <ion-segment value="all" v-model="state.selectedDay">
         <ion-segment-button
@@ -42,9 +50,10 @@
               :routerLink="`/session/${session.id}`"
               button>
             <ion-icon
-                :icon="iconForSessionType(session.type)"
-                style="color : #098BFF"
-                slot="end">
+                :icon="session.isLiked ? heart : heartOutline"
+                :color="session.isLiked ? 'danger' : 'medium'"
+                slot="end"
+                @click.stop="toggleLike(session)">
             </ion-icon>
             <ion-label>
               <h3>{{ session.session_name }}</h3>
@@ -79,6 +88,8 @@ import {
   IonLabel
 } from '@ionic/vue';
 import {
+  heart,
+  heartOutline,
   calendarNumber,
   cafeOutline,
   fastFoodOutline,
@@ -101,10 +112,13 @@ const state = reactive({
   uniqueDays: [],
   selectedDay: null,
   weekStart: new Date,
-  weekEnd: new Date
+  weekEnd: new Date,
+  agendaType: 'all',
 })
 async function fetchSessions() {
   try {
+    await fetchLikedSessions();
+
     // Fetch all sessions first.
     const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
       headers: { 'Authorization': `Bearer ${token}` },
@@ -112,15 +126,25 @@ async function fetchSessions() {
     const sessionsData = response.data;
 
     // Process sessions data.
-    const processedSessions = sessionsData.map(session => ({
-      id: session.id.toString(),
-      session_name: session.name,
-      session_host: session.host,
-      session_location: session.location,
-      start_time: session.startTime.replace('T', ' ').slice(0, -3),
-      end_time: session.endTime.replace('T', ' ').slice(0, -3),
-      type: session.type,
-    }));
+    const processedSessions = sessionsData.map(session => {
+      const sessionIdAsString = session.id.toString();
+      const isLikedCheck = state.likedSessionIds.has(sessionIdAsString);
+      // console.log(`Session ID: ${sessionIdAsString} (Type: ${typeof sessionIdAsString}) Is liked: ${isLikedCheck}`);
+      return {
+        id: sessionIdAsString,
+        session_name: session.name,
+        session_host: session.host,
+        session_location: session.location,
+        start_time: session.startTime.replace('T', ' ').slice(0, -3),
+        end_time: session.endTime.replace('T', ' ').slice(0, -3),
+        type: session.type,
+        isLiked: isLikedCheck,
+      };
+    });
+    /* console.log("Liked Session IDs in the Set:");
+    state.likedSessionIds.forEach(id => console.log(`ID: ${id}, Type: ${typeof id}`)); */
+
+    // console.log("Processed sessions with isLiked property:", processedSessions);
 
     // Determine the week range either based on query date or the earliest session date.
     let weekStart, weekEnd;
@@ -202,9 +226,61 @@ function uniqueDays() {
   }
 }
 
+async function toggleLike(session) {
+  const previouslyLiked = session.isLiked;
+  session.isLiked = !session.isLiked;  // Optimistically update the UI
+  try {
+    await axios.post(`http://localhost:8080/api/v1/agenda/session/like`, {
+      likes: session.isLiked,
+      id: session.id
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (session.isLiked) {
+      state.likedSessionIds.add(session.id);
+    } else {
+      state.likedSessionIds.delete(session.id);
+    }
+  } catch (error) {
+    console.error('Failed to change like status:', error);
+    session.isLiked = previouslyLiked;  // Revert on failure
+  }
+}
 
-onMounted(fetchSessions);
 
+async function fetchLikedSessions() {
+  try {
+    const response = await axios.get('http://localhost:8080/api/v1/agenda/session/hearts', {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    // Convert each ID from the response into a string before creating the set
+    state.likedSessionIds = new Set(response.data.map(id => id.toString()));
+    // console.log("Liked Session IDs Set after fetching and converting:", Array.from(state.likedSessionIds));
+  } catch (error) {
+    console.error('Failed to fetch liked sessions:', error);
+    state.likedSessionIds = new Set();
+  }
+}
+
+
+
+
+onMounted(async () => {
+  await fetchSessions();
+});
+
+watch(() => state.agendaType, async () => {
+  await fetchSessions(); // Refetch sessions whenever the agenda type changes
+});
+
+function determineWeek(date) {
+  const startOfWeek = new Date(date);
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1)); // Adjust to set Monday as the first day of the week
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  return { startOfWeek, endOfWeek };
+}
 
 function iconForSessionType(type) {
   switch (type) {
@@ -224,14 +300,7 @@ function iconForSessionType(type) {
 }
 
 
-function determineWeek(date) {
-  const startOfWeek = new Date(date);
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1)); // Adjust to set Monday as the first day of the week
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-  return { startOfWeek, endOfWeek };
-}
 
 // Compute sessions for the selected day
 const filteredSessions = computed(() => {
@@ -355,6 +424,18 @@ ion-item {
     --secondary-text-color: var(--light-text-color); /* Adjust if needed */
   }
 }
+
+ion-icon[icon="heart"] {
+  --ionicon-color: red !important;
+}
+
+ion-icon[icon="heart-outline"] {
+  --ionicon-color: grey !important;
+}
+
+
+
+
 
 </style>
 

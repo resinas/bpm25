@@ -27,12 +27,12 @@
 
 
 <script setup>
-import { IonIcon, IonPage, IonContent, IonList, IonItem, IonAvatar, IonLabel, IonSearchbar, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/vue';
+import { IonPage, IonContent, IonList, IonItem, IonAvatar, IonLabel, IonSearchbar, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { watch, reactive, onMounted } from 'vue';
 import { debounce } from 'lodash';
 import axios from 'axios';
-import { personCircle } from 'ionicons/icons';
+
 
 
 const state = reactive({
