@@ -111,25 +111,34 @@ const router = useRouter();
 const route = useRoute();
 
 const calendarIcon = calendarNumber;
-const token = localStorage.getItem("accessToken")
+const token = localStorage.getItem("accessToken");
 const state = reactive({
   sessions: [],
   uniqueDays: [],
   selectedDay: null,
   weekStart: new Date,
   weekEnd: new Date,
-  agendaType: 'all',
+  agendaType: 'all', // Agenda type defaults to 'all'
   likedSessionIds: new Set(),
   currentUserId: null,
+  passedUserId: route.params.id || null, // Capture user ID from URL params (if provided)
 });
 
 async function fetchSessions() {
   try {
-    // Determine agenda type and fetch accordingly
-    if (state.agendaType === 'all') {
+    if (state.passedUserId) {
+      // Load the agenda for a specific user passed via URL
+      await fetchPersonalAgenda(state.passedUserId);
+    } else if (state.agendaType === 'all') {
       await fetchICPMAgenda();
-    } else if (state.currentUserId) {
-      await fetchPersonalAgenda(state.currentUserId);
+    } else {
+      // Ensure currentUserId is fetched before loading the current user's personalized agenda
+      if (!state.currentUserId) {
+        await fetchCurrentUserId();
+      }
+      if (state.currentUserId) {
+        await fetchPersonalAgenda(state.currentUserId);
+      }
     }
     uniqueDays();
   } catch (error) {
@@ -138,19 +147,15 @@ async function fetchSessions() {
 }
 
 async function fetchICPMAgenda() {
+  console.log("fetching ICPM")
   try {
     await fetchLikedSessions();
     const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
     const sessionsData = response.data;
     const processedSessions = await processSessions(sessionsData);
-    const {
-      weekStart,
-      weekEnd
-    } = determineWeekRangeFromSessions(processedSessions);
+    const { weekStart, weekEnd } = determineWeekRangeFromSessions(processedSessions);
     state.sessions = processedSessions.filter(session => {
       const sessionDate = new Date(session.start_time);
       return sessionDate >= weekStart && sessionDate <= weekEnd;
@@ -162,17 +167,16 @@ async function fetchICPMAgenda() {
 
 async function fetchPersonalAgenda(userId) {
   try {
+    console.log('Fetching personal agenda for user ID:', userId);
     const response = await axios.get(`http://localhost:8080/api/v1/agenda/session/likedlist/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
+
     const sessionsData = response.data;
+    console.log('Fetched personal agenda sessions:', sessionsData);
     const processedSessions = await processSessions(sessionsData);
-    const {
-      weekStart,
-      weekEnd
-    } = determineWeekRangeFromSessions(processedSessions);
+    const { weekStart, weekEnd } = determineWeekRangeFromSessions(processedSessions);
+
     state.sessions = processedSessions.filter(session => {
       const sessionDate = new Date(session.start_time);
       return sessionDate >= weekStart && sessionDate <= weekEnd;
@@ -182,12 +186,25 @@ async function fetchPersonalAgenda(userId) {
   }
 }
 
+async function fetchCurrentUserId() {
+  try {
+    const response = await axios.get('http://localhost:8080/api/v1/account/id', {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    state.currentUserId = response.data.id;
+    console.log('Fetched current user ID:', state.currentUserId);
+  } catch (error) {
+    console.error('Failed to fetch current user ID:', error);
+    state.currentUserId = null;
+  }
+}
+
+
+
 async function fetchLikedSessions() {
   try {
     const response = await axios.get('http://localhost:8080/api/v1/agenda/session/hearts', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
     state.likedSessionIds = new Set(response.data.map(id => id.toString()));
   } catch (error) {
@@ -196,19 +213,7 @@ async function fetchLikedSessions() {
   }
 }
 
-async function fetchCurrentUserId() {
-  try {
-    const response = await axios.get('http://localhost:8080/api/v1/account/id', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    state.currentUserId = response.data.id;
-  } catch (error) {
-    console.error('Failed to fetch current user ID:', error);
-    state.currentUserId = null;
-  }
-}
+
 
 async function toggleLike(session) {
   const previouslyLiked = session.isLiked;
@@ -218,9 +223,7 @@ async function toggleLike(session) {
       likes: session.isLiked,
       id: session.id
     }, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
     if (session.isLiked) {
       state.likedSessionIds.add(session.id);
@@ -273,10 +276,7 @@ function determineWeekRangeFromSessions(processedSessions) {
       weekEnd = weekRange.endOfWeek;
     }
   }
-  return {
-    weekStart,
-    weekEnd
-  };
+  return { weekStart, weekEnd };
 }
 
 function determineWeek(date) {
@@ -284,10 +284,7 @@ function determineWeek(date) {
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1));
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
-  return {
-    startOfWeek,
-    endOfWeek
-  };
+  return { startOfWeek, endOfWeek };
 }
 
 function uniqueDays() {
@@ -306,11 +303,7 @@ function uniqueDays() {
   if (!earliestDate || !latestDate) return;
   for (let d = new Date(earliestDate); d <= latestDate; d.setDate(d.getDate() + 1)) {
     const formattedDate = d.toISOString().split('T')[0];
-    const dayLabel = d.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
+    const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     state.uniqueDays.push({
       value: formattedDate,
       label: dayLabel,
@@ -328,9 +321,7 @@ function selectDay(value) {
 }
 
 function goToCalendar() {
-  router.push({
-    name: 'CalendarView'
-  });
+  router.push({ name: 'CalendarView' });
 }
 
 onMounted(async () => {
@@ -339,15 +330,12 @@ onMounted(async () => {
 });
 
 watch(() => state.agendaType, async () => {
-  console.log("agendaType changed to:", state.agendaType); // Debug log
+  console.log('agendaType changed to:', state.agendaType); // Debug log
   await fetchSessions();
 });
 
-
 const filteredSessions = computed(() => {
-  return state.sessions.filter(session => {
-    return session.start_time.startsWith(state.selectedDay);
-  }).sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+  return state.sessions.filter(session => session.start_time.startsWith(state.selectedDay)).sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 });
 
 const groupedSessionsByTimeSlot = computed(() => {
