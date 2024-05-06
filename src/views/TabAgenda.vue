@@ -1,16 +1,21 @@
 <template>
   <ion-page>
     <HeaderBar name="Agenda" />
-
-    <ion-toolbar>
-      <ion-segment value="all" v-model="state.agendaType">
-        <ion-segment-button value="all">
+    <!-- ICPM/Personal Segment Bar -->
+    <ion-toolbar class="agenda-type-bar">
+      <ion-segment :value="agendaSegmentValue" class="full-width-segment">
+        <ion-segment-button value="all" @click="navigateToAgendaType('all')" class="half-width-segment-button">
           <ion-label>ICPM Agenda</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="personal">
+        <ion-segment-button value="personal" @click="navigateToAgendaType('personal')" class="half-width-segment-button">
           <ion-label>Personalized Agenda</ion-label>
         </ion-segment-button>
       </ion-segment>
+    </ion-toolbar>
+
+
+    <!-- Day Selection Bar -->
+    <ion-toolbar class="day-selection-bar">
       <div class="segment-wrapper">
         <ion-segment value="all" v-model="state.selectedDay">
           <ion-segment-button
@@ -39,10 +44,9 @@
         <div v-for="(group, timeSlot) in groupedSessionsByTimeSlot" :key="timeSlot">
           <ion-item-divider color="light">
             <ion-label>
-              <h2>{{ timeSlot }}</h2> <!-- Time slot headline -->
+              <h2>{{ timeSlot }}</h2>
             </ion-label>
           </ion-item-divider>
-          <!-- Updated to use 'routerLink' for navigation -->
           <ion-item
               v-for="session in group"
               :key="session.id"
@@ -71,12 +75,9 @@
 </template>
 
 <script setup>
-import {
-  reactive,
-  onMounted,
-  computed,
-  watch
-} from 'vue';
+import { reactive, onMounted, computed, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 import {
   IonPage,
   IonToolbar,
@@ -90,49 +91,38 @@ import {
   IonSegmentButton,
   IonLabel
 } from '@ionic/vue';
-import {
-  heart,
-  heartOutline,
-  calendarNumber,
-  cafeOutline,
-  fastFoodOutline,
-  alertCircleOutline,
-  idCardOutline,
-  helpCircleOutline,
-} from 'ionicons/icons';
-import HeaderBar from "@/components/HeaderBar.vue";
-import {
-  useRouter,
-  useRoute
-} from 'vue-router';
-import axios from "axios";
+import { heart, heartOutline, calendarNumber } from 'ionicons/icons';
+import HeaderBar from '@/components/HeaderBar.vue';
 
 const router = useRouter();
 const route = useRoute();
 
 const calendarIcon = calendarNumber;
-const token = localStorage.getItem("accessToken");
+const token = localStorage.getItem('accessToken');
+
 const state = reactive({
   sessions: [],
   uniqueDays: [],
   selectedDay: null,
-  weekStart: new Date,
-  weekEnd: new Date,
-  agendaType: 'all', // Agenda type defaults to 'all'
+  weekStart: new Date(),
+  weekEnd: new Date(),
+  agendaType: 'all',
   likedSessionIds: new Set(),
   currentUserId: null,
-  passedUserId: route.params.id || null, // Capture user ID from URL params (if provided)
+  passedUserId: route.params.id ? parseInt(route.params.id) : null
+});
+
+const agendaSegmentValue = computed(() => {
+  return state.passedUserId ? null : state.agendaType;
 });
 
 async function fetchSessions() {
   try {
     if (state.passedUserId) {
-      // Load the agenda for a specific user passed via URL
       await fetchPersonalAgenda(state.passedUserId);
     } else if (state.agendaType === 'all') {
       await fetchICPMAgenda();
     } else {
-      // Ensure currentUserId is fetched before loading the current user's personalized agenda
       if (!state.currentUserId) {
         await fetchCurrentUserId();
       }
@@ -147,11 +137,10 @@ async function fetchSessions() {
 }
 
 async function fetchICPMAgenda() {
-  console.log("fetching ICPM")
   try {
     await fetchLikedSessions();
     const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     const sessionsData = response.data;
     const processedSessions = await processSessions(sessionsData);
@@ -167,16 +156,15 @@ async function fetchICPMAgenda() {
 
 async function fetchPersonalAgenda(userId) {
   try {
+    await fetchLikedSessions();
     console.log('Fetching personal agenda for user ID:', userId);
     const response = await axios.get(`http://localhost:8080/api/v1/agenda/session/likedlist/${userId}`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token}` }
     });
-
     const sessionsData = response.data;
     console.log('Fetched personal agenda sessions:', sessionsData);
     const processedSessions = await processSessions(sessionsData);
     const { weekStart, weekEnd } = determineWeekRangeFromSessions(processedSessions);
-
     state.sessions = processedSessions.filter(session => {
       const sessionDate = new Date(session.start_time);
       return sessionDate >= weekStart && sessionDate <= weekEnd;
@@ -189,7 +177,7 @@ async function fetchPersonalAgenda(userId) {
 async function fetchCurrentUserId() {
   try {
     const response = await axios.get('http://localhost:8080/api/v1/account/id', {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     state.currentUserId = response.data.id;
     console.log('Fetched current user ID:', state.currentUserId);
@@ -199,12 +187,10 @@ async function fetchCurrentUserId() {
   }
 }
 
-
-
 async function fetchLikedSessions() {
   try {
     const response = await axios.get('http://localhost:8080/api/v1/agenda/session/hearts', {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     state.likedSessionIds = new Set(response.data.map(id => id.toString()));
   } catch (error) {
@@ -213,18 +199,20 @@ async function fetchLikedSessions() {
   }
 }
 
-
-
 async function toggleLike(session) {
   const previouslyLiked = session.isLiked;
   session.isLiked = !session.isLiked;
   try {
-    await axios.post(`http://localhost:8080/api/v1/agenda/session/like`, {
-      likes: session.isLiked,
-      id: session.id
-    }, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+    await axios.post(
+        'http://localhost:8080/api/v1/agenda/session/like',
+        {
+          likes: session.isLiked,
+          id: session.id
+        },
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+    );
     if (session.isLiked) {
       state.likedSessionIds.add(session.id);
     } else {
@@ -248,7 +236,7 @@ async function processSessions(sessionsData) {
       start_time: session.startTime.replace('T', ' ').slice(0, -3),
       end_time: session.endTime.replace('T', ' ').slice(0, -3),
       type: session.type,
-      isLiked: isLikedCheck,
+      isLiked: isLikedCheck
     };
   });
 }
@@ -320,6 +308,15 @@ function selectDay(value) {
   state.selectedDay = value;
 }
 
+function navigateToAgendaType(type) {
+  if (type === 'personal') {
+    router.push({ path: '/tabs/calendar', query: { type: 'personal' } });
+  } else {
+    router.push({ path: '/tabs/calendar' });
+  }
+  state.agendaType = type;
+}
+
 function goToCalendar() {
   router.push({ name: 'CalendarView' });
 }
@@ -330,12 +327,14 @@ onMounted(async () => {
 });
 
 watch(() => state.agendaType, async () => {
-  console.log('agendaType changed to:', state.agendaType); // Debug log
+  console.log('Agenda type changed to:', state.agendaType);
   await fetchSessions();
 });
 
 const filteredSessions = computed(() => {
-  return state.sessions.filter(session => session.start_time.startsWith(state.selectedDay)).sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+  return state.sessions
+      .filter(session => session.start_time.startsWith(state.selectedDay))
+      .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 });
 
 const groupedSessionsByTimeSlot = computed(() => {
@@ -432,11 +431,11 @@ ion-item {
   }
 }
 
-ion-icon[icon="heart"] {
+ion-icon[icon='heart'] {
   --ionicon-color: red !important;
 }
 
-ion-icon[icon="heart-outline"] {
+ion-icon[icon='heart-outline'] {
   --ionicon-color: grey !important;
 }
 </style>
