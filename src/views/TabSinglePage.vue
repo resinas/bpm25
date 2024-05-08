@@ -29,7 +29,7 @@ const token = localStorage.getItem("accessToken")
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/pages/${route.params.id}`,{ headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.get(`https://localhost:8080/api/v1/pages/${route.params.id}`,{ headers: { Authorization: `Bearer ${token}` } });
     Object.assign(pageData, response.data);
   } catch (error) {
     console.error('Failed to fetch page data', error);

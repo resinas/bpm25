@@ -61,7 +61,7 @@ onBeforeRouteLeave((to, from) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/v1/pages',{ headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.get('https://localhost:8080/api/v1/pages',{ headers: { Authorization: `Bearer ${token}` } });
     pages.splice(0, pages.length, ...response.data.map(page => ({
       id: page.id,
       name: page.title,

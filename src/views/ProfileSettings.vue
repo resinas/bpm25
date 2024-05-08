@@ -1,5 +1,3 @@
-
-
 <template>
   <ion-page>
     <ion-header>
@@ -219,7 +217,7 @@ const notifications = ref({
 // Example function to fetch user settings (replace with actual API call)
 const fetchUserSettings = async () => {
   try {
-    const response = await axios.get("http://localhost:8080/api/v1/account/userDetails",{ headers: { Authorization: `Bearer ${token.value}` } });
+    const response = await axios.get("https://localhost:8080/api/v1/account/userDetails",{ headers: { Authorization: `Bearer ${token.value}` } });
     user.value.email = response.data.email;
     user.value.firstname = response.data.firstname;
     user.value.lastname = response.data.lastname;
@@ -229,7 +227,7 @@ const fetchUserSettings = async () => {
     user.value.sharingChoice = response.data.sharingChoice
 
     if (response.data.profilePicture) {
-      const retrieveResponse = await axios.get(`http://localhost:8080/api/v1/account/getProfilePicture/${user.value.id}`,
+      const retrieveResponse = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${user.value.id}`,
           { headers: {
             Authorization: `Bearer ${token.value}` },
             params: {
@@ -245,7 +243,7 @@ const fetchUserSettings = async () => {
 
 const updateUserInformation = async () => {
   try {
-    const response = await axios.post("http://localhost:8080/api/v1/account/update",
+    const response = await axios.post("https://localhost:8080/api/v1/account/update",
         {email: user.value.email,
           firstname: user.value.firstname,
           lastname: user.value.lastname,
@@ -275,7 +273,7 @@ async function updatePassword() {
       changePasswordSuccess.value = '';
       changePasswordError.value = 'New password and confirm password does not match';
     }
-    const response = await axios.post("http://localhost:8080/api/v1/account/changePassword", {oldPassword: passwordChange.value.oldpassword,newPassword: passwordChange.value.newpassword},{ headers: { Authorization: `Bearer ${token.value}` } });
+    const response = await axios.post("https://localhost:8080/api/v1/account/changePassword", {oldPassword: passwordChange.value.oldpassword,newPassword: passwordChange.value.newpassword},{ headers: { Authorization: `Bearer ${token.value}` } });
     changePasswordError.value = '';
     changePasswordSuccess.value = response.data;
     passwordChange.value.oldpassword = '';
@@ -339,7 +337,7 @@ const actionSheetButtons = [
         formData.append('file', photoBlob as Blob);
 
         // Make the POST request with the form data and proper headers
-        const uploadResponse = await axios.post("http://localhost:8080/api/v1/account/uploadProfilePicture", formData, {
+        const uploadResponse = await axios.post("https://localhost:8080/api/v1/account/uploadProfilePicture", formData, {
           headers: {
             Authorization: `Bearer ${token.value}`,
             'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
@@ -359,7 +357,6 @@ const actionSheetButtons = [
     }
   }
 ]
-
 </script>
 
 <style scoped>
