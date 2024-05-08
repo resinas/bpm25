@@ -1,6 +1,5 @@
 
 import fs from 'fs';
-import https from 'https';
 import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
@@ -28,6 +27,7 @@ export default defineConfig({
     environment: 'jsdom'
   },
   base: "/icpm-navigator/",
+  publicDir: 'public',
   build: {
     cssCodeSplit: true,
     minify: 'terser',
