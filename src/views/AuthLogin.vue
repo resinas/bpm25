@@ -87,7 +87,7 @@ const toggleActive = () => {
 const login = async () => {
   try {
     // Here you would replace the URL with your server endpoint
-    const response = await axios.post("http://localhost:8080/api/v1/auth/signin", loginUser.value);
+    const response = await axios.post("https://localhost:8080/api/v1/auth/signin", loginUser.value);
     console.log(response.data);
     // Handle success response, e.g., navigate to another route or display a success message
     localStorage.setItem('accessToken', response.data.accessToken);
@@ -107,7 +107,7 @@ const login = async () => {
 const sendConfirmationEmail = async () => {
   try {
     localStorage.setItem('accessToken', '');
-    await axios.post("http://localhost:8080/api/v1/auth/signup", registerUser.value);
+    await axios.post("https//localhost:8080/api/v1/auth/signup", registerUser.value);
     registerUser.value.receiver = '';
     await router.push('/auth/login');
     registerSuccess.value = 'Email send successfully'

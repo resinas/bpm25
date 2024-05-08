@@ -55,7 +55,7 @@ onMounted(() => {
 
 const getImageData = async (filepath:string) => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/gallery/image/${filepath}?format=jpg`, { headers: { Authorization: `Bearer ${token.value}` } });
+    const response = await axios.get(`https://localhost:8080/api/v1/gallery/image/${filepath}?format=jpg`, { headers: { Authorization: `Bearer ${token.value}` } });
     imageData.value.imageAuthor = response.data.imageAuthor;
     imageData.value.imageLikes = response.data.imageLikes;
     imageData.value.imageIsLiked = response.data.hasLiked;
@@ -66,13 +66,13 @@ const getImageData = async (filepath:string) => {
 };
 
 const getImageUrl = (filepath:string) => {
-  return `http://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
 };
 
 const changeLikeStatus = async () => {
   try{
     console.log(imagePath);
-    await axios.put(`http://localhost:8080/api/v1/gallery/changeLikeStatusGalleyImage`, {
+    await axios.put(`https://localhost:8080/api/v1/gallery/changeLikeStatusGalleyImage`, {
       likes: !imageData.value.imageIsLiked,
       path: imagePath
     }, { headers: { Authorization: `Bearer ${token.value}` } })

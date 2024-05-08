@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp, ref} from 'vue'
 import App from './App.vue'
 import router from './router';
 import Backend from "@/services/backend";
@@ -45,12 +45,34 @@ function applyTheme() {
 // Apply the theme before mounting the app
 applyTheme();
 
+
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
 
+const isOffline = ref(false);
+app.provide('isOffline', isOffline);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/icpm-navigator/serviceW.js')
+      .then(() => {
+        console.log('ServiceWorker registration successful.');
+
+        navigator.serviceWorker.onmessage = event => {
+          if (event.data.type === 'OFFLINE') {
+            isOffline.value = true; // Trigger the popup
+
+          }
+        };
+      })
+      .catch(err => console.log('ServiceWorker registration failed:', err));
+}
+
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.$backend = new Backend();
+
+
 
 router.isReady().then(() => {
   app.mount('#app');
@@ -69,7 +91,7 @@ axios.interceptors.response.use(
         try {
           const refreshToken = localStorage.getItem('refreshToken');
           // Attempt to get a new access token using the refresh token
-          const refreshResponse = await axios.post('http://localhost:8080/api/v1/auth/refresh', {
+          const refreshResponse = await axios.post('https://localhost:8080/api/v1/auth/refresh', {
             token: refreshToken,
           });
 
