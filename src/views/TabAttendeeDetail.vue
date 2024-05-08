@@ -62,7 +62,7 @@ const attendee = reactive({
 
 async function fetchAttendeeDetails() {
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/attendees/${attendeeId}`, {
+    const response = await axios.get(`https://localhost:8080/api/v1/attendees/${attendeeId}`, {
       headers: {'Authorization': `Bearer ${token}`}
     });
     Object.assign(attendee, response.data);
@@ -76,7 +76,7 @@ async function fetchAttendeeDetails() {
 
 async function getImage(person) {
   try {
-    const response = await axios.get(`http://localhost:8080/api/v1/account/getProfilePicture/${person.id}`, {
+    const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${person.id}`, {
       headers: {'Authorization': `Bearer ${token}`},
       params: {
         format: 'webp'

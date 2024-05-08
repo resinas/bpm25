@@ -315,13 +315,20 @@ function selectDay(value) {
 }
 
 function navigateToAgendaType(type) {
+  const query = { ...route.query }; // Get current query parameters
+
+  // Add or update the `type` parameter based on the selected segment
   if (type === 'personal') {
-    router.push({ path: '/tabs/calendar', query: { type: 'personal' } });
+    query.type = 'personal';
   } else {
-    router.push({ path: '/tabs/calendar' });
+    delete query.type; // Remove `type` for ICPM
   }
+
+  // Navigate with the updated query parameters
+  router.push({ path: '/tabs/calendar', query });
   state.agendaType = type;
 }
+
 
 function goToCalendar() {
   const query = { date: state.selectedDay };
@@ -336,8 +343,15 @@ function goToCalendar() {
 
 onMounted(async () => {
   await fetchCurrentUserId();
+
+  // Check if `type` is provided in the query and update `agendaType`
+  if (route.query.type === 'personal') {
+    state.agendaType = 'personal';
+  }
+
   await fetchSessions();
 });
+
 
 watch(() => state.agendaType, async () => {
   console.log('Agenda type changed to:', state.agendaType);
@@ -416,6 +430,5 @@ ion-segment-button .day-date {
   white-space: normal; /* Allow text wrapping */
   display: flex;
 }
-
 
 </style>

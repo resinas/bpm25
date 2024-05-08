@@ -120,19 +120,19 @@ async function fetchSessions() {
     let response;
 
     if (id) {
-      response = await axios.get(`http://localhost:8080/api/v1/agenda/session/likedlist/${id}`, {
+      response = await axios.get(`https://localhost:8080/api/v1/agenda/session/likedlist/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
     } else if (type === 'personal') {
-      const currentUserIdResponse = await axios.get('http://localhost:8080/api/v1/account/id', {
+      const currentUserIdResponse = await axios.get('https://localhost:8080/api/v1/account/id', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const currentUserId = currentUserIdResponse.data.id;
-      response = await axios.get(`http://localhost:8080/api/v1/agenda/session/likedlist/${currentUserId}`, {
+      response = await axios.get(`https://localhost:8080/api/v1/agenda/session/likedlist/${currentUserId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
     } else {
-      response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
+      response = await axios.get('https://localhost:8080/api/v1/agenda/sessions', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
     }
@@ -276,5 +276,3 @@ onMounted(() => {
 
 
 </style>
-
-
