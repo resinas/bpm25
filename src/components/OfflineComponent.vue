@@ -27,13 +27,6 @@ const toastButtons = [
     handler: handleDismiss,
   },
 ];
-
-// Adding debug to watch the offline status
-onMounted(() => {
-  watch(isOffline, (newVal) => {
-    console.log("Offline status changed:", newVal);
-  });
-});
 </script>
 
 

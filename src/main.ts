@@ -62,7 +62,6 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.onmessage = event => {
           if (event.data.type === 'OFFLINE') {
             isOffline.value = true; // Trigger the popup
-            console.log("Received offline notification from SW: " + isOffline.value);
 
           }
         };

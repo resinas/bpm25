@@ -3,10 +3,8 @@
 self.addEventListener('fetch', event => {
     event.respondWith(
         fetch(event.request).catch(error => {
-            console.log("Fetch failed; checking connectivity...");
             // Only send a message if the network request fails due to offline status
             if (!navigator.onLine) {
-                console.log("Confirmed offline. Notifying clients...");
                 self.clients.matchAll().then(clients => {
                     clients.forEach(client => {
                         // Notify the client that the fetch failed due to being offline
