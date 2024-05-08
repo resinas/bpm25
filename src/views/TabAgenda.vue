@@ -1,43 +1,48 @@
 <template>
   <ion-page>
     <HeaderBar name="Agenda" />
+
     <!-- ICPM/Personal Segment Bar -->
     <ion-toolbar class="agenda-type-bar">
       <ion-segment :value="agendaSegmentValue" class="full-width-segment">
         <ion-segment-button value="all" @click="navigateToAgendaType('all')" class="half-width-segment-button">
-          <ion-label>ICPM Agenda</ion-label>
+          <ion-label class="segment-label">
+            <span>ICPM Agenda</span>
+          </ion-label>
         </ion-segment-button>
         <ion-segment-button value="personal" @click="navigateToAgendaType('personal')" class="half-width-segment-button">
-          <ion-label>Personalized Agenda</ion-label>
+          <ion-label class="segment-label">
+            <span>Personalized Agenda</span>
+          </ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
 
-
-    <!-- Day Selection Bar -->
-    <ion-toolbar class="day-selection-bar">
-      <div class="segment-wrapper">
-        <ion-segment value="all" v-model="state.selectedDay">
-          <ion-segment-button
-              v-for="day in state.uniqueDays"
-              :value="day.value"
-              :key="day.value"
-              :class="{'day-without-session': !day.hasSession, 'day-with-session': day.hasSession}"
-              @click="day.hasSession ? selectDay(day.value) : null"
-          >
-            <ion-label>
-              <span class="day-name">{{ day.label.split(', ')[0] }}</span>
-              <span class="day-date">{{ day.label.split(', ')[1] }}</span>
-            </ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
+    <ion-toolbar
+        :style="`--days-count: ${state.uniqueDays.length}`"
+    >
+      <ion-segment value="all" v-model="state.selectedDay" scrollable>
+        <ion-segment-button
+            v-for="day in state.uniqueDays"
+            :value="day.value"
+            :key="day.value"
+            :class="{'day-without-session': !day.hasSession, 'day-with-session': day.hasSession}"
+            @click="day.hasSession ? selectDay(day.value) : null"
+        >
+          <ion-label>
+            <span class="day-name">{{ day.label.split(', ')[0] }}</span>
+            <span class="day-date">{{ day.label.split(', ')[1] }}</span>
+          </ion-label>
+        </ion-segment-button>
+      </ion-segment>
       <ion-buttons slot="end">
         <ion-button @click="goToCalendar">
           <ion-icon :icon="calendarIcon" class="larger-icon" />
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
+
+
 
     <ion-content id="main-content">
       <div v-if="state.selectedDay">
@@ -73,6 +78,7 @@
     </ion-content>
   </ion-page>
 </template>
+
 
 <script setup>
 import { reactive, onMounted, computed, watch } from 'vue';
@@ -351,66 +357,6 @@ const groupedSessionsByTimeSlot = computed(() => {
 </script>
 
 <style scoped>
-.segment-wrapper {
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  background-color: var(--background-color);
-}
-
-ion-segment-button {
-  display: inline-flex;
-  justify-content: center;
-  min-width: 60px;
-  max-width: 100px;
-  margin: 0 2px;
-  white-space: normal;
-  color: var(--text-color);
-}
-
-.segment-wrapper ion-label {
-  font-size: 0.8em;
-  text-align: center;
-  color: var(--text-color);
-}
-
-.segment-wrapper .day-name,
-.segment-wrapper .day-date {
-  display: block;
-  color: var(--text-color);
-}
-
-.segment-wrapper .day-name {
-  font-weight: bold;
-}
-
-.segment-wrapper .day-date {
-  font-size: 0.75em;
-  color: var(--secondary-text-color);
-  margin-top: 4px;
-}
-
-.larger-icon {
-  font-size: 24px;
-  width: 26px;
-  height: 26px;
-  color: var(--icon-color);
-}
-
-.day-without-session {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.day-with-session ion-label {
-  color: var(--text-color);
-}
-
-ion-item {
-  text-align: left;
-  color: var(--text-color);
-}
-
 :root {
   --text-color: #ffffff;
   --secondary-text-color: #686868;
@@ -430,12 +376,85 @@ ion-item {
     --secondary-text-color: var(--light-text-color);
   }
 }
-
-ion-icon[icon='heart'] {
-  --ionicon-color: red !important;
+ion-segment {
+  padding-bottom: 0.3em; /* Adjust as needed */
 }
 
-ion-icon[icon='heart-outline'] {
-  --ionicon-color: grey !important;
+ion-segment-button {
+  justify-content: center;
+  white-space: normal;
+  color: var(--text-color);
+  padding: 0.25rem;
 }
+
+ion-segment-button ion-label {
+  align-items: center;
+  font-size: 0.75rem; /* Adjust as needed */
+  text-align: center;
+}
+
+ion-segment-button .day-name {
+  font-size: 0.7rem; /* Adjust as needed */
+  font-weight: bold;
+  display: block;
+  color: var(--text-color);
+}
+
+ion-segment-button .day-date {
+  font-size: 0.65rem; /* Adjust to fit the box */
+  color: var(--secondary-text-color);
+  margin-top: 0.125rem;
+}
+
+.day-without-session {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.day-with-session ion-label {
+  color: var(--text-color);
+}
+
+.larger-icon {
+  font-size: 1.5rem; /* Adjust as needed */
+  width: 1.625rem;
+  height: 1.625rem;
+  color: var(--icon-color);
+}
+
+/* personal/icpm toolbar below */
+
+.agenda-type-bar {
+  --background: var(--background-color);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.full-width-segment {
+  width: 100%;
+}
+
+.half-width-segment-button {
+  max-width: 100%;
+  height: 2rem; /* Adjust as needed */
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0.25rem;
+}
+
+.segment-label {
+  font-size: 0.75rem; /* Adjust as needed */
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal; /* Allow text wrapping */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
 </style>
