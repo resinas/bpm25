@@ -324,8 +324,15 @@ function navigateToAgendaType(type) {
 }
 
 function goToCalendar() {
-  router.push({ name: 'CalendarView' });
+  const query = { date: state.selectedDay };
+  if (state.passedUserId) {
+    query.id = state.passedUserId;
+  } else if (state.agendaType === 'personal') {
+    query.type = 'personal';
+  }
+  router.push({ name: 'CalendarView', query });
 }
+
 
 onMounted(async () => {
   await fetchCurrentUserId();
@@ -356,36 +363,14 @@ const groupedSessionsByTimeSlot = computed(() => {
 });
 </script>
 
+
+
 <style scoped>
-:root {
-  --text-color: #ffffff;
-  --secondary-text-color: #686868;
-  --background-color: #2a2a2a;
-  --icon-color: #098BFF;
 
-  --light-text-color: #000000;
-  --light-background-color: #ffffff;
-  --light-icon-color: #000000;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --text-color: var(--light-text-color);
-    --background-color: var(--light-background-color);
-    --icon-color: var(--light-icon-color);
-    --secondary-text-color: var(--light-text-color);
-  }
-}
 ion-segment {
   padding-bottom: 0.3em; /* Adjust as needed */
 }
 
-ion-segment-button {
-  justify-content: center;
-  white-space: normal;
-  color: var(--text-color);
-  padding: 0.25rem;
-}
 
 ion-segment-button ion-label {
   align-items: center;
@@ -397,12 +382,10 @@ ion-segment-button .day-name {
   font-size: 0.7rem; /* Adjust as needed */
   font-weight: bold;
   display: block;
-  color: var(--text-color);
 }
 
 ion-segment-button .day-date {
   font-size: 0.65rem; /* Adjust to fit the box */
-  color: var(--secondary-text-color);
   margin-top: 0.125rem;
 }
 
@@ -411,49 +394,27 @@ ion-segment-button .day-date {
   pointer-events: none;
 }
 
-.day-with-session ion-label {
-  color: var(--text-color);
-}
-
 .larger-icon {
   font-size: 1.5rem; /* Adjust as needed */
   width: 1.625rem;
   height: 1.625rem;
-  color: var(--icon-color);
 }
 
 /* personal/icpm toolbar below */
-
-.agenda-type-bar {
-  --background: var(--background-color);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
 
 .full-width-segment {
   width: 100%;
 }
 
 .half-width-segment-button {
-  max-width: 100%;
   height: 2rem; /* Adjust as needed */
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  padding: 0.25rem;
 }
 
 .segment-label {
   font-size: 0.75rem; /* Adjust as needed */
-  text-align: center;
   line-height: 1.2;
   white-space: normal; /* Allow text wrapping */
   display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 

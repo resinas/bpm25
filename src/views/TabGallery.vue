@@ -204,7 +204,7 @@ const untoggleSelectImage = () => {
 }
 
 const goToImage = (imageId:string) => {
-  router.push(`/tabs/images/${imageId}`);
+  router.push(`/tabs/singleimage/${imageId}`);
 }
 </script>
 

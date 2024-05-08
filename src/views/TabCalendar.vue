@@ -35,7 +35,7 @@
 
 
 <script setup>
-import { reactive, onMounted, computed } from 'vue';
+import { reactive, onMounted, computed, nextTick } from 'vue';
 import {
   IonPage,
   IonToolbar,
@@ -49,9 +49,11 @@ import HeaderBar from "@/components/HeaderBar.vue";
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { star } from 'ionicons/icons';
+import { useRoute } from 'vue-router';
 
 
 
+const route = useRoute();
 const router = useRouter();
 const token = localStorage.getItem("accessToken");
 
@@ -114,15 +116,35 @@ function changeMonth(change) {
 
 async function fetchSessions() {
   try {
-    const response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+    const { id, type } = route.query;
+    let response;
+
+    if (id) {
+      response = await axios.get(`http://localhost:8080/api/v1/agenda/session/likedlist/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+    } else if (type === 'personal') {
+      const currentUserIdResponse = await axios.get('http://localhost:8080/api/v1/account/id', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const currentUserId = currentUserIdResponse.data.id;
+      response = await axios.get(`http://localhost:8080/api/v1/agenda/session/likedlist/${currentUserId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+    } else {
+      response = await axios.get('http://localhost:8080/api/v1/agenda/sessions', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+    }
+
     state.sessions = response.data;
     markDaysWithSessions();
   } catch (error) {
     console.error('Failed to fetch sessions:', error);
   }
 }
+
+
 
 function markDaysWithSessions() {
   state.daysOfMonth.forEach(day => {
@@ -144,21 +166,38 @@ function markDaysWithSessions() {
 
 
 function dateClicked(day) {
-  if (!day.isCurrentMonth || day.date == null) return; // Ignore clicks on placeholders and headers
+  if (!day.isCurrentMonth || day.date == null) return;
 
-  // Use UTC methods to set the date to avoid time zone issues.
+  // Get the clicked date and ensure it's in UTC
   const clickedDate = new Date(Date.UTC(state.currentYear, state.currentMonth, day.date));
+  const query = { date: clickedDate.toISOString().slice(0, 10) };
 
-  // Logging the date to console to verify
-  console.log('Date clicked (ISO String):', clickedDate.toISOString());
-  console.log('Date clicked (Locale):', clickedDate.toLocaleDateString());
+  // Extract user ID and agenda type from the route parameters or query
+  const routeUserId = route.params.id || route.query.id;
+  const agendaType = route.query.type;
 
-  // Example redirection logic (adapt as needed)
-  router.push(`/tabs/calendar?date=${clickedDate.toISOString().slice(0, 10)}`);
-  setTimeout(() => {
-    window.location.reload();
-  }, 50);
+  // Redirect to the desired path with the ID and date parameter
+  if (routeUserId) {
+    router.push({ path: `/tabs/calendar/${routeUserId}`, query }).then(() => {
+      nextTick(() => window.location.reload());
+    });
+  } else if (agendaType === 'personal') {
+    query.type = 'personal';
+    router.push({ path: '/tabs/calendar', query }).then(() => {
+      nextTick(() => window.location.reload());
+    });
+  } else {
+    router.push({ path: '/tabs/calendar', query }).then(() => {
+      nextTick(() => window.location.reload());
+    });
+  }
 }
+
+
+
+
+
+
 
 const applyTheme = () => {
   const theme = localStorage.getItem('theme'); // Get the theme from localStorage
