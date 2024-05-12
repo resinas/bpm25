@@ -13,7 +13,8 @@
         </ion-menu-button>
       </ion-buttons>
       <ion-buttons v-if="name == 'Gallery'" slot="end" id="click-trigger" class="gallery-dropdown">
-        <ion-icon :icon="reload" style="font-size: 26px;margin-right: 10px;" @click="$emit('reloadPage')"></ion-icon>
+        <ion-icon :icon="reload" style="font-size: 26px;margin-right: 14px;" @click="$emit('reloadPage')"></ion-icon>
+        <ion-icon :icon="options" style="font-size: 26px;margin-right: 10px;" @click="$emit('openFilter',$event)"></ion-icon>
         <ion-icon :icon="ellipsisVertical" style="font-size: 26px;" @click="$emit('openActionSheet')"></ion-icon>
       </ion-buttons>
       <ion-buttons v-if="name == 'My Gallery'" slot="end" id="click-trigger" class="gallery-dropdown" >
@@ -35,11 +36,14 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import SettingsMenu from "@/components/SettingsMenu.vue";
-import {ellipsisVertical, reload} from 'ionicons/icons';
+import {ellipsisVertical, reload, options} from 'ionicons/icons';
 
 defineProps({
   name: String,
 });
+
+const emits = defineEmits(['openActionSheet', 'reloadPage', 'openFilter']);
+
 </script>
 
 <style scoped>

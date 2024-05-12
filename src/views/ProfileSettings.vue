@@ -214,7 +214,6 @@ const notifications = ref({
   events: ''
 })
 
-// Example function to fetch user settings (replace with actual API call)
 const fetchUserSettings = async () => {
   try {
     const response = await axios.get("https://localhost:8080/api/v1/account/userDetails",{ headers: { Authorization: `Bearer ${token.value}` } });

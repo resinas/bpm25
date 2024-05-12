@@ -7,7 +7,6 @@
       position="top"
       :buttons="toastButtons"
       @did-dismiss="handleDismiss">
-    <ion-button slot="buttons" @click="handleDismiss">Hide</ion-button>
   </ion-toast>
 </template>
 

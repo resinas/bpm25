@@ -1,8 +1,27 @@
 <template>
   <ion-page>
-    <HeaderBar name="Gallery" @openActionSheet="openActionSheet" @reloadPage="reloadPage"></HeaderBar>
-
+    <HeaderBar name="Gallery" @openActionSheet="openActionSheet" @reloadPage="reloadPage" @openFilter="openFilter" ></HeaderBar>
+    <ion-popover :is-open="showFilterOptions" @ionPopoverDidDismiss="showFilterOptions = false" class="filterPopover" :event="popoverEvent">
+      <ion-list>
+        <ion-item>
+          <ion-select v-model="filterAndSearch.filterChoice" label="Filter by:" interface="popover">
+            <ion-select-option value="uploadTime">Date</ion-select-option>
+            <ion-select-option value="likes">Likes</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-select v-model="filterAndSearch.orderValue" label="Order by:" interface="popover">
+            <ion-select-option value="true">Ascending</ion-select-option>
+            <ion-select-option value="false">Descending</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <div class="applyFilterButton">
+        <ion-button expand="block" @click="applyFilter" class="applyButtonText">Apply</ion-button>
+      </div>
+    </ion-popover>
     <ion-content :fullscreen="true" ref="content">
+      <ion-searchbar v-model="filterAndSearch.searchInput" @ionChange="fetchGalleryMetadata" placeholder="Search authors..."></ion-searchbar>
       <ion-grid>
         <ion-row>
           <ion-col size="4" v-for="(image, index) in images" :key="index">
@@ -41,34 +60,70 @@ import {
   IonRow,
   IonCol,
   IonImg,
+  IonList,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent,  actionSheetController,
+  InfiniteScrollCustomEvent, actionSheetController, IonSearchbar, IonSelectOption, IonSelect, IonPopover, IonButton, IonItem
 } from '@ionic/vue';
 import {close, download} from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from "axios";
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, Ref, ref, watch} from "vue";
 import router from "@/router";
+import { debounce } from 'lodash';
+import {useRoute } from 'vue-router'
 
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
+const route = useRoute();
 
 const images = ref<string[]>([]);
 const hasMore = ref(true);
-const pageNr =ref(0);
+let pageNr =ref(0);
 const pageSize = 100;
+
+const showFilterOptions = ref(false);
+const popoverEvent = ref<MouseEvent | null>(null);
+const filterAndSearch = ref({
+  searchInput: '',
+  filterChoice: 'uploadTime',
+  orderValue: false
+});
 
 const selectMultiple = ref(false);
 const imagesSelectedList = ref<string[]>([]);
 
 const content: Ref<InstanceType<typeof IonContent> | null> = ref(null);
 
-onMounted(() => {
-  fetchGalleryMetadata()
+onMounted(async () => {
+  if (route.params.id) {
+    try {
+      const response = await axios.get(`https://localhost:8080/api/v1/account/getName/${route.params.id}`, {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      })
+      filterAndSearch.value.searchInput = response.data.firstname + ' ' + response.data.lastname
+    } catch (e) {
+      console.log("No user with this id")
+    }
+  }
+  await fetchGalleryMetadata()
 });
 
+const openFilter = (event:MouseEvent) => {
+  popoverEvent.value = event;
+  showFilterOptions.value = true;
+};
+
+const applyFilter = () => {
+  images.value = [];
+  hasMore.value = true;
+  pageNr.value = 0;
+  showFilterOptions.value = false; // Close the popover
+  fetchGalleryMetadata()
+};
 
 const actionSheet = ref<HTMLIonActionSheetElement | null>(null);
 const openActionSheet = async () => {
@@ -107,7 +162,10 @@ const fetchGalleryMetadata = async () => {
     const response = await axios.get(`https://localhost:8080/api/v1/gallery/images`, {
       params: {
         pageNr: pageNr.value,
-        pageSize: pageSize
+        pageSize: pageSize,
+        search: filterAndSearch.value.searchInput,
+        filterChoice: filterAndSearch.value.filterChoice,
+        orderValue: filterAndSearch.value.orderValue
       },
       headers: {
         Authorization: `Bearer ${token.value}`
@@ -123,6 +181,17 @@ const fetchGalleryMetadata = async () => {
     console.error('Error fetching gallery images:', error);
   }
 }
+
+const debouncedFetchAttendees = debounce(fetchGalleryMetadata, 300);  // 300ms delay
+
+watch(() => filterAndSearch.value.searchInput, async (newQuery, oldQuery) => {
+  if (newQuery !== oldQuery) {
+    images.value = [];
+    hasMore.value = true;
+    pageNr.value = 0;
+    debouncedFetchAttendees();
+  }
+}, { immediate: false });
 
 const getImageUrl = (filepath:string) => {
   return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
@@ -225,5 +294,19 @@ const goToImage = (imageId:string) => {
 }
 .custom-fab ion-fab-button:not(:last-child) {
   margin-right: 10px; /* Adds space to the right of each button except the last one */
+}
+
+.filterPopover {
+  --width: 60%;
+}
+
+.applyFilterButton {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+}
+
+.applyButtonText {
+  font-size: 12px;
 }
 </style>
