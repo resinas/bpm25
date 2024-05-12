@@ -45,7 +45,7 @@
 import { reactive, onMounted} from 'vue';
 import { useRouter, useRoute} from 'vue-router';
 import axios from 'axios';
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonAvatar } from '@ionic/vue';
 
 
 const router = useRouter();
