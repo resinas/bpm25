@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/TabAttendeeDetail.vue')
       },
       {
-        path: 'images/:id',
+        path: 'images/:id?',
         component: () => import('@/views/TabGallery.vue')
       },
       {
