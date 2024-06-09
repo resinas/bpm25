@@ -66,8 +66,6 @@ onMounted(async () => {
       id: page.id,
       name: page.title,
 
-      //label: page.updated ??
-
     })));
   } catch (error) {
   console.error('Failed to fetch pages', error);
@@ -84,14 +82,13 @@ onMounted(async () => {
   width: 100%;
   margin-bottom: 10px;
 }
-@media (prefers-color-scheme: light) {
-  #logo-large {
-    background-image: url("@/assets/images/icpm-logo-1.png");
-  }
+/* Light Mode */
+body:not(.dark) #logo-large {
+  background-image: url('@/assets/images/icpm-logo-1.png');
 }
-@media (prefers-color-scheme: dark) {
-  #logo-large {
-    background-image: url("@/assets/images/icpm-logo-2.png");
-  }
+
+/* Dark Mode */
+body.dark #logo-large {
+  background-image: url('@/assets/images/icpm-logo-2.png');
 }
 </style>

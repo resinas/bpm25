@@ -5,7 +5,7 @@
     <ion-content :fullscreen="true" ref="content">
       <ion-grid>
         <ion-row>
-          <ion-col size="4" v-for="(image, index) in imagesList" :key="index">
+          <ion-col size="4" v-for="(image, index) in imagesListMyGallery" :key="index">
             <ion-img :src="getImageWebP(image)" class="gallery-image" :class="{ 'selected-image': imagesSelectedList.includes(image) }" @click="selectMultiple ? selectImage(image) : goToImage(image)"></ion-img>
           </ion-col>
         </ion-row>
@@ -49,12 +49,12 @@ import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
 
-const imagesList = ref<string[]>([]);
+const imagesListMyGallery = ref<string[]>([]);
 const selectMultiple = ref(false);
 const imagesSelectedList = ref<string[]>([]);
 
-onMounted(() => {
-  fetchMyGalleryMetadata()
+onMounted(async () => {
+  await fetchMyGalleryMetadata()
 });
 
 onBeforeRouteUpdate((to, from, next) => {
@@ -65,7 +65,7 @@ onBeforeRouteUpdate((to, from, next) => {
 });
 
 const resetMyGalleryData = async () => {
-  imagesList.value = [];
+  imagesListMyGallery.value = [];
   imagesSelectedList.value = [];
   selectMultiple.value = false;
 };
@@ -99,7 +99,7 @@ const openActionSheet = async () => {
 };
 
 const reloadPage = async () => {
-  imagesList.value = [];
+  imagesListMyGallery.value = [];
   await fetchMyGalleryMetadata();
 }
 
@@ -107,7 +107,7 @@ const fetchMyGalleryMetadata = async () => {
   try {
     const response = await axios.get(`https://localhost:8080/api/v1/gallery/myImages`, {headers: {Authorization: `Bearer ${token.value}`}});
     if (response.data.imagePaths.length > 0) {
-      imagesList.value = [...imagesList.value, ...response.data.imagePaths];
+      imagesListMyGallery.value = [...imagesListMyGallery.value, ...response.data.imagePaths];
     }
   } catch (error) {
     console.error('Error fetching gallery images:', error);
@@ -152,7 +152,7 @@ const deleteGalleryImage = async () => {
         imagePaths: imagesSelectedList.value
       }
     });
-    imagesList.value = imagesList.value.filter(image => !imagesSelectedList.value.includes(image));
+    imagesListMyGallery.value = imagesListMyGallery.value.filter(image => !imagesSelectedList.value.includes(image));
     imagesSelectedList.value = [];
   } catch (error) {
     console.error('Error deleting image:', error);
@@ -195,7 +195,7 @@ const getImageJPG = (filepath:string) => {
 };
 
 const goToImage = (imageId:string) => {
-  router.push(`/tabs/images/${imageId}`);
+  router.push(`/tabs/singleimage/${imageId}`);
 }
 
 const selectImage = (imageId:string) => {

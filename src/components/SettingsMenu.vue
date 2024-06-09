@@ -9,7 +9,7 @@
       <div class="ion-padding">
 <!--        <img src="@/assets/images/icpm-logo-1.png" />-->
         <div id="logo-large" />
-        <p>Welcome</p>
+        <p>Welcome {{ name.firstname }} {{name.lastname}}</p>
       </div>
       <ion-list lines="full">
         <ion-item button :routerLink="'/profile/settings/'">
@@ -39,8 +39,29 @@
 import {informationCircleOutline, logOutOutline, settingsOutline} from "ionicons/icons";
 import {IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonTitle, IonToolbar} from "@ionic/vue";
 import {useRouter} from 'vue-router';
+import {onMounted, reactive} from "vue";
+import axios from "axios";
 
 const router = useRouter();
+const name = reactive({
+  firstname:"",
+  lastname:""
+});
+const token = localStorage.getItem("accessToken")
+
+
+onMounted(async () => {
+  try {
+    const response = await axios.get("https://localhost:8080/api/v1/account/getName",{ headers: { Authorization: `Bearer ${token}` } });
+    name.firstname = response.data.firstname;
+    name.lastname = response.data.lastname;
+  } catch (error) {
+    console.error('Failed to fetch pages', error);
+  }
+});
+
+
+
 const logout = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
@@ -59,14 +80,13 @@ const logout = () => {
   width: 100%;
   margin-bottom: 10px;
 }
-@media (prefers-color-scheme: light) {
-  #logo-large {
-    background-image: url("@/assets/images/icpm-logo-1.png");
-  }
+/* Light Mode */
+body:not(.dark) #logo-large {
+  background-image: url('@/assets/images/icpm-logo-1.png');
 }
-@media (prefers-color-scheme: dark) {
-  #logo-large {
-    background-image: url("@/assets/images/icpm-logo-2.png");
-  }
+
+/* Dark Mode */
+body.dark #logo-large {
+  background-image: url('@/assets/images/icpm-logo-2.png');
 }
 </style>

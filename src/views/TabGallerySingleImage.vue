@@ -4,7 +4,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/images"></ion-back-button>
+          <ion-back-button defaultHref="/tabs/images/myGallery"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ imagePath }}</ion-title>
       </ion-toolbar>

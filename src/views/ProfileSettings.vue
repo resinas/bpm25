@@ -67,11 +67,12 @@
             </ion-item>
             <ion-item>
               <ion-toggle slot="start" :checked="user.sharingChoice" @ionChange="toggleSharingChoice"></ion-toggle>
-              <span class="toggle-text">Share user information with other attendees</span>
+              <span class="toggle-text">Share user information with other attendees*</span>
             </ion-item>
             <ion-button type="submit" expand="block" shape="round" class="button">Update information</ion-button>
             <p v-if="updateError" class="error-message">{{ updateError }}</p>
             <p v-if="updateSuccess" class="error-message">{{ updateSuccess }}</p>
+            <p>* name is always shared with other attendees</p>
           </form>
         </ion-card-content>
       </ion-card>
@@ -109,24 +110,6 @@
           <ion-button type="submit" expand="block" shape="round" class="button" @click="updatePassword">Update password</ion-button>
           <p v-if="changePasswordSuccess" class="error-message">{{ changePasswordSuccess }}</p>
           <p v-if="changePasswordError" class="success-message">{{ changePasswordError }}</p>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Privacy Settings Section -->
-      <ion-card>
-        <ion-card-header @click="getNotifikationsSettings">
-          <ion-card-title>Notifications</ion-card-title>
-        </ion-card-header>
-        <ion-card-content v-if="showNotificationsInformation">
-          <ion-item>
-            <ion-toggle slot="start"></ion-toggle>
-            <span class="toggle-text">Get an email when an article is created or updated </span>
-          </ion-item>
-          <ion-item>
-            <ion-toggle slot="start"></ion-toggle>
-            <span class="toggle-text">Get an email when an event you follow is updated</span>
-          </ion-item>
-          <ion-button type="submit" expand="block" shape="round" class="button">Save</ion-button>
         </ion-card-content>
       </ion-card>
 
@@ -311,7 +294,6 @@ const getInitialTheme = () => {
 
 const isDarkMode = ref(getInitialTheme());
 
-// In your Vue component, inside the <script> tag
 const toggleTheme = () => {
   const isCurrentlyDark = document.body.classList.contains('dark');
   const newTheme = !isCurrentlyDark ? 'dark' : 'light';

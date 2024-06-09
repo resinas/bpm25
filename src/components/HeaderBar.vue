@@ -56,15 +56,14 @@ const emits = defineEmits(['openActionSheet', 'reloadPage', 'openFilter']);
   margin-left: 8px;
   margin-top: 4px;
 }
-@media (prefers-color-scheme: light) {
-  #logo {
-    background-image: url("@/assets/images/icpm-logo-1.png");
-  }
+/* Light Mode */
+body:not(.dark) #logo {
+  background-image: url('@/assets/images/icpm-logo-1.png');
 }
-@media (prefers-color-scheme: dark) {
-  #logo {
-    background-image: url("@/assets/images/icpm-logo-2.png");
-  }
+
+/* Dark Mode */
+body.dark #logo {
+  background-image: url('@/assets/images/icpm-logo-2.png');
 }
 .gallery-dropdown {
   margin-right: 15px;

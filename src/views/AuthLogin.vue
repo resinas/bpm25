@@ -107,7 +107,7 @@ const login = async () => {
 const sendConfirmationEmail = async () => {
   try {
     localStorage.setItem('accessToken', '');
-    await axios.post("https//localhost:8080/api/v1/auth/signup", registerUser.value);
+    await axios.post("https://localhost:8080/api/v1/auth/signup", registerUser.value);
     registerUser.value.receiver = '';
     await router.push('/auth/login');
     registerSuccess.value = 'Email send successfully'
