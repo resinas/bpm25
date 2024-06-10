@@ -1,6 +1,13 @@
 <template>
   <ion-page>
     <ion-content>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-back-button defaultHref="/auth/login"></ion-back-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
       <div class="reset-container">
         <div class="reset-header">
           <h1>Reset password</h1>
@@ -25,7 +32,17 @@
 </template>
 
 <script setup lang="ts">
-import {IonButton, IonInput, IonPage, IonContent} from "@ionic/vue";
+import {
+  IonButton,
+  IonInput,
+  IonPage,
+  IonContent,
+  IonButtons,
+  IonTitle,
+  IonBackButton,
+  IonHeader,
+  IonToolbar
+} from "@ionic/vue";
 import {ref} from "vue";
 import axios from "axios";
 
