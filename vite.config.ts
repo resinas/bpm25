@@ -27,7 +27,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom'
   },
-  base: "/icpm-navigator/",
+  base: "/frontend/",
   publicDir: 'public',
   build: {
     cssCodeSplit: true,
