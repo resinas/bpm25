@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content>
+    <ion-content class="ion-padding">
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
@@ -14,14 +14,17 @@
           <h2>Please enter your email address to recieve a reset link</h2>
         </div>
         <form @submit.prevent="sendResetEmail">
-          <label for="email">Email</label>
-          <ion-input
-              id="email"
-              placeholder="Your email"
-              type="email"
-              v-model="resetUser.receiver"
-              required>
-          </ion-input>
+          <ion-item>
+            <ion-input
+                id="email"
+                placeholder="email@email.com"
+                type="email"
+                v-model="resetUser.receiver"
+                label="Your email"
+                label-placement="stacked"
+                required>
+            </ion-input>
+          </ion-item>
           <ion-button type="submit" expand="block" shape="round">Send reset email</ion-button>
           <p v-if="resetEmailError" class="error-message">{{ resetEmailError }}</p>
           <p v-if="resetEmailSuccess" class="success-message">{{ resetEmailSuccess }}</p>
@@ -41,7 +44,7 @@ import {
   IonTitle,
   IonBackButton,
   IonHeader,
-  IonToolbar
+  IonToolbar, IonItem
 } from "@ionic/vue";
 import {ref} from "vue";
 import axios from "axios";
@@ -88,13 +91,13 @@ form {
 }
 
 ion-input {
-  --padding-start: 5px;
-  --placeholder-color: rgba(255, 255, 255, 0.6);
-  --color: #fff;
-  background: #000;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  margin-bottom: 2rem;
+  //--padding-start: 5px;
+  //--placeholder-color: rgba(255, 255, 255, 0.6);
+  //--color: #fff;
+  //background: #000;
+  //border: 1px solid #fff;
+  //border-radius: 4px;
+  //margin-bottom: 2rem;
 }
 
 ion-button {

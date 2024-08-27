@@ -4,13 +4,13 @@
     <ion-popover :is-open="showFilterOptions" @ionPopoverDidDismiss="showFilterOptions = false" class="filterPopover" :event="popoverEvent">
       <ion-list>
         <ion-item>
-          <ion-select v-model="filterAndSearch.filterChoice" label="Filter by:" interface="popover">
+          <ion-select v-model="filterAndSearch.filterChoice" label="Order by:" interface="popover">
             <ion-select-option value="uploadTime">Date</ion-select-option>
             <ion-select-option value="likes">Likes</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-select v-model="filterAndSearch.orderValue" label="Order by:" interface="popover">
+          <ion-select v-model="filterAndSearch.orderValue" label="Direction:" interface="popover">
             <ion-select-option value="true">Ascending</ion-select-option>
             <ion-select-option value="false">Descending</ion-select-option>
           </ion-select>
@@ -45,6 +45,11 @@
           <ion-icon :icon="download"></ion-icon>
         </ion-fab-button>
       </ion-fab>
+      <ion-fab  v-if="!selectMultiple" vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
+        <ion-fab-button>
+          <ion-icon :icon="add" @click="uploadGalleryImage"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -65,7 +70,7 @@ import {
   IonInfiniteScrollContent,
   InfiniteScrollCustomEvent, actionSheetController, IonSearchbar, IonSelectOption, IonSelect, IonPopover, IonButton, IonItem
 } from '@ionic/vue';
-import {close, download} from 'ionicons/icons';
+import {close, download, add} from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from "axios";
@@ -225,6 +230,7 @@ const uploadGalleryImage = async () => {
     });
     if (uploadResponse.status === 200) {
       console.log('Upload successful');
+      reloadPage();
     }
   } catch (error) {
     console.error('Error uploading image:', error);

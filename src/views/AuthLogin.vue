@@ -4,43 +4,63 @@
       <div class="login-container">
         <div class="login-header">
           <img :src="logo" alt="ICPM Logo" class="logo"/>
-          <div class="login-toggle">
-            <ion-button expand="block" class="toggle-button" :class="{ 'active': isActiveLogin }" @click="toggleActive">Log in</ion-button>
-            <ion-button expand="block" class="toggle-button" :class="{ 'active': !isActiveLogin }" @click="toggleActive">Register</ion-button>
-          </div>
+<!--          <div class="login-toggle">-->
+<!--            <ion-button expand="block" class="toggle-button" :class="{ 'active': isActiveLogin }" @click="toggleActive">Log in</ion-button>-->
+<!--            <ion-button expand="block" class="toggle-button" :class="{ 'active': !isActiveLogin }" @click="toggleActive">Register</ion-button>-->
+<!--          </div>-->
+          <ion-segment v-model="selectedSegment" value="login">
+            <ion-segment-button value="login">
+              <ion-label>Log in</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="register">
+              <ion-label>Register</ion-label>
+            </ion-segment-button>
+          </ion-segment>
         </div>
-        <form @submit.prevent="login" v-if="isActiveLogin">
-          <label for="emailInput" class="input-label">Email</label>
-          <!-- type="email" missing in ion-input right below this line, literally the one on the next line: "15", this line is line: "14" for reference -->
-          <ion-input
-              id="emailInput"
-              placeholder="Your email"
-              v-model="loginUser.email"
-              required>
-          </ion-input>
-          <label for="passwordInput" class="input-label">Password</label>
-          <ion-input
-              id="passwordInput"
-              placeholder="Password"
-              type="password"
-              v-model="loginUser.password"
-              required>
-          </ion-input>
-          <router-link to="/auth/login/resetpassword" class="forgot-password">Forgot password?</router-link>
-          <ion-button type="submit" expand="block" class="login-button">Sign in</ion-button>
+        <form @submit.prevent="login" v-if="selectedSegment=='login'">
+          <ion-item>
+            <ion-input
+                id="emailInput"
+                label="Your email"
+                label-placement="stacked"
+                v-model="loginUser.email"
+                placeholder="email@email.com"
+                required
+            ></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input
+                id="passwordInput"
+                placeholder="password"
+                type="password"
+                v-model="loginUser.password"
+                label="Password"
+                label-placement="stacked"
+                required>
+            </ion-input>
+          </ion-item>
+          <p class="ion-text-right">
+            <router-link to="/auth/login/resetpassword" class="forgot-password">Forgot password?</router-link>
+          </p>
+          <p class="ion-text-center">
+            <ion-button type="submit" expand="block" class="login-button">Sign in</ion-button>
+          </p>
           <!-- Display error message if login fails -->
           <p v-if="loginError" class="error-message">{{ loginError }}</p>
         </form>
         <form @submit.prevent="sendConfirmationEmail" v-else>
-          <label for="emailInput" class="input-label">Email</label>
-          <ion-input
-              id="emailInput"
-              placeholder="Your email"
-              type="email"
-              v-model="registerUser.receiver"
-              required>
-          </ion-input>
-          <ion-button type="submit" expand="block" shape="round">Send Confirmation Email</ion-button>
+          <ion-item>
+            <ion-input
+                id="emailInput"
+                placeholder="email@email.com"
+                type="email"
+                v-model="registerUser.receiver"
+                label="Your email"
+                label-placement="stacked"
+                required>
+            </ion-input>
+          </ion-item>
+          <ion-button type="submit" expand="block" class="ion-margin-top">Send Confirmation Email</ion-button>
           <p v-if="registerError" class="error-message">{{ registerError }}</p>
           <p v-if="registerSuccess" class="success-message">{{ registerSuccess }}</p>
         </form>
@@ -50,7 +70,7 @@
 </template>
 
 <script setup lang="js">
-import {IonPage, IonContent,IonButton,IonInput} from "@ionic/vue";
+import {IonPage, IonContent, IonButton, IonInput, IonLabel, IonSegment, IonSegmentButton, IonItem} from "@ionic/vue";
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -71,6 +91,8 @@ const loginError = ref('');
 const registerError = ref('');
 const registerSuccess = ref('');
 const isActiveLogin = ref(true);
+
+const selectedSegment = ref('login');
 
 const loginUser = ref({
   email: '',
@@ -110,12 +132,12 @@ const sendConfirmationEmail = async () => {
     await axios.post("https://localhost:8080/api/v1/auth/signup", registerUser.value);
     registerUser.value.receiver = '';
     await router.push('/auth/login');
-    registerSuccess.value = 'Email send successfully'
+    registerSuccess.value = 'E-mail sent successfully'
 
   } catch (error) {
     // Handle error, e.g., display an error message
     console.error("Register error:", error.response ? error.response.data : error.message);
-    registerError.value = 'Email is not in participant list, please contact conference personal';
+    registerError.value = 'If you registered for the conference, you will receive an e-mail soon';
   }
 };
 
@@ -168,27 +190,21 @@ form {
 }
 
 ion-input {
-  --padding-start: 5px;
-  --placeholder-color: rgba(255, 255, 255, 0.6);
-  --color: #fff;
-  background: #000;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  margin-bottom: 2rem;
+  //--padding-start: 5px;
+  //--placeholder-color: rgba(255, 255, 255, 0.6);
+  //--color: #fff;
+  //background: #000;
+  //border: 1px solid #fff;
+  //border-radius: 4px;
+  //margin-bottom: 2rem;
 }
 
 .forgot-password {
-  display: block;
-  margin-top: -1.5rem;
-  color: var(--ion-color-primary);
-  text-decoration: none;
-  text-align: right;
-}
-.login-button {
-  --background: #428cff;
-  --color: white;
-  margin-top: 2.5rem;
-  --border-radius: 4px;
+  //display: block;
+  //margin-top: -1.5rem;
+  //color: var(--ion-color-primary);
+  //text-decoration: none;
+  //text-align: right;
 }
 
 .error-message {
