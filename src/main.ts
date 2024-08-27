@@ -55,7 +55,7 @@ const isOffline = ref(false);
 app.provide('isOffline', isOffline);
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/icpm-navigator/serviceW.js')
+  navigator.serviceWorker.register('/frontend/serviceW.js')
       .then(() => {
         console.log('ServiceWorker registration successful.');
 
