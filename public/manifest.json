@@ -1,7 +1,7 @@
 {
   "name": "ICPM Conference",
   "short_name": "ICPM",
-  "description": "The 2019 International Conference on Process Mining",
+  "description": "The 2024 International Conference on Process Mining",
   "icons": [
     {
       "src": "manifest_icons/64.png",
@@ -19,6 +19,6 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "start_url": "/frontend",
   "display": "standalone"
 }
