@@ -22,7 +22,7 @@ const handleDismiss = () => {
 
 const toastButtons = [
   {
-    text: 'Hide',
+    text: 'Dismiss',
     handler: handleDismiss,
   },
 ];
