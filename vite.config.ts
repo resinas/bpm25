@@ -27,7 +27,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom'
   },
-  base: "/frontend/",
+  base: "/",
   publicDir: 'public',
   build: {
     cssCodeSplit: true,
