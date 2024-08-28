@@ -49,6 +49,8 @@
           <p v-if="loginError" class="error-message">{{ loginError }}</p>
         </form>
         <form @submit.prevent="sendConfirmationEmail" v-else>
+          <p>You must use the same email address you used to register at the conference (<a href="https://icpmconference.org/2024/registration/" target="_blank">https://icpmconference.org/2024/registration/</a>).</p>
+          <p>Please allow up to 12 hours for emails to be synchronized between the conference registration system and this app.</p>
           <ion-item>
             <ion-input
                 id="emailInput"
