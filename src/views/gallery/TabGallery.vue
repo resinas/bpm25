@@ -21,6 +21,11 @@
       </div>
     </ion-popover>
     <ion-content :fullscreen="true" ref="content">
+
+      <ion-refresher slot="fixed" @ionRefresh="reloadPage">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
       <ion-searchbar v-model="filterAndSearch.searchInput" @ionChange="fetchGalleryMetadata" placeholder="Search authors..."></ion-searchbar>
       <ion-grid>
         <ion-row>
@@ -68,7 +73,15 @@ import {
   IonList,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent, actionSheetController, IonSearchbar, IonSelectOption, IonSelect, IonPopover, IonButton, IonItem
+  InfiniteScrollCustomEvent,
+  actionSheetController,
+  IonSearchbar,
+  IonSelectOption,
+  IonSelect,
+  IonPopover,
+  IonButton,
+  IonItem,
+  IonRefresher, IonRefresherContent
 } from '@ionic/vue';
 import {close, download, add} from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
@@ -154,11 +167,15 @@ const openActionSheet = async () => {
   return actionSheet.value.present();
 };
 
-const reloadPage = async () => {
+const reloadPage = async (event) => {
   images.value = [];
   hasMore.value = true;
   pageNr.value = 0;
   await fetchGalleryMetadata();
+
+  if (event) {
+    event.target.complete();
+  }
 }
 
 const fetchGalleryMetadata = async () => {

@@ -2,6 +2,11 @@
   <ion-page>
     <HeaderBar name="Messages" @reloadPage="reloadPage" />
     <ion-content id="main-content" :fullscreen="true">
+
+      <ion-refresher slot="fixed" @ionRefresh="reloadPage">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
       <ion-list lines="full">
         <ion-item button v-for="message in messages" :key="message.id" @click="setVisibleMessage(message.id)">
           <ion-label>
@@ -78,8 +83,10 @@ import {
   IonLabel,
   IonNote,
   IonModal,
-  IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput, IonAvatar
+  IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput, IonAvatar,
+    IonRefresher, IonRefresherContent
 } from '@ionic/vue';
+import { arrowDownOutline  } from 'ionicons/icons';
 import { ref } from 'vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
@@ -152,8 +159,11 @@ function closePostMessage() {
   postError.value = '';
 }
 
-const reloadPage = async () => {
+const reloadPage = async (event) => {
   await fetchMessages();
+  if (event) {
+    event.target.complete();
+  }
 }
 
 const fetchMessages = async () => {
