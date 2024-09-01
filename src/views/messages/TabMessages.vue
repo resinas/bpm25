@@ -33,7 +33,7 @@
             Posted {{ dayjs(activeMessage.date).fromNow() }} ({{ dayjs(activeMessage.date).format('D MMM, HH:mm') }})
           </p>
           <h1>{{ activeMessage.title }}</h1>
-          <p>{{ activeMessage.message }}</p>
+          <p style="white-space: pre-wrap">{{ activeMessage.message }}</p>
         </ion-content>
       </ion-modal>
 
@@ -42,13 +42,12 @@
           <ion-toolbar>
             <ion-title>Post new message</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="closeMessage()">Cancel</ion-button>
+              <ion-button @click="closePostMessage()">Cancel</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
 
-          <!-- Form Starts Here -->
           <form @submit.prevent="submitForm">
             <ion-item>
               <ion-input v-model="formData.title" type="text" required label="Title" label-placement="stacked"></ion-input>
@@ -57,8 +56,8 @@
               <ion-textarea v-model="formData.message" required rows="10" label="Message" label-placement="stacked"></ion-textarea>
             </ion-item>
             <ion-button expand="block" type="submit" class="ion-margin-top">Post Message</ion-button>
+            <p v-if="postError" class="error-message">{{ postError }}</p>
           </form>
-
         </ion-content>
       </ion-modal>
     </ion-content>
@@ -79,7 +78,7 @@ import {
   IonLabel,
   IonNote,
   IonModal,
-  IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput
+  IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput, IonAvatar
 } from '@ionic/vue';
 import { ref } from 'vue';
 import HeaderBar from "@/components/HeaderBar.vue";
@@ -94,17 +93,47 @@ dayjs.extend(relativeTime);
 
 
 const messages = reactive([]);
-const token = localStorage.getItem("accessToken");
 const isOpen = ref(false);
 const isOpenPost = ref(false);
+const postError = ref('');
 const activeMessage = {};
+
 const formData = ref({
   title: '',
   message: ''
 });
+const token = ref(localStorage.getItem("accessToken"))
+
+const submitForm = async () => {
+  console.log('Form Submitted', formData.value);
+
+  try {
+    const response = await axios.post("https://localhost:8080/api/v1/message",
+    {
+            title: formData.value.title,
+            text: formData.value.message
+          },{
+            headers: { Authorization: `Bearer ${token.value}` }
+          }
+    );
+    postError.value='';
+    if (response.data && response.data.accessToken && response.data.refreshToken) {
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      token.value = response.data.accessToken;
+    }
+  } catch (error) {
+    postError.value = "Failed to post the message!";
+    console.error("Failed to fetch user details:", error);
+  }
+
+  closePostMessage();
+  fetchMessages();
+};
 
 function setVisibleMessage(id) {
   this.activeMessage = messages.find(message => message.id === id);
+  // this.activeMessage.text = this.activeMessage.text.replace(/\n/g, '<br>');
   this.isOpen = true;
 }
 
@@ -114,23 +143,29 @@ function openPostMessage() {
 
 function closeMessage() {
   this.isOpen = false;
-  this.isOpenPost = false;
+}
+
+function closePostMessage() {
+  formData.value.title = '';
+  formData.value.message = '';
+  isOpenPost.value = false;
+  postError.value = '';
 }
 
 const reloadPage = async () => {
-  await fetchAttendees();
+  await fetchMessages();
 }
 
-const fetchAttendees = async () => {
+const fetchMessages = async () => {
   try {
-    const response = await axios.get('https://localhost:8080/api/v1/message',{ headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.get('https://localhost:8080/api/v1/message',{ headers: { Authorization: `Bearer ${token.value}` } });
     messages.splice(0, response.data.length, ...response.data);
   } catch (error) {
     console.error('Failed to fetch pages', error);
   }
 };
 
-onMounted(fetchAttendees);
+onMounted(fetchMessages);
 
 </script>
 
