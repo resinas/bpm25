@@ -18,6 +18,11 @@
           <ion-label>Attendees</ion-label>
         </ion-tab-button>
 
+        <ion-tab-button tab="messages" href="/tabs/messages">
+          <ion-icon aria-hidden="true" :icon="mail" />
+          <ion-label>Messages</ion-label>
+        </ion-tab-button>
+
         <ion-tab-button tab="images" href="/tabs/images">
           <ion-icon aria-hidden="true" :icon="images" />
           <ion-label>Gallery</ion-label>
@@ -28,8 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet, IonBadge } from '@ionic/vue';
-import { home, calendar, people, images } from 'ionicons/icons';
+import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
+import { home, calendar, people, images, mail  } from 'ionicons/icons';
 
 
 
