@@ -11,9 +11,12 @@
         <ion-item button v-for="message in messages" :key="message.id" @click="setVisibleMessage(message.id)">
           <ion-label>
             <h2>{{ message.title }}</h2>
-            <p>By {{ message.author }}</p>
           </ion-label>
-          <ion-note slot="end">{{ dayjs(message.date).fromNow() }}</ion-note>
+          <ion-note slot="end" class="ion-text-right">
+            {{ dayjs(message.date).fromNow() }}<br>
+            By {{ message.author }}
+          </ion-note>
+
         </ion-item>
       </ion-list>
 
@@ -32,13 +35,29 @@
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding">
-          <p style="font-size: .8em" class="ion-text-right">
-            Message by: {{ activeMessage.author }}<br>
-            Posted {{ dayjs(activeMessage.date).fromNow() }} ({{ dayjs(activeMessage.date).format('D MMM, HH:mm') }})
-          </p>
-          <h1>{{ activeMessage.title }}</h1>
-          <p style="white-space: pre-wrap">{{ activeMessage.message }}</p>
+        <ion-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <p style="font-size: .8em">
+                  Posted {{ dayjs(activeMessage.date).fromNow() }}<br>
+                  {{ dayjs(activeMessage.date).format('D MMMM, HH:mm') }}
+                </p>
+              </ion-col>
+              <ion-col class="ion-text-right">
+                <ion-chip :router-link="`/attendee/${activeMessage.authorId}`" @click="closeMessage()">
+                  <ion-avatar>
+                    <img :src="activeMessage.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
+                  </ion-avatar>
+                  <ion-label>{{ activeMessage.author }}</ion-label>
+                </ion-chip>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <div class="ion-padding-horizontal">
+            <h1>{{ activeMessage.title }}</h1>
+            <p style="white-space: pre-wrap">{{ activeMessage.message }}</p>
+          </div>
         </ion-content>
       </ion-modal>
 
@@ -77,14 +96,9 @@ import {
   IonToolbar,
   IonHeader,
   IonTitle,
-  IonButtons,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonModal,
-  IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput, IonAvatar,
-    IonRefresher, IonRefresherContent
+  IonButtons, IonCol, IonRow, IonGrid,
+  IonList, IonItem, IonLabel, IonNote, IonModal, IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput, IonAvatar,
+    IonRefresher, IonRefresherContent, IonChip
 } from '@ionic/vue';
 import { arrowDownOutline  } from 'ionicons/icons';
 import { ref } from 'vue';
@@ -140,7 +154,6 @@ const submitForm = async () => {
 
 function setVisibleMessage(id) {
   this.activeMessage = messages.find(message => message.id === id);
-  // this.activeMessage.text = this.activeMessage.text.replace(/\n/g, '<br>');
   this.isOpen = true;
 }
 
@@ -169,11 +182,33 @@ const reloadPage = async (event) => {
 const fetchMessages = async () => {
   try {
     const response = await axios.get('https://localhost:8080/api/v1/message',{ headers: { Authorization: `Bearer ${token.value}` } });
-    messages.splice(0, response.data.length, ...response.data);
+    const tmp_messages = response.data;
+    await Promise.all(tmp_messages.map(async msg => {
+      if (msg.avatar) {
+        msg.avatar = await getImage(msg.avatar);
+      }
+    }));
+    messages.splice(0, tmp_messages.length, ...tmp_messages);
   } catch (error) {
     console.error('Failed to fetch pages', error);
   }
 };
+
+const getImage = async (id) => {
+  try {
+    const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${id}`, {
+      headers: { Authorization: `Bearer ${token.value}` },
+      params: {
+        format: 'webp'
+      },
+      responseType: 'blob'  // This tells axios to expect a binary response instead of JSON
+    });
+    return URL.createObjectURL(response.data);  // Convert the blob to a URL and return it
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    return '';  // Return an empty string or a default image path in case of error
+  }
+}
 
 onMounted(fetchMessages);
 
