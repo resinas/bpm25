@@ -116,6 +116,7 @@ const login = async () => {
     // Handle success response, e.g., navigate to another route or display a success message
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('refreshToken', response.data.refreshToken);
+    localStorage.setItem('userId', response.data.userId);
     await router.push('/tabs/home');
     loginError.value = '';
     loginUser.value.email = '';
@@ -189,24 +190,6 @@ const sendConfirmationEmail = async () => {
 form {
   text-align: left;
   margin-top: 2rem;
-}
-
-ion-input {
-  //--padding-start: 5px;
-  //--placeholder-color: rgba(255, 255, 255, 0.6);
-  //--color: #fff;
-  //background: #000;
-  //border: 1px solid #fff;
-  //border-radius: 4px;
-  //margin-bottom: 2rem;
-}
-
-.forgot-password {
-  //display: block;
-  //margin-top: -1.5rem;
-  //color: var(--ion-color-primary);
-  //text-decoration: none;
-  //text-align: right;
 }
 
 .error-message {

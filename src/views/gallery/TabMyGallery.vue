@@ -15,8 +15,8 @@
         <ion-fab-button  @click="untoggleSelectImage">
           <ion-icon :icon="close"></ion-icon>
         </ion-fab-button>
-        <ion-fab-button  @click="deleteGalleryImage">
-          <ion-icon :icon="trash"></ion-icon>
+        <ion-fab-button color="danger"  @click="deleteGalleryImage">
+          <ion-icon :icon="trashOutline"></ion-icon>
         </ion-fab-button>
         <ion-fab-button  @click="downloadImages">
           <ion-icon :icon="download"></ion-icon>
@@ -38,7 +38,7 @@ import {
   IonImg,
   actionSheetController
 } from '@ionic/vue';
-import {trash, close, download} from "ionicons/icons";
+import { close, download, trashOutline} from "ionicons/icons";
 import axios from "axios";
 import {usePhotoGallery} from "@/composables/usePhotoGallery";
 import {onMounted, ref} from "vue";

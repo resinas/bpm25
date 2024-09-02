@@ -65,6 +65,7 @@ onMounted(async () => {
 const logout = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
+  localStorage.removeItem('userId');
 
   router.push('/auth/login');
 }

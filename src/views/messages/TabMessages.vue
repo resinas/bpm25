@@ -16,7 +16,6 @@
             {{ dayjs(message.date).fromNow() }}<br>
             By {{ message.author }}
           </ion-note>
-
         </ion-item>
       </ion-list>
 
@@ -57,6 +56,11 @@
           <div class="ion-padding-horizontal">
             <h1>{{ activeMessage.title }}</h1>
             <p style="white-space: pre-wrap">{{ activeMessage.message }}</p>
+            <p class="ion-text-right" v-if="userId == activeMessage.authorId">
+              <ion-button color="danger" @click="deleteMessage()">
+                <ion-icon :icon="trashOutline"></ion-icon> Delete
+              </ion-button>
+            </p>
           </div>
         </ion-content>
       </ion-modal>
@@ -64,23 +68,33 @@
       <ion-modal :is-open="isOpenPost" @didDismiss="closePostMessage()">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Post new message</ion-title>
-            <ion-buttons slot="end">
-              <ion-button @click="closePostMessage()">Cancel</ion-button>
+            <ion-buttons slot="start">
+              <ion-back-button defaultHref="/tabs/messages" @click="closePostMessage()"></ion-back-button>
             </ion-buttons>
+            <ion-title>Post new message</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
 
           <form @submit.prevent="submitForm">
-            <ion-item>
-              <ion-input v-model="formData.title" type="text" required label="Title" label-placement="stacked"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-textarea v-model="formData.message" required rows="10" label="Message" label-placement="stacked"></ion-textarea>
-            </ion-item>
-            <ion-button expand="block" type="submit" class="ion-margin-top">Post Message</ion-button>
-            <p v-if="postError" class="error-message">{{ postError }}</p>
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <ion-input v-model="formData.title" type="text" required label="Title" label-placement="stacked"></ion-input>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <ion-textarea v-model="formData.message" required rows="10" label="Message" label-placement="stacked"></ion-textarea>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <ion-button expand="block" type="submit" class="ion-margin-top">Post Message</ion-button>
+                  <p v-if="postError" class="error-message">{{ postError }}</p>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </form>
         </ion-content>
       </ion-modal>
@@ -115,9 +129,9 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonChip,
-  IonBackButton, modalController
+  IonBackButton, modalController, alertController
 } from '@ionic/vue';
-import { arrowDownOutline  } from 'ionicons/icons';
+import { trashOutline } from 'ionicons/icons';
 import { ref } from 'vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
@@ -130,21 +144,20 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 
-const messages = reactive([]);
+const messages = ref([]);
 const isOpen = ref(false);
 const isOpenPost = ref(false);
 const postError = ref('');
-const activeMessage = {};
+const activeMessage = ref({});
 
 const formData = ref({
   title: '',
   message: ''
 });
 const token = ref(localStorage.getItem("accessToken"))
+const userId = ref(localStorage.getItem("userId"));
 
 const submitForm = async () => {
-  console.log('Form Submitted', formData.value);
-
   try {
     const response = await axios.post("https://localhost:8080/api/v1/message",
     {
@@ -166,28 +179,50 @@ const submitForm = async () => {
   }
 
   closePostMessage();
-  fetchMessages();
+  await fetchMessages();
 };
 
-function setVisibleMessage(id) {
-  this.activeMessage = messages.find(message => message.id === id);
-  this.isOpen = true;
+const setVisibleMessage = (id) => {
+  activeMessage.value = messages.value.find(message => message.id === id);
+  isOpen.value = true;
 }
 
-function openPostMessage() {
-  this.isOpenPost = true;
+const openPostMessage = () => {
+  isOpenPost.value = true;
 }
 
-function closeMessage() {
-  this.isOpen = false;
-  // modalController.dismiss(null);
+const closeMessage = () => {
+  isOpen.value = false;
 }
 
-function closePostMessage() {
+const closePostMessage = () => {
   formData.value.title = '';
   formData.value.message = '';
   isOpenPost.value = false;
   postError.value = '';
+}
+
+const deleteMessage = async () => {
+  const alert = await alertController.create({
+    header: 'Confirm!',
+    message: 'Are you sure you want to delete this message?',
+    buttons: [
+      { text: 'Cancel',  role: 'cancel', },
+      { text: 'Delete',
+        handler: async () => {
+          await axios.delete(`https://localhost:8080/api/v1/message/${activeMessage.value.id}`, {
+            headers: {Authorization: `Bearer ${token.value}`}});
+
+          closeMessage();
+          await fetchMessages();
+
+          return;
+        },
+      },
+    ],
+  });
+
+  await alert.present();
 }
 
 const reloadPage = async (event) => {
@@ -206,7 +241,8 @@ const fetchMessages = async () => {
         msg.avatar = await getAvatarImage(msg.avatar);
       }
     }));
-    messages.splice(0, tmp_messages.length, ...tmp_messages);
+    messages.value = tmp_messages;
+    console.log("reloading");
   } catch (error) {
     console.error('Failed to fetch pages', error);
   }
