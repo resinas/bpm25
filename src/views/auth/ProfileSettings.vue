@@ -2,10 +2,10 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>User Profile</ion-title>
         <ion-buttons slot="start">
           <ion-back-button defaultHref="/tabs/home"></ion-back-button>
         </ion-buttons>
+        <ion-title>User Profile</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
@@ -69,7 +69,8 @@
               <ion-toggle slot="start" :checked="user.sharingChoice" @ionChange="toggleSharingChoice"></ion-toggle>
               <span class="toggle-text">Share user information with other attendees*</span>
             </ion-item>
-            <ion-button type="submit" expand="block" shape="round" class="button">Update information</ion-button>
+
+            <ion-button type="submit" expand="block" class="ion-margin-vertical">Update information</ion-button>
             <p v-if="updateError" class="error-message">{{ updateError }}</p>
             <p v-if="updateSuccess" class="error-message">{{ updateSuccess }}</p>
             <p>* name is always shared with other attendees</p>
@@ -375,11 +376,6 @@ const actionSheetButtons = [
 
 ion-item {
   --background: transparent;
-}
-
-.button {
-  margin-top: 1rem;
-  --border-radius: 4px;
 }
 
 .toggle-text {
