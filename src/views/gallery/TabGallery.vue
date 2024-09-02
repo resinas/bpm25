@@ -90,10 +90,11 @@ import axios from "axios";
 import {onMounted, Ref, ref, watch} from "vue";
 import router from "@/router";
 import { debounce } from 'lodash';
-import {useRoute } from 'vue-router'
+import {onBeforeRouteUpdate, useRoute} from 'vue-router'
 import backend from "../../../backend.config";
 
 const { takePhotoGallery } = usePhotoGallery();
+
 const token = ref(localStorage.getItem("accessToken"))
 const route = useRoute();
 
@@ -207,7 +208,9 @@ const fetchGalleryMetadata = async () => {
 
 const debouncedFetchAttendees = debounce(fetchGalleryMetadata, 300);  // 300ms delay
 
-watch(() => filterAndSearch.value.searchInput, async (newQuery, oldQuery) => {
+watch(
+    () => filterAndSearch.value.searchInput,
+    async (newQuery, oldQuery) => {
   if (newQuery !== oldQuery) {
     images.value = [];
     hasMore.value = true;

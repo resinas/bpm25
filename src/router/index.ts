@@ -28,11 +28,6 @@ const routes: Array<RouteRecordRaw> = [
         name: 'agenda',
         component: () => import('@/views/calendar/TabAgenda.vue'),
       },
-      // {
-      //   path: '/session/:id',
-      //   name: 'SessionDetail',
-      //   component: () => import('@/views/calendar/TabSessionDetails.vue')
-      // },
       {
         path: '/calendar-view',
         name: 'CalendarView',
@@ -48,7 +43,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/attendees/TabAttendeeDetail.vue')
       },
       {
-        path: 'images/:id?',
+        path: 'images/:forceReload?',
         component: () => import('@/views/gallery/TabGallery.vue')
       },
       {

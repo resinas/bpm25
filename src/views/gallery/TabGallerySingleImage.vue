@@ -23,9 +23,22 @@
         <ion-card-content class="Likes-text">
           Likes: {{ imageData.imageLikes }}
         </ion-card-content>
-        <ion-card-content >
-          <ion-icon v-if="imageData.imageIsLiked" :icon="thumbsUp" class="like-icon" @click="changeLikeStatus"></ion-icon>
-          <ion-icon v-else :icon="thumbsUpOutline" class="like-icon" @click="changeLikeStatus"></ion-icon>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <ion-icon v-if="imageData.imageIsLiked" :icon="thumbsUp" class="like-icon" @click="changeLikeStatus"></ion-icon>
+                <ion-icon v-else :icon="thumbsUpOutline" class="like-icon" @click="changeLikeStatus"></ion-icon>
+              </ion-col>
+              <ion-col>
+                <p class="ion-text-right" v-if="Number(userId) == imageData.authorId">
+                  <ion-button color="danger" @click="deletePicture()">
+                    <ion-icon :icon="trashOutline"></ion-icon> Delete
+                  </ion-button>
+                </p>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -36,7 +49,6 @@
 import {
   IonPage,
   IonContent,
-  IonImg,
   IonButtons,
   IonBackButton,
   IonIcon,
@@ -45,18 +57,20 @@ import {
   IonTitle,
   IonToolbar,
   IonHeader,
-  IonAvatar, IonLabel, IonChip,
+  IonAvatar, IonLabel, IonChip, IonButton, alertController, IonGrid, IonRow, IonCol
 } from "@ionic/vue";
 import {onMounted, ref} from "vue";
-import {useRoute} from "vue-router";
-import HeaderBar from "@/components/HeaderBar.vue";
+import {useRoute, useRouter} from "vue-router";
 import axios from "axios";
-import {thumbsUpOutline, thumbsUp} from "ionicons/icons";
+import {thumbsUpOutline, thumbsUp, trashOutline} from "ionicons/icons";
 import backend from "../../../backend.config";
 
 const token = ref(localStorage.getItem("accessToken"))
+const userId = ref(localStorage.getItem("userId"));
 
 const route = useRoute();
+const router = useRouter();
+
 const imageData = ref({
   imageAuthor: '',
   imageLikes: 0,
@@ -125,6 +139,35 @@ const getAvatarImage = async (id:number) => {
     console.error("Error fetching image:", error);
     return '';  // Return an empty string or a default image path in case of error
   }
+}
+
+const deletePicture = async () => {
+  const alert = await alertController.create({
+    header: 'Confirm!',
+    message: 'Are you sure you want to delete this picture?',
+    buttons: [
+      { text: 'Cancel',  role: 'cancel', },
+      { text: 'Delete',
+        handler: async () => {
+          await axios.delete(backend.construct("gallery/images"), {
+            headers: {
+              Authorization: `Bearer ${token.value}`,
+              'Content-Type': 'application/json'
+            },
+            data: {
+              imagePaths: [imagePath]
+            }
+          });
+
+          router.push('/tabs/images/' + Math.random());
+
+          return;
+        },
+      },
+    ],
+  });
+
+  await alert.present();
 }
 
 </script>
