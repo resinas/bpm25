@@ -119,7 +119,6 @@ import {
   IonLabel,
   IonNote,
   IonModal,
-  IonText,
   IonFab,
   IonIcon,
   IonFabButton,
@@ -129,7 +128,8 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonChip,
-  IonBackButton, modalController, alertController
+  IonBackButton,
+  alertController
 } from '@ionic/vue';
 import { trashOutline } from 'ionicons/icons';
 import { ref } from 'vue';
