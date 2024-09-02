@@ -26,13 +26,13 @@
         </ion-fab-button>
       </ion-fab>
 
-      <ion-modal :is-open="isOpen">
+      <ion-modal :is-open="isOpen" @didDismiss="closeMessage()">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Message</ion-title>
-            <ion-buttons slot="end">
-              <ion-button @click="closeMessage()">Close</ion-button>
+            <ion-buttons slot="start">
+              <ion-back-button defaultHref="/tabs/messages" @click="closeMessage()"></ion-back-button>
             </ion-buttons>
+            <ion-title>Message</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content>
@@ -61,7 +61,7 @@
         </ion-content>
       </ion-modal>
 
-      <ion-modal :is-open="isOpenPost">
+      <ion-modal :is-open="isOpenPost" @didDismiss="closePostMessage()">
         <ion-header>
           <ion-toolbar>
             <ion-title>Post new message</ion-title>
@@ -96,9 +96,26 @@ import {
   IonToolbar,
   IonHeader,
   IonTitle,
-  IonButtons, IonCol, IonRow, IonGrid,
-  IonList, IonItem, IonLabel, IonNote, IonModal, IonText, IonFab, IonIcon, IonFabButton, IonTextarea, IonInput, IonAvatar,
-    IonRefresher, IonRefresherContent, IonChip
+  IonButtons,
+  IonCol,
+  IonRow,
+  IonGrid,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonNote,
+  IonModal,
+  IonText,
+  IonFab,
+  IonIcon,
+  IonFabButton,
+  IonTextarea,
+  IonInput,
+  IonAvatar,
+  IonRefresher,
+  IonRefresherContent,
+  IonChip,
+  IonBackButton, modalController
 } from '@ionic/vue';
 import { arrowDownOutline  } from 'ionicons/icons';
 import { ref } from 'vue';
@@ -163,6 +180,7 @@ function openPostMessage() {
 
 function closeMessage() {
   this.isOpen = false;
+  // modalController.dismiss(null);
 }
 
 function closePostMessage() {
@@ -185,7 +203,7 @@ const fetchMessages = async () => {
     const tmp_messages = response.data;
     await Promise.all(tmp_messages.map(async msg => {
       if (msg.avatar) {
-        msg.avatar = await getImage(msg.avatar);
+        msg.avatar = await getAvatarImage(msg.avatar);
       }
     }));
     messages.splice(0, tmp_messages.length, ...tmp_messages);
@@ -194,7 +212,7 @@ const fetchMessages = async () => {
   }
 };
 
-const getImage = async (id) => {
+const getAvatarImage = async (id) => {
   try {
     const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${id}`, {
       headers: { Authorization: `Bearer ${token.value}` },
