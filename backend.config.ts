@@ -7,7 +7,6 @@ const backend = {
     construct: function(endpoint: string, queryParams: QueryParams = {}): string {
         const url = new URL(this.config.url + endpoint);
         Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
-        console.log("requested construction of: " + url.toString());
         return url.toString();
     }
 }
