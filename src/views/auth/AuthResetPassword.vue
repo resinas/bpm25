@@ -60,7 +60,7 @@ const resetUser = ref( {
 const sendResetEmail = async () => {
   try {
     localStorage.setItem('accessToken', '');
-    await axios.post(backend.construct(backend.construct("auth/resetPassword"), resetUser.value);
+    await axios.post(backend.construct("auth/resetPassword"), resetUser.value);
     resetUser.value.receiver = '';
     resetEmailSuccess.value = 'Email send successfully'
 
