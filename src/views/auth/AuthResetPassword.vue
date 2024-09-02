@@ -48,6 +48,7 @@ import {
 } from "@ionic/vue";
 import {ref} from "vue";
 import axios from "axios";
+import backend from "../../../backend.config";
 
 const resetEmailError = ref('');
 const resetEmailSuccess = ref('');
@@ -59,7 +60,7 @@ const resetUser = ref( {
 const sendResetEmail = async () => {
   try {
     localStorage.setItem('accessToken', '');
-    await axios.post("https://localhost:8080/api/v1/auth/resetPassword", resetUser.value);
+    await axios.post(backend.construct(backend.construct("auth/resetPassword"), resetUser.value);
     resetUser.value.receiver = '';
     resetEmailSuccess.value = 'Email send successfully'
 

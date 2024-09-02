@@ -140,6 +140,7 @@ import {onBeforeRouteLeave} from "vue-router";
 import {add} from "ionicons/icons";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import backend from "/backend.config.ts";
 
 dayjs.extend(relativeTime);
 
@@ -159,7 +160,7 @@ const userId = ref(localStorage.getItem("userId"));
 
 const submitForm = async () => {
   try {
-    const response = await axios.post("https://localhost:8080/api/v1/message",
+    const response = await axios.post(backend.construct("message"),
     {
             title: formData.value.title,
             text: formData.value.message
@@ -210,7 +211,7 @@ const deleteMessage = async () => {
       { text: 'Cancel',  role: 'cancel', },
       { text: 'Delete',
         handler: async () => {
-          await axios.delete(`https://localhost:8080/api/v1/message/${activeMessage.value.id}`, {
+          await axios.delete(backend.construct(`message/${activeMessage.value.id}`), {
             headers: {Authorization: `Bearer ${token.value}`}});
 
           closeMessage();
@@ -234,7 +235,7 @@ const reloadPage = async (event) => {
 
 const fetchMessages = async () => {
   try {
-    const response = await axios.get('https://localhost:8080/api/v1/message',{ headers: { Authorization: `Bearer ${token.value}` } });
+    const response = await axios.get(backend.construct('message'),{ headers: { Authorization: `Bearer ${token.value}` } });
     const tmp_messages = response.data;
     await Promise.all(tmp_messages.map(async msg => {
       if (msg.avatar) {
@@ -250,7 +251,7 @@ const fetchMessages = async () => {
 
 const getAvatarImage = async (id) => {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${id}`, {
+    const response = await axios.get(backend.construct(`account/getProfilePicture/${id}`), {
       headers: { Authorization: `Bearer ${token.value}` },
       params: {
         format: 'webp'

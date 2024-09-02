@@ -91,6 +91,7 @@ import {onMounted, Ref, ref, watch} from "vue";
 import router from "@/router";
 import { debounce } from 'lodash';
 import {useRoute } from 'vue-router'
+import backend from "../../../backend.config";
 
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
@@ -117,7 +118,7 @@ const content: Ref<InstanceType<typeof IonContent> | null> = ref(null);
 onMounted(async () => {
   if (route.params.id) {
     try {
-      const response = await axios.get(`https://localhost:8080/api/v1/account/getName/${route.params.id}`, {
+      const response = await axios.get(backend.construct(`account/getName/${route.params.id}`), {
         headers: {
           Authorization: `Bearer ${token.value}`
         }
@@ -181,7 +182,7 @@ const reloadPage = async (event) => {
 const fetchGalleryMetadata = async () => {
   if (!hasMore.value) return;
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/gallery/images`, {
+    const response = await axios.get(backend.construct(`gallery/images`), {
       params: {
         pageNr: pageNr.value,
         pageSize: pageSize,
@@ -216,11 +217,11 @@ watch(() => filterAndSearch.value.searchInput, async (newQuery, oldQuery) => {
 }, { immediate: false });
 
 const getImageUrl = (filepath:string) => {
-  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+  return backend.construct(`gallery/images/${filepath}?format=webp`);
 };
 
 const getImageJPG = (filepath:string) => {
-  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
+  return backend.construct(`gallery/images/${filepath}?format=jpg`);
 };
 
 const loadMore = async (event?:InfiniteScrollCustomEvent) => {
@@ -239,7 +240,7 @@ const uploadGalleryImage = async () => {
     formData.append('file', photoBlob as Blob);
 
     // Make the POST request with the form data and proper headers
-    const uploadResponse = await axios.post("https://localhost:8080/api/v1/gallery/images", formData, {
+    const uploadResponse = await axios.post(backend.construct("gallery/images"), formData, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary

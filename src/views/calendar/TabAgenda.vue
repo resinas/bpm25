@@ -94,6 +94,7 @@ import {
 import { heart, heartOutline, calendarNumber } from 'ionicons/icons';
 import HeaderBar from '@/components/HeaderBar.vue';
 import TabSessionDetails from "@/views/calendar/TabSessionDetails.vue";
+import backend from "/backend.config.ts";
 
 const router = useRouter();
 const route = useRoute();
@@ -143,7 +144,7 @@ async function fetchSessions() {
 async function fetchICPMAgenda() {
   try {
     await fetchLikedSessions();
-    const response = await axios.get('https://localhost:8080/api/v1/agenda/sessions', {
+    const response = await axios.get(backend.construct('agenda/sessions'), {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const sessionsData = response.data;
@@ -162,7 +163,7 @@ async function fetchPersonalAgenda(userId) {
   try {
     await fetchLikedSessions();
     console.log('Fetching personal agenda for user ID:', userId);
-    const response = await axios.get(`https://localhost:8080/api/v1/agenda/session/likedlist/${userId}`, {
+    const response = await axios.get(backend.construct(`agenda/session/likedlist/${userId}`), {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const sessionsData = response.data;
@@ -180,7 +181,7 @@ async function fetchPersonalAgenda(userId) {
 
 async function fetchCurrentUserId() {
   try {
-    const response = await axios.get('https://localhost:8080/api/v1/account/id', {
+    const response = await axios.get(backend.construct('account/id'), {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     state.currentUserId = response.data.id;
@@ -193,7 +194,7 @@ async function fetchCurrentUserId() {
 
 async function fetchLikedSessions() {
   try {
-    const response = await axios.get('https://localhost:8080/api/v1/agenda/session/hearts', {
+    const response = await axios.get(backend.construct('agenda/session/hearts'), {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     state.likedSessionIds = new Set(response.data.map(id => id.toString()));
@@ -208,7 +209,7 @@ async function toggleLike(session) {
   session.isLiked = !session.isLiked;
   try {
     await axios.post(
-        'https://localhost:8080/api/v1/agenda/session/like',
+        backend.construct('agenda/session/like'),
         {
           likes: session.isLiked,
           id: session.id

@@ -76,9 +76,9 @@ import {IonPage, IonContent, IonButton, IonInput, IonLabel, IonSegment, IonSegme
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-// Import the logos
 import logoLight from '@/assets/images/icpm-logo-1.png';
 import logoDark from '@/assets/images/icpm-logo-2.png';
+import backend from "/backend.config.ts";
 
 // Create a computed property to switch logo based on user's color scheme preference
 const logo = computed(() => {
@@ -111,8 +111,7 @@ const toggleActive = () => {
 const login = async () => {
   try {
     // Here you would replace the URL with your server endpoint
-    const response = await axios.post("https://localhost:8080/api/v1/auth/signin", loginUser.value);
-    console.log(response.data);
+    const response = await axios.post(backend.construct("auth/signin"), loginUser.value);
     // Handle success response, e.g., navigate to another route or display a success message
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -132,7 +131,7 @@ const login = async () => {
 const sendConfirmationEmail = async () => {
   try {
     localStorage.setItem('accessToken', '');
-    await axios.post("https://localhost:8080/api/v1/auth/signup", registerUser.value);
+    await axios.post(backend.construct("auth/signup"), registerUser.value);
     registerUser.value.receiver = '';
     await router.push('/auth/login');
     registerSuccess.value = 'E-mail sent successfully'

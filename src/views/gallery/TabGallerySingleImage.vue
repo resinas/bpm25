@@ -52,6 +52,7 @@ import {useRoute} from "vue-router";
 import HeaderBar from "@/components/HeaderBar.vue";
 import axios from "axios";
 import {thumbsUpOutline, thumbsUp} from "ionicons/icons";
+import backend from "../../../backend.config";
 
 const token = ref(localStorage.getItem("accessToken"))
 
@@ -73,7 +74,7 @@ onMounted(() => {
 
 const getImageData = async (filepath:string) => {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/gallery/image/${filepath}?format=jpg`, { headers: { Authorization: `Bearer ${token.value}` } });
+    const response = await axios.get(backend.construct(`gallery/image/${filepath}`, {format: 'jpg'}), { headers: { Authorization: `Bearer ${token.value}` } });
     imageData.value.imageAuthor = response.data.imageAuthor;
     imageData.value.imageLikes = response.data.imageLikes;
     imageData.value.imageIsLiked = response.data.hasLiked;
@@ -86,13 +87,13 @@ const getImageData = async (filepath:string) => {
 };
 
 const getImageUrl = (filepath:string) => {
-  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+  return backend.construct(`gallery/images/${filepath}`, {format: 'webp'});
 };
 
 const changeLikeStatus = async () => {
   try{
     console.log(imagePath);
-    await axios.put(`https://localhost:8080/api/v1/gallery/changeLikeStatusGalleyImage`, {
+    await axios.put(backend.construct(`gallery/changeLikeStatusGalleyImage`), {
       likes: !imageData.value.imageIsLiked,
       path: imagePath
     }, { headers: { Authorization: `Bearer ${token.value}` } })
@@ -109,7 +110,7 @@ const changeLikeStatus = async () => {
 
 const getAvatarImage = async (id:number) => {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${id}`, {
+    const response = await axios.get(backend.construct(`account/getProfilePicture/${id}`), {
       headers: { Authorization: `Bearer ${token.value}` },
       params: {
         format: 'webp'

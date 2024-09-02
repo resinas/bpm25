@@ -45,6 +45,7 @@ import {onMounted, ref} from "vue";
 import HeaderBar from "@/components/HeaderBar.vue";
 import router from "@/router";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
+import backend from "../../../backend.config";
 
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
@@ -105,7 +106,7 @@ const reloadPage = async () => {
 
 const fetchMyGalleryMetadata = async () => {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/gallery/myImages`, {headers: {Authorization: `Bearer ${token.value}`}});
+    const response = await axios.get(backend.construct(`gallery/myImages`), {headers: {Authorization: `Bearer ${token.value}`}});
     if (response.data.imagePaths.length > 0) {
       imagesListMyGallery.value = [...imagesListMyGallery.value, ...response.data.imagePaths];
     }
@@ -124,7 +125,7 @@ const uploadGalleryImage = async () => {
     formData.append('file', photoBlob as Blob);
 
     // Make the POST request with the form data and proper headers
-    const uploadResponse = await axios.post("https://localhost:8080/api/v1/gallery/images", formData, {
+    const uploadResponse = await axios.post(backend.construct("gallery/images"), formData, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'multipart/form-data' // This might be optional as axios sets it automatically with the correct boundary
@@ -143,7 +144,7 @@ const deleteGalleryImage = async () => {
     return;
   }
   try {
-    await axios.delete("https://localhost:8080/api/v1/gallery/images", {
+    await axios.delete(backend.construct("gallery/images"), {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'application/json'
@@ -188,10 +189,10 @@ const downloadImages = () => {
 }
 
 const getImageWebP = (filepath:string) => {
-  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=webp`;
+  return backend.construct(`gallery/images/${filepath}`, {format: 'webp'});
 };
 const getImageJPG = (filepath:string) => {
-  return `https://localhost:8080/api/v1/gallery/images/${filepath}?format=jpg`;
+  return backend.construct(`gallery/images/${filepath}`, {format: 'jpg'});
 };
 
 const goToImage = (imageId:string) => {

@@ -46,6 +46,7 @@ import { reactive, onMounted} from 'vue';
 import { useRouter, useRoute} from 'vue-router';
 import axios from 'axios';
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonAvatar } from '@ionic/vue';
+import backend from "/backend.config.ts";
 
 
 const router = useRouter();
@@ -64,7 +65,7 @@ const attendee = reactive({
 
 async function fetchAttendeeDetails() {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/attendees/${attendeeId}`, {
+    const response = await axios.get(backend.construct(`attendees/${attendeeId}`), {
       headers: {'Authorization': `Bearer ${token}`}
     });
     Object.assign(attendee, response.data);
@@ -78,7 +79,7 @@ async function fetchAttendeeDetails() {
 
 async function getImage(person) {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/account/getProfilePicture/${person.id}`, {
+    const response = await axios.get(backend.construct(`account/getProfilePicture/${person.id}`), {
       headers: {'Authorization': `Bearer ${token}`},
       params: {
         format: 'webp'

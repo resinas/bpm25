@@ -53,6 +53,7 @@ import {IonPage, IonContent, IonInput, IonButton, IonToggle} from "@ionic/vue";
 import {computed, onMounted, ref} from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
+import backend from "../../../backend.config";
 
 const router = useRouter();
 const route = useRoute();
@@ -85,7 +86,7 @@ const getUserInformation = async () => {
   try {
     const setUpToken = Array.isArray(token) ? token[0] : token;
     localStorage.setItem('setUpToken', setUpToken);
-    const response = await axios.get("https://localhost:8080/api/v1/account/userDetails", {
+    const response = await axios.get(backend.construct("account/userDetails"), {
       headers: { Authorization: `Bearer ${setUpToken}` }});
     localStorage.setItem('setUpToken', '');
     console.log(response.data);
@@ -102,11 +103,11 @@ const sendUserInformation = async () => {
   try {
     const accessToken = Array.isArray(token) ? token[0] : token;
     localStorage.setItem('accessToken', accessToken);
-    await axios.post("https://localhost:8080/api/v1/account/update", userInformation.value, { headers: { Authorization: `Bearer ${accessToken}` } });
+    await axios.post(backend.construct("account/update"), userInformation.value, { headers: { Authorization: `Bearer ${accessToken}` } });
     localStorage.setItem('accessToken', '');
     loginInformation.value.email = userInformation.value.email;
     loginInformation.value.password = userInformation.value.password
-    const response = await axios.post("https://localhost:8080/api/v1/auth/signin", loginInformation.value);
+    const response = await axios.post(backend.construct("auth/signin"), loginInformation.value);
     console.log(response.data);
     // Handle success response, e.g., navigate to another route or display a success message
     localStorage.setItem('accessToken', response.data.accessToken);

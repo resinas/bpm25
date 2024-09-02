@@ -22,6 +22,7 @@ import HeaderBar from "@/components/HeaderBar.vue";
 import { useRoute } from 'vue-router';
 import { onMounted, reactive } from 'vue';
 import axios from 'axios';
+import backend from "/backend.config.ts";
 
 const route = useRoute();
 const pageData = reactive({title: '', content: '', layoutId: null });
@@ -29,7 +30,7 @@ const token = localStorage.getItem("accessToken")
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`https://localhost:8080/api/v1/pages/${route.params.id}`,{ headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.get(backend.construct(`pages/${route.params.id}`),{ headers: { Authorization: `Bearer ${token}` } });
     Object.assign(pageData, response.data);
   } catch (error) {
     console.error('Failed to fetch page data', error);

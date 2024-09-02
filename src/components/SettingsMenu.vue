@@ -41,6 +41,7 @@ import {IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, Ion
 import {useRouter} from 'vue-router';
 import {onMounted, reactive} from "vue";
 import axios from "axios";
+import backend from "../../backend.config";
 
 const router = useRouter();
 const name = reactive({
@@ -52,7 +53,7 @@ const token = localStorage.getItem("accessToken")
 
 onMounted(async () => {
   try {
-    const response = await axios.get("https://localhost:8080/api/v1/account/getName",{ headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.get(backend.construct( 'account/getName'),{ headers: { Authorization: `Bearer ${token}` } });
     name.firstname = response.data.firstname;
     name.lastname = response.data.lastname;
   } catch (error) {

@@ -47,6 +47,7 @@ import {IonPage, IonContent,IonButton,IonInput} from "@ionic/vue";
 import {ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
 import axios from "axios";
+import backend from "../../../backend.config";
 
 const route = useRoute();
 const router = useRouter();
@@ -67,7 +68,7 @@ const resetPassword = async () => {
     }
     const resetToken = Array.isArray(token) ? token[0] : token;
     localStorage.setItem('resetToken', resetToken);
-    const response = await axios.post("https://localhost:8080/api/v1/account/resetPassword", resetInformation.value, { headers: { Authorization: `Bearer ${resetToken}` } });
+    const response = await axios.post(backend.construct("account/resetPassword"), resetInformation.value, { headers: { Authorization: `Bearer ${resetToken}` } });
     localStorage.setItem('resetToken', '');
 
     await router.push('/auth/login');

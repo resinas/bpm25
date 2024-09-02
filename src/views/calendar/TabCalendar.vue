@@ -50,6 +50,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { star } from 'ionicons/icons';
 import { useRoute } from 'vue-router';
+import backend from "/backend.config.ts";
 
 
 
@@ -120,19 +121,19 @@ async function fetchSessions() {
     let response;
 
     if (id) {
-      response = await axios.get(`https://localhost:8080/api/v1/agenda/session/likedlist/${id}`, {
+      response = await axios.get(backend.construct(`agenda/session/likedlist/${id}`), {
         headers: { 'Authorization': `Bearer ${token}` },
       });
     } else if (type === 'personal') {
-      const currentUserIdResponse = await axios.get('https://localhost:8080/api/v1/account/id', {
+      const currentUserIdResponse = await axios.get(backend.construct('account/id'), {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const currentUserId = currentUserIdResponse.data.id;
-      response = await axios.get(`https://localhost:8080/api/v1/agenda/session/likedlist/${currentUserId}`, {
+      response = await axios.get(backend.construct(`agenda/session/likedlist/${currentUserId}`), {
         headers: { 'Authorization': `Bearer ${token}` },
       });
     } else {
-      response = await axios.get('https://localhost:8080/api/v1/agenda/sessions', {
+      response = await axios.get(backend.construct('agenda/sessions'), {
         headers: { 'Authorization': `Bearer ${token}` },
       });
     }

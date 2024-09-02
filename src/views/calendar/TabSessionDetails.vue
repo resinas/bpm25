@@ -36,6 +36,7 @@ import HeaderBar from "@/components/HeaderBar.vue";
 import {onMounted, reactive, ref} from 'vue';
 import axios from 'axios';
 import dayjs from "dayjs";
+import backend from "/backend.config.ts";
 
 const props = defineProps({
   isOpen: {
@@ -70,7 +71,7 @@ const openModal = async () => {
   try {
     if(props.id != "") {
       loading.value = true;
-      const response = await axios.get(`https://localhost:8080/api/v1/agenda/session/${props.id}`,
+      const response = await axios.get(backend.construct(`agenda/session/${props.id}`),
           {headers: {Authorization: `Bearer ${token}`}}).then(response => {
         Object.assign(pageData, response.data);
         loading.value = false;

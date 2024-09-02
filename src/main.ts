@@ -1,7 +1,6 @@
 import {createApp, ref} from 'vue'
 import App from './App.vue'
 import router from './router';
-import Backend from "@/services/backend";
 import axios from "axios";
 
 import { IonicVue } from '@ionic/vue';
@@ -28,6 +27,7 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 /* Theme variables */
 import './theme/variables.css';
+import backend from "../backend.config";
 
 function applyTheme() {
   // First, check if a theme is saved in localStorage
@@ -70,7 +70,6 @@ if ('serviceWorker' in navigator) {
 }
 
 app.config.globalProperties.axios = axios;
-app.config.globalProperties.$backend = new Backend();
 
 
 
@@ -91,7 +90,7 @@ axios.interceptors.response.use(
         try {
           const refreshToken = localStorage.getItem('refreshToken');
           // Attempt to get a new access token using the refresh token
-          const refreshResponse = await axios.post('https://localhost:8080/api/v1/auth/refresh', {
+          const refreshResponse = await axios.post(backend.construct( 'auth/refresh'), {
             token: refreshToken,
           });
 
