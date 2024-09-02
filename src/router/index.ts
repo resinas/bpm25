@@ -28,11 +28,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'agenda',
         component: () => import('@/views/calendar/TabAgenda.vue'),
       },
-      {
-        path: '/session/:id',
-        name: 'SessionDetail',
-        component: () => import('@/views/TabSessionDetails.vue')
-      },
+      // {
+      //   path: '/session/:id',
+      //   name: 'SessionDetail',
+      //   component: () => import('@/views/calendar/TabSessionDetails.vue')
+      // },
       {
         path: '/calendar-view',
         name: 'CalendarView',

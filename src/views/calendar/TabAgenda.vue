@@ -18,9 +18,7 @@
       </ion-segment>
     </ion-toolbar>
 
-    <ion-toolbar
-        :style="`--days-count: ${state.uniqueDays.length}`"
-    >
+    <ion-toolbar :style="`--days-count: ${state.uniqueDays.length}`">
       <ion-segment value="all" v-model="state.selectedDay" scrollable>
         <ion-segment-button
             v-for="day in state.uniqueDays"
@@ -43,6 +41,7 @@
     </ion-toolbar>
 
 
+    <TabSessionDetails :id="sessionIdDetail" :is-open="sessionModalOpen" @didDismiss="sessionModalOpen = false" @close="sessionModalOpen = false" />
 
     <ion-content id="main-content">
       <div v-if="state.selectedDay">
@@ -52,12 +51,7 @@
               <h2>{{ timeSlot }}</h2>
             </ion-label>
           </ion-item-divider>
-          <ion-item
-              v-for="session in group"
-              :key="session.id"
-              :routerLink="`/session/${session.id}`"
-              button
-          >
+          <ion-item button v-for="session in group" :key="session.id" @click="showSession(session.id)">
             <ion-icon
                 :icon="session.isLiked ? heart : heartOutline"
                 :color="session.isLiked ? 'danger' : 'medium'"
@@ -81,7 +75,7 @@
 
 
 <script setup>
-import { reactive, onMounted, computed, watch } from 'vue';
+import {reactive, onMounted, computed, watch, ref} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import {
@@ -99,12 +93,16 @@ import {
 } from '@ionic/vue';
 import { heart, heartOutline, calendarNumber } from 'ionicons/icons';
 import HeaderBar from '@/components/HeaderBar.vue';
+import TabSessionDetails from "@/views/calendar/TabSessionDetails.vue";
 
 const router = useRouter();
 const route = useRoute();
 
 const calendarIcon = calendarNumber;
 const token = localStorage.getItem('accessToken');
+
+const sessionIdDetail = ref("");
+const sessionModalOpen = ref(false);
 
 const state = reactive({
   sessions: [],
@@ -375,6 +373,11 @@ const groupedSessionsByTimeSlot = computed(() => {
   }
   return groups;
 });
+
+const showSession = (id) => {
+  sessionIdDetail.value = id;
+  sessionModalOpen.value = true;
+}
 </script>
 
 
