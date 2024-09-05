@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import TabsPage from '../components/TabsPage.vue'
 import AuthPage from "@/views/auth/AuthPage.vue";
 import ProfilePage from "@/views/auth/ProfilePage.vue";
 
