@@ -15,7 +15,10 @@
           </ion-label>
         </ion-item>
       </ion-list>
-      <ion-infinite-scroll @ionInfinite="loadMore" threshold="20%">
+      <ion-infinite-scroll
+          @ionInfinite="loadMore"
+          :disabled="state.allLoaded"
+          threshold="20%">
         <ion-infinite-scroll-content
             loading-spinner="bubbles"
             loading-text="Loading more attendees...">
@@ -38,7 +41,8 @@ const state = reactive({
   persons: [],
   searchQuery: '',
   page: 0,
-  loading: false
+  loading: false,
+  allLoaded: false
 });
 
 
@@ -46,7 +50,7 @@ const fetchAttendees = async () => {
   const token = localStorage.getItem("accessToken");
   try {
     state.loading = true;
-    const response = await axios.get(backend.construct("attendees", {page: state.page, size: 50, search: state.searchQuery}), {
+    const response = await axios.get(backend.construct("attendees", {page: state.page, size: 25, search: state.searchQuery}), {
       headers: { 'Authorization': `Bearer ${token}`}
     });
     const persons = response.data.content;
@@ -61,6 +65,7 @@ const fetchAttendees = async () => {
       state.persons.push(...persons);
     }
     state.page++;
+    state.allLoaded = response.data.last;
     state.loading = false;
   } catch (error) {
     console.error("Failed to fetch attendees:", error);
