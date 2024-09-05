@@ -51,8 +51,8 @@
         </ion-fab-button>
       </ion-fab>
       <ion-fab  v-if="!selectMultiple" vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
-        <ion-fab-button>
-          <ion-icon :icon="add" @click="uploadGalleryImage"></ion-icon>
+        <ion-fab-button @click="uploadGalleryImage">
+          <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>

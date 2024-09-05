@@ -20,8 +20,8 @@
       </ion-list>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
-        <ion-fab-button>
-          <ion-icon :icon="add" @click="openPostMessage()"></ion-icon>
+        <ion-fab-button @click="openPostMessage()">
+          <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
@@ -64,7 +64,6 @@
           </div>
         </ion-content>
       </ion-modal>
-
       <ion-modal :is-open="isOpenPost" @didDismiss="closePostMessage()">
         <ion-header>
           <ion-toolbar>
@@ -191,6 +190,7 @@ const setVisibleMessage = (id) => {
 }
 
 const openPostMessage = () => {
+  console.log("posting?")
   isOpenPost.value = true;
 }
 
