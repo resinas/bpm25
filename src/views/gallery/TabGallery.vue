@@ -81,7 +81,7 @@ import {
   IonPopover,
   IonButton,
   IonItem,
-  IonRefresher, IonRefresherContent
+  IonRefresher, IonRefresherContent, toastController
 } from '@ionic/vue';
 import {close, download, add} from 'ionicons/icons';
 import { usePhotoGallery } from '@/composables/usePhotoGallery';
@@ -242,6 +242,13 @@ const uploadGalleryImage = async () => {
     // Append the photo blob to the form data, the 'file' key should match the name expected in the backend
     formData.append('file', photoBlob as Blob);
 
+    const toast = await toastController.create({
+      message: 'Your picture is being processed.',
+      duration: 5000,
+      positionAnchor: 'footer'
+    });
+    await toast.present();
+
     // Make the POST request with the form data and proper headers
     const uploadResponse = await axios.post(backend.construct("gallery/images"), formData, {
       headers: {
@@ -251,7 +258,13 @@ const uploadGalleryImage = async () => {
     });
     if (uploadResponse.status === 200) {
       console.log('Upload successful');
-      reloadPage();
+      const toast = await toastController.create({
+        message: 'Your picture has been posted.',
+        duration: 5000,
+        positionAnchor: 'footer'
+      });
+      await toast.present();
+      await reloadPage();
     }
   } catch (error) {
     console.error('Error uploading image:', error);

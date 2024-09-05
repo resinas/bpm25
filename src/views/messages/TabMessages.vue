@@ -86,6 +86,7 @@
                   label="Message"
                   placeholder="Write here the text of your message..."
                   label-placement="stacked"
+                  rows="20"
                   style="flex: 1"></ion-textarea>
               <p v-if="postError" class="error-message">{{ postError }}</p>
               <ion-button expand="full" type="submit" class="ion-margin-top">Post Message</ion-button>
@@ -177,7 +178,7 @@ const submitForm = async () => {
   const toast = await toastController.create({
     message: 'Your message has been posted.',
     duration: 5000,
-    position: 'bottom'
+    positionAnchor: 'footer'
   });
   await toast.present();
 
@@ -190,7 +191,6 @@ const setVisibleMessage = (id) => {
 }
 
 const openPostMessage = () => {
-  console.log("posting?")
   isOpenPost.value = true;
 }
 
