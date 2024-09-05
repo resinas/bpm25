@@ -73,8 +73,8 @@
             <ion-title>Post new message</ion-title>
           </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding" style="display: flex; flex-direction: column">
-          <form @submit.prevent="submitForm" style="display: flex; flex-direction: column; height: 100%;">
+        <ion-content class="ion-padding">
+          <form @submit.prevent="submitForm">
               <ion-input
                   v-model="formData.title"
                   type="text" required
@@ -86,8 +86,7 @@
                   label="Message"
                   placeholder="Write here the text of your message..."
                   label-placement="stacked"
-                  rows="20"
-                  style="flex: 1"></ion-textarea>
+                  rows="20"></ion-textarea>
               <p v-if="postError" class="error-message">{{ postError }}</p>
               <ion-button expand="full" type="submit" class="ion-margin-top">Post Message</ion-button>
           </form>
