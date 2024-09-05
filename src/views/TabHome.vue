@@ -25,6 +25,7 @@
           <ion-badge v-if="page.label" color="danger">{{ page.label }}</ion-badge>
         </ion-item>
       </ion-list>
+      <InstallApplication />
     </ion-content>
   </ion-page>
 </template>
@@ -41,13 +42,14 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  menuController
+  menuController, IonToast
 } from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
 import axios from 'axios';
 import {onBeforeRouteLeave} from "vue-router";
 import backend from "/backend.config.ts";
+import InstallApplication from "@/components/InstallApplication.vue";
 
 const pages = reactive([]);
 const token = localStorage.getItem("accessToken")
