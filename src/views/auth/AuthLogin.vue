@@ -4,10 +4,6 @@
       <div class="login-container">
         <div class="login-header">
           <img :src="logo" alt="ICPM Logo" class="logo"/>
-<!--          <div class="login-toggle">-->
-<!--            <ion-button expand="block" class="toggle-button" :class="{ 'active': isActiveLogin }" @click="toggleActive">Log in</ion-button>-->
-<!--            <ion-button expand="block" class="toggle-button" :class="{ 'active': !isActiveLogin }" @click="toggleActive">Register</ion-button>-->
-<!--          </div>-->
           <ion-segment v-model="selectedSegment" value="login">
             <ion-segment-button value="login">
               <ion-label>Log in</ion-label>
@@ -51,7 +47,7 @@
         <form @submit.prevent="sendConfirmationEmail" v-else>
           <p>You must use the same email address you used to register at the conference (<a href="https://icpmconference.org/2024/registration/" target="_blank">https://icpmconference.org/2024/registration/</a>).</p>
           <p>Please allow up to 12 hours for emails to be synchronized between the conference registration system and this app.</p>
-          <ion-item>
+          <ion-item class="ion-padding-top">
             <ion-input
                 id="emailInput"
                 placeholder="email@email.com"

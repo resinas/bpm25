@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'page/:id',
-        component: () => import('@/views/TabSinglePage.vue')
+        component: () => import('@/views/pages/TabSinglePage.vue')
       },
       {
         path: 'about',
