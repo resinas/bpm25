@@ -49,7 +49,6 @@ const fetchData = async () => {
   try {
     const response = await axios.get(backend.construct('updates'),{ headers: { Authorization: `Bearer ${token.value}` } });
     Object.assign(updates.value, response.data);
-    console.log(updates.value);
   } catch (error) {
     console.log(`Failed to fetch updates: ${error}`);
   }
