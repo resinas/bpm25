@@ -74,27 +74,22 @@
             <ion-title>Post new message</ion-title>
           </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding">
-
-          <form @submit.prevent="submitForm">
-            <ion-grid>
-              <ion-row>
-                <ion-col>
-                  <ion-input v-model="formData.title" type="text" required label="Title" label-placement="stacked"></ion-input>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  <ion-textarea v-model="formData.message" required rows="10" label="Message" label-placement="stacked"></ion-textarea>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  <ion-button expand="block" type="submit" class="ion-margin-top">Post Message</ion-button>
-                  <p v-if="postError" class="error-message">{{ postError }}</p>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
+        <ion-content class="ion-padding" style="display: flex; flex-direction: column">
+          <form @submit.prevent="submitForm" style="display: flex; flex-direction: column; height: 100%;">
+              <ion-input
+                  v-model="formData.title"
+                  type="text" required
+                  label="Title"
+                  placeholder="Message title"
+                  label-placement="stacked"></ion-input>
+              <ion-textarea
+                  v-model="formData.message" required
+                  label="Message"
+                  placeholder="Write here the text of your message..."
+                  label-placement="stacked"
+                  style="flex: 1"></ion-textarea>
+              <p v-if="postError" class="error-message">{{ postError }}</p>
+              <ion-button expand="full" type="submit" class="ion-margin-top">Post Message</ion-button>
           </form>
         </ion-content>
       </ion-modal>
@@ -129,6 +124,7 @@ import {
   IonRefresherContent,
   IonChip,
   IonBackButton,
+  toastController,
   alertController
 } from '@ionic/vue';
 import { trashOutline } from 'ionicons/icons';
@@ -136,14 +132,12 @@ import { ref } from 'vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
 import axios from 'axios';
-import {onBeforeRouteLeave} from "vue-router";
 import {add} from "ionicons/icons";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import backend from "/backend.config.ts";
 
 dayjs.extend(relativeTime);
-
 
 const messages = ref([]);
 const isOpen = ref(false);
@@ -168,7 +162,7 @@ const submitForm = async () => {
             headers: { Authorization: `Bearer ${token.value}` }
           }
     );
-    postError.value='';
+    postError.value = '';
     if (response.data && response.data.accessToken && response.data.refreshToken) {
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
@@ -180,6 +174,14 @@ const submitForm = async () => {
   }
 
   closePostMessage();
+
+  const toast = await toastController.create({
+    message: 'Your message has been posted.',
+    duration: 5000,
+    position: 'bottom'
+  });
+  await toast.present();
+
   await fetchMessages();
 };
 
