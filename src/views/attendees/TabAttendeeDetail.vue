@@ -19,24 +19,17 @@
       <!-- Personal Details -->
       <div class="personal-details">
         <h2>{{ attendee.firstname }} {{ attendee.lastname }}</h2>
-        <p v-if="attendee.email">{{ attendee.email }}</p>
-        <div class="work-country">
-          <p v-if="attendee.company">{{ attendee.company }}</p>
-          <p v-if="attendee.country">{{ attendee.country }}</p>
-        </div>
+        <p>
+          <span v-if="attendee.company">{{ attendee.company }}</span><br />
+          <span v-if="attendee.country">{{ attendee.country }}</span>
+        </p>
+        <p v-if="attendee.email"><a :href="`mailto:${attendee.email}`">{{ attendee.email }}</a></p>
       </div>
 
-      <!-- Navigation Boxes -->
-      <ion-card @click="goToPersonalizedAgenda">
-        <ion-card-header>
-          <ion-card-title>Personalized Agenda</ion-card-title>
-        </ion-card-header>
-      </ion-card>
-      <ion-card @click="goToPersonalGallery">
-        <ion-card-header>
-          <ion-card-title>Personal Gallery</ion-card-title>
-        </ion-card-header>
-      </ion-card>
+      <ion-button expand="block" @click="() => router.push(`/tabs/calendar/${attendeeId}`)">
+        <ion-icon aria-hidden="true" :icon="calendar" class="ion-margin-end" />
+        See Personalized Agenda
+      </ion-button>
     </ion-content>
   </ion-page>
 </template>
@@ -45,8 +38,20 @@
 import { reactive, onMounted} from 'vue';
 import { useRouter, useRoute} from 'vue-router';
 import axios from 'axios';
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonAvatar } from '@ionic/vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonButton,
+  IonBackButton,
+  IonTitle,
+  IonContent,
+  IonAvatar,
+  IonIcon
+} from '@ionic/vue';
 import backend from "/backend.config.ts";
+import {calendar} from "ionicons/icons";
 
 
 const router = useRouter();
@@ -128,7 +133,7 @@ onMounted(fetchAttendeeDetails);
   border-radius: 50%;
 }
 
-.personal-details {
+/*.personal-details {
   text-align: center;
   margin-bottom: 20px;
 }
@@ -150,5 +155,5 @@ ion-card {
 
 ion-card-header {
   text-align: center;
-}
+}*/
 </style>
