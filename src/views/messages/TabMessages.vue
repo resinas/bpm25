@@ -244,7 +244,6 @@ const fetchMessages = async () => {
       }
     }));
     messages.value = tmp_messages;
-    console.log("reloading");
   } catch (error) {
     console.error('Failed to fetch pages', error);
   }
