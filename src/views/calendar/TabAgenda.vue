@@ -17,7 +17,6 @@
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
-
     <ion-toolbar :style="`--days-count: ${state.uniqueDays.length}`">
       <ion-segment value="all" v-model="state.selectedDay" scrollable>
         <ion-segment-button
@@ -52,12 +51,17 @@
             </ion-label>
           </ion-item-divider>
           <ion-item button v-for="session in group" :key="session.id" @click="showSession(session.id)">
-            <ion-icon
-                :icon="session.isLiked ? heart : heartOutline"
-                :color="session.isLiked ? 'danger' : 'medium'"
-                slot="end"
-                @click.stop="toggleLike(session)"
-            ></ion-icon>
+            <ion-note slot="end" class="ion-text-right">
+              <ion-icon
+                  :icon="session.isLiked ? heart : heartOutline"
+                  :color="session.isLiked ? 'danger' : 'medium'"
+                  @click.stop="toggleLike(session)"
+                  style="font-size: 2.5em"
+              ></ion-icon><br>
+              <span v-if="session.likes > 0">
+                {{ session.likes + ' like' + (session.likes > 1 ? 's' : '') }}
+              </span>
+            </ion-note>
             <ion-label>
               <h3>{{ session.session_name }}</h3>
               <p>{{ session.session_host }}</p>
@@ -89,7 +93,7 @@ import {
   IonItemDivider,
   IonSegment,
   IonSegmentButton,
-  IonLabel
+  IonLabel, IonNote
 } from '@ionic/vue';
 import { heart, heartOutline, calendarNumber } from 'ionicons/icons';
 import HeaderBar from '@/components/HeaderBar.vue';
@@ -220,8 +224,10 @@ async function toggleLike(session) {
     );
     if (session.isLiked) {
       state.likedSessionIds.add(session.id);
+      session.likes++;
     } else {
       state.likedSessionIds.delete(session.id);
+      session.likes--;
     }
   } catch (error) {
     console.error('Failed to change like status:', error);
@@ -241,7 +247,8 @@ async function processSessions(sessionsData) {
       start_time: session.startTime.replace('T', ' ').slice(0, -3),
       end_time: session.endTime.replace('T', ' ').slice(0, -3),
       type: session.type,
-      isLiked: isLikedCheck
+      isLiked: isLikedCheck,
+      likes: session.likes
     };
   });
 }
