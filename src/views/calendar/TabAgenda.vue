@@ -4,10 +4,10 @@
 
     <!-- ICPM/Personal Segment Bar -->
     <ion-toolbar class="agenda-type-bar">
-      <ion-segment :value="agendaSegmentValue" class="full-width-segment">
+      <ion-segment color="dark" :value="agendaSegmentValue" class="full-width-segment">
         <ion-segment-button value="all" @click="navigateToAgendaType('all')" class="half-width-segment-button">
           <ion-label class="segment-label">
-            <span>ICPM Agenda</span>
+            <span>Full Agenda</span>
           </ion-label>
         </ion-segment-button>
         <ion-segment-button value="personal" @click="navigateToAgendaType('personal')" class="half-width-segment-button">
@@ -61,6 +61,7 @@
               <span v-if="session.likes > 0">
                 {{ session.likes + ' like' + (session.likes > 1 ? 's' : '') }}
               </span>
+              <span v-else>&nbsp;</span>
             </ion-note>
             <ion-label>
               <h3>{{ session.session_name }}</h3>

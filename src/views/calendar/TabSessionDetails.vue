@@ -16,12 +16,13 @@
       </div>
       <div v-else class="ion-padding">
         <h1>{{ pageData.name }}</h1>
-        <p>
-          <strong>Location:</strong> {{ pageData.location }}<br>
-          <strong>Time:</strong> {{ dayjs(pageData.startTime).format('D MMMM, HH:mm') }}-{{ dayjs(pageData.endTime).format('HH:mm') }}
-        </p>
         <p><strong>Session chair:</strong> {{ pageData.host }}</p>
-        <div v-html="pageData.content || '<em>No further information</em>'"></div>
+        <p>
+          <strong>Time:</strong> {{ dayjs(pageData.startTime).format('D MMMM, HH:mm') }}-{{ dayjs(pageData.endTime).format('HH:mm') }}<br>
+          <strong>Location:</strong> {{ pageData.location }}
+        </p>
+        <div v-html="pageData.content"></div>
+        <img src="@/assets/images/map.png" class="ion-margin-top" />
       </div>
     </ion-content>
   </ion-modal>
@@ -30,10 +31,8 @@
 
 
 <script setup>
-import {IonPage, IonContent, IonModal, IonTitle, IonButtons, IonToolbar, IonHeader, IonBackButton, IonLoading} from '@ionic/vue';
-import HeaderBar from "@/components/HeaderBar.vue";
-// import { useRoute } from 'vue-router';
-import {onMounted, reactive, ref} from 'vue';
+import { IonContent, IonModal, IonTitle, IonButtons, IonToolbar, IonHeader, IonBackButton, IonLoading} from '@ionic/vue';
+import { reactive, ref} from 'vue';
 import axios from 'axios';
 import dayjs from "dayjs";
 import backend from "/backend.config.ts";
