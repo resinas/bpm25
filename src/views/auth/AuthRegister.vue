@@ -6,33 +6,38 @@
           <h1>Sign up</h1>
         </div>
         <form id="form" @submit.prevent="sendUserInformation">
-          <label for="Firstname" class="input-label">First name</label>
           <ion-input
+              label="First name"
+              label-placement="stacked"
               id="Firstname"
               v-model="userInformation.firstname"
               required
           ></ion-input>
-          <label  for="Surname" class="input-label">Surname</label>
           <ion-input
+              label="Surname"
+              label-placement="stacked"
               id="Surname"
               v-model="userInformation.lastname"
               required
           ></ion-input>
-          <label for="emailInput" class="input-label">Email</label>
           <ion-input
+              label="Email"
+              label-placement="stacked"
               id="emailInput"
               type="email"
               v-model="userInformation.email"
               required
           ></ion-input>
-          <label for="password" class="input-label">Password</label>
           <ion-input
+              label="Password"
+              label-placement="stacked"
               id="password"
               type="password" v-model="userInformation.password"
               required
           ></ion-input>
-          <label for="ConfPassword" class="input-label">Confirm password</label>
           <ion-input
+              label="Confirm password"
+              label-placement="stacked"
               id="ConfPassword"
               type="password"
               v-model="userInformation.confirmPassword"
@@ -41,7 +46,7 @@
           <ion-toggle :checked="true" label-placement="end">
             Share user information with other attendees
           </ion-toggle><br /><br />
-          <ion-button type="submit" expand="block" shape="round">Sign up</ion-button>
+          <ion-button type="submit" expand="block">Sign up</ion-button>
         </form>
       </div>
     </ion-content>
@@ -139,7 +144,7 @@ const sendUserInformation = async () => {
 ion-input {
   --padding-start: 5px;
   --placeholder-color: rgba(255, 255, 255, 0.6);
-  --color: #fff;
+  //--color: #fff;
   border: 1px solid #fff;
   border-radius: 4px;
   margin-bottom: 2rem;

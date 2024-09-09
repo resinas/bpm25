@@ -47,7 +47,7 @@
         <form @submit.prevent="sendConfirmationEmail" v-else>
           <p>You must use the same email address you used to register at the conference (<a href="https://icpmconference.org/2024/registration/" target="_blank">https://icpmconference.org/2024/registration/</a>).</p>
           <p>Please allow up to 12 hours for emails to be synchronized between the conference registration system and this app.</p>
-          <ion-item class="ion-padding-top">
+          <ion-item class="ion-padding-vertical">
             <ion-input
                 id="emailInput"
                 placeholder="email@email.com"
