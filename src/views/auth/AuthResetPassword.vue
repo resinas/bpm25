@@ -1,19 +1,17 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding">
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-back-button defaultHref="/auth/login"></ion-back-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/auth/login"></ion-back-button>
+        </ion-buttons>
+      </ion-toolbar>
       <div class="reset-container">
         <div class="reset-header">
           <h1>Reset password</h1>
-          <h2>Please enter your email address to recieve a reset link</h2>
         </div>
         <form @submit.prevent="sendResetEmail">
+          <p>Please enter your email address to receive a reset link.</p>
           <ion-item>
             <ion-input
                 id="email"

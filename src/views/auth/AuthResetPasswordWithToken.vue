@@ -4,32 +4,31 @@
       <div class="reset-password-container">
         <div class="signup-header">
           <h2>Reset password</h2>
-          <p>Please type something you'll remember</p>
         </div>
         <form id="form" @submit.prevent="resetPassword">
-            <label
-              for="firstPassword">
-              Password
-            </label>
+          <p>Please type something you'll remember</p>
+          <ion-item>
             <ion-input
+                label="Password"
+                label-placement="stacked"
                 id="firstPassword"
                 type="password"
                 placeholder="Password"
                 v-model="resetInformation.password"
                 required
             ></ion-input>
-            <label
-                for="secondPassword">
-                Confirm Password
-            </label>
+          </ion-item>
+          <ion-item class="ion-padding-vertical">
             <ion-input
+                label="Confirm password"
+                label-placement="stacked"
                 id="secondPassword"
                 type="password"
                 placeholder="Repeat password"
                 v-model="resetInformation.confirmPassword"
                 required
             ></ion-input>
-
+          </ion-item>
           <ion-button
               type="submit"
               expand="block">
@@ -43,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import {IonPage, IonContent,IonButton,IonInput} from "@ionic/vue";
+import {IonPage, IonContent, IonButton, IonInput, IonItem} from "@ionic/vue";
 import {ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
 import axios from "axios";
@@ -107,26 +106,4 @@ p {
   margin-top: 2rem;
 }
 
-ion-input {
-  --padding-start: 5px;
-  --placeholder-color: rgba(255, 255, 255, 0.6);
-  --color: #fff;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  margin-bottom: 2rem;
-}
-ion-item {
-  --padding-start: 0;
-  --inner-padding-start: 0;
-  --inner-padding-end: 0;
-  --min-height: auto; /* Adjust the height as needed */
-  position: relative; /* For proper positioning of the label and input */
-  text-align: left;
-}
-
-ion-button {
-  --color: white;
-  margin-top: 2.5rem;
-  --border-radius: 4px;
-}
 </style>
