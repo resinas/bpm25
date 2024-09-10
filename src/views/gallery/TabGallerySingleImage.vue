@@ -101,7 +101,7 @@ const getImageData = async (filepath:string) => {
 };
 
 const getImageUrl = (filepath:string) => {
-  return backend.construct(`gallery/images/${filepath}`, {format: 'webp'});
+  return backend.construct(`gallery/images/${filepath}`, {format: 'jpg'});
 };
 
 const changeLikeStatus = async () => {
