@@ -25,7 +25,7 @@
           <ion-badge v-if="page.label" color="danger">{{ page.label }}</ion-badge>
         </ion-item>
       </ion-list>
-      <InstallApplication />
+<!--      <InstallApplication />-->
     </ion-content>
   </ion-page>
 </template>
