@@ -11,17 +11,22 @@
     <ion-content>
       <ion-card>
         <img :src="image" />
-        <ion-card-content class="Published-text">
-          Published by:
-          <ion-chip :router-link="`/attendee/${imageData.authorId}`" >
-            <ion-avatar>
-              <img :src="imageData.imageAuthorAvatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
-            </ion-avatar>
-            <ion-label>{{ imageData.imageAuthor }}</ion-label>
-          </ion-chip>
-        </ion-card-content>
-        <ion-card-content class="Likes-text">
-          Likes: {{ imageData.imageLikes }}
+        <ion-card-content>
+          <p class="Published-text">
+            Published by:
+            <ion-chip :router-link="`/attendee/${imageData.authorId}`" >
+              <ion-avatar>
+                <img :src="imageData.imageAuthorAvatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
+              </ion-avatar>
+              <ion-label>{{ imageData.imageAuthor }}</ion-label>
+            </ion-chip>
+          </p>
+          <p v-if="imageData.uploadTime">
+            Picture uploaded {{ dayjs(imageData.uploadTime).fromNow() }} ({{ dayjs(imageData.uploadTime).format('D MMM, HH:mm') }})
+          </p>
+          <p v-if="imageData.imageLikes > 0">
+            Likes: {{ imageData.imageLikes }}
+          </p>
         </ion-card-content>
         <ion-card-content>
           <ion-grid>
@@ -64,6 +69,10 @@ import {useRoute, useRouter} from "vue-router";
 import axios from "axios";
 import {thumbsUpOutline, thumbsUp, trashOutline} from "ionicons/icons";
 import backend from "../../../backend.config";
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const token = ref(localStorage.getItem("accessToken"))
 const userId = ref(localStorage.getItem("userId"));
@@ -76,7 +85,8 @@ const imageData = ref({
   imageLikes: 0,
   imageIsLiked: false,
   authorId: 0,
-  imageAuthorAvatar: ''
+  imageAuthorAvatar: '',
+  uploadTime: ''
 });
 const image = ref('');
 const imagePath = route.params.imageId as string;
@@ -94,6 +104,7 @@ const getImageData = async (filepath:string) => {
     imageData.value.imageIsLiked = response.data.hasLiked;
     imageData.value.authorId = response.data.authorId;
     imageData.value.imageAuthorAvatar = await getAvatarImage(response.data.authorId);
+    imageData.value.uploadTime = response.data.uploadTime;
 
   } catch (e) {
     console.error('Error fetching image data:', e);
@@ -106,7 +117,6 @@ const getImageUrl = (filepath:string) => {
 
 const changeLikeStatus = async () => {
   try{
-    console.log(imagePath);
     await axios.put(backend.construct(`gallery/changeLikeStatusGalleyImage`), {
       likes: !imageData.value.imageIsLiked,
       path: imagePath
@@ -179,9 +189,5 @@ const deletePicture = async () => {
 
 .Published-text{
   font-size: 18px;
-}
-.Likes-text{
-  font-size: 16px;
-  margin-top: -8%;
 }
 </style>
