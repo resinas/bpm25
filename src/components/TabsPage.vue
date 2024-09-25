@@ -41,7 +41,7 @@ import {onBeforeUnmount, onMounted, ref} from "vue";
 import axios from "axios";
 import backend from "../../backend.config";
 
-const updates = ref({ numberOfMessages: 0, numberOfPictures: 0 });
+const updates = ref({numberOfMessages: 0, numberOfPictures: 0});
 const intervalId = ref(0);
 const token = ref(localStorage.getItem("accessToken"))
 
@@ -49,6 +49,8 @@ const fetchData = async () => {
   try {
     const response = await axios.get(backend.construct('updates'),{ headers: { Authorization: `Bearer ${token.value}` } });
     Object.assign(updates.value, response.data);
+    localStorage.setItem('lastDownloadMessages', response.data.lastDownloadMessages);
+    localStorage.setItem('lastDownloadPictures', response.data.lastDownloadPictures);
   } catch (error) {
     console.log(`Failed to fetch updates: ${error}`);
   }

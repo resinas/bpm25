@@ -10,7 +10,12 @@
       <ion-list lines="full">
         <ion-item button v-for="message in messages" :key="message.id" @click="setVisibleMessage(message.id)">
           <ion-label>
-            <h2>{{ message.title }}</h2>
+            <h2>
+              <ion-icon
+                  v-if="message.isNew"
+                  :icon="bookmark" slot="start" color="danger"></ion-icon>
+              {{ message.title }}
+            </h2>
           </ion-label>
           <ion-note slot="end" class="ion-text-right">
             {{ dayjs(message.date).fromNow() }}<br>
@@ -126,7 +131,7 @@ import {
   toastController,
   alertController
 } from '@ionic/vue';
-import { trashOutline } from 'ionicons/icons';
+import {bookmark, bookmarkOutline, mail, starOutline, starSharp, trashOutline} from 'ionicons/icons';
 import { ref } from 'vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { onMounted, reactive } from 'vue';
@@ -238,10 +243,12 @@ const fetchMessages = async () => {
   try {
     const response = await axios.get(backend.construct('message'),{ headers: { Authorization: `Bearer ${token.value}` } });
     const tmp_messages = response.data;
+    const lastDownloadMessages = localStorage.getItem('lastDownloadMessages');
     await Promise.all(tmp_messages.map(async msg => {
       if (msg.avatar) {
         msg.avatar = await getAvatarImage(msg.avatar);
       }
+      msg.isNew = lastDownloadMessages == 'null' || dayjs(lastDownloadMessages).diff(dayjs(msg.date), 'minutes') < 2;
     }));
     messages.value = tmp_messages;
   } catch (error) {
