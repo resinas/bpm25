@@ -43,7 +43,7 @@
               v-model="userInformation.confirmPassword"
               required
           ></ion-input>
-          <ion-toggle :checked="true" label-placement="end">
+          <ion-toggle :checked="true" v-model="userInformation.sharingChoice" label-placement="end">
             Share user information with other attendees
           </ion-toggle><br /><br />
           <ion-button type="submit" expand="block">Sign up</ion-button>
@@ -68,8 +68,8 @@ const userInformation = ref({
   firstname: '',
   lastname: '',
   password: '',
-  confirmPassword: ''
-
+  confirmPassword: '',
+  sharingChoice: true
 })
 
 const loginInformation = ref({
