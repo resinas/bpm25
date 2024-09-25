@@ -49,7 +49,6 @@ import { onMounted, reactive } from 'vue';
 import axios from 'axios';
 import {onBeforeRouteLeave} from "vue-router";
 import backend from "/backend.config.ts";
-import InstallApplication from "@/components/InstallApplication.vue";
 
 const pages = reactive([]);
 const token = localStorage.getItem("accessToken")
