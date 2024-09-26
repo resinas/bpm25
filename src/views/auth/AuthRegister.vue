@@ -117,6 +117,7 @@ const sendUserInformation = async () => {
     // Handle success response, e.g., navigate to another route or display a success message
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('refreshToken', response.data.refreshToken);
+    localStorage.setItem('userId', response.data.userId);
     await router.push('/tabs/home');
   } catch (error) {
     console.error("Failed send user information:", error);
