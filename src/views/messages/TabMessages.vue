@@ -10,9 +10,9 @@
       <ion-list lines="full">
         <ion-item button v-for="message in messages" :key="message.id" @click="setVisibleMessage(message.id)">
           <ion-label>
-            <h2>
+            <h2 :class="{bold :!message.read}">
               <ion-icon
-                  v-if="message.isNew"
+                  v-if="!message.read"
                   :icon="bookmark" slot="start" color="danger"></ion-icon>
               {{ message.title }}
             </h2>
@@ -189,9 +189,12 @@ const submitForm = async () => {
   await fetchMessages();
 };
 
-const setVisibleMessage = (id) => {
+const setVisibleMessage = async (id) => {
   activeMessage.value = messages.value.find(message => message.id === id);
   isOpen.value = true;
+  await axios.get(
+      backend.construct(`message/read/${activeMessage.value.id}`),
+      { headers: {Authorization: `Bearer ${token.value}`}});
 }
 
 const openPostMessage = () => {
@@ -248,7 +251,6 @@ const fetchMessages = async () => {
       if (msg.avatar) {
         msg.avatar = await getAvatarImage(msg.avatar);
       }
-      msg.isNew = lastDownloadMessages == 'null' || dayjs(lastDownloadMessages).diff(dayjs(msg.date), 'minutes') < 2;
     }));
     messages.value = tmp_messages;
   } catch (error) {
@@ -277,5 +279,7 @@ onMounted(fetchMessages);
 </script>
 
 <style scoped>
-
+.bold {
+  font-weight: bold;
+}
 </style>
