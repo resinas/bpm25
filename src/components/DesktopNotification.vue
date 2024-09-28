@@ -13,10 +13,10 @@
 <script setup>
 import {IonButton, IonToast} from "@ionic/vue";
 
-const isDesktop = window.innerWidth > 1024;
+let isDesktop = window.innerWidth > 1024;
 
 const handleDismiss = () => {
-  isDesktop.value = false; // Reset the offline status on dismiss
+  isDesktop = false; // Reset the offline status on dismiss
 };
 
 const toastButtons = [
