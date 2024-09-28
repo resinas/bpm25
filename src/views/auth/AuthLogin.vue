@@ -61,6 +61,9 @@
           <ion-button type="submit" expand="block" class="ion-margin-top">Send Confirmation Email</ion-button>
           <p v-if="registerError" class="error-message">{{ registerError }}</p>
           <p v-if="registerSuccess" class="success-message">{{ registerSuccess }}</p>
+
+          <p class="ion-text-right"><ion-button fill="clear" @click="openPrivacy">Privacy note</ion-button></p>
+          <PrivacyNote :isOpen="isPrivacyOpen" @update:isOpen="isPrivacyOpen = $event" />
         </form>
       </div>
     </ion-content>
@@ -75,6 +78,7 @@ import { useRouter } from 'vue-router';
 import logoLight from '@/assets/images/icpm-logo-1.png';
 import logoDark from '@/assets/images/icpm-logo-2.png';
 import backend from "/backend.config.ts";
+import PrivacyNote from "@/components/PrivacyNote.vue";
 
 // Create a computed property to switch logo based on user's color scheme preference
 const logo = computed(() => {
@@ -138,6 +142,12 @@ const sendConfirmationEmail = async () => {
     registerError.value = 'If you registered for the conference, you will receive an e-mail soon';
   }
 };
+
+const isPrivacyOpen = ref(false);
+const openPrivacy = () => {
+  isPrivacyOpen.value = true;
+};
+
 
 </script>
 
