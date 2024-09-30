@@ -51,7 +51,10 @@ applyTheme();
 const app = createApp(App)
     .use(IonicVue)
     .use(router)
-    .use(VueGtag, {config: "G-4ZSK67CV8L"});
+    .use(VueGtag, {
+        config: { id: "G-4ZSK67CV8L" }
+    });
+
 
 const isOffline = ref(false);
 app.provide('isOffline', isOffline);
