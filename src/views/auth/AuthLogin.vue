@@ -79,8 +79,10 @@ import logoLight from '@/assets/images/icpm-logo-1.png';
 import logoDark from '@/assets/images/icpm-logo-2.png';
 import backend from "/backend.config.ts";
 import PrivacyNote from "@/components/PrivacyNote.vue";
+import {googleanalytics} from "@/composables/googleanalytics.js";
 
-// Create a computed property to switch logo based on user's color scheme preference
+const { trackButtonClick } = googleanalytics();
+
 const logo = computed(() => {
   return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       ? logoDark
@@ -110,9 +112,7 @@ const toggleActive = () => {
 };
 const login = async () => {
   try {
-    // Here you would replace the URL with your server endpoint
     const response = await axios.post(backend.construct("auth/signin"), loginUser.value);
-    // Handle success response, e.g., navigate to another route or display a success message
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('refreshToken', response.data.refreshToken);
     localStorage.setItem('userId', response.data.userId);
@@ -120,9 +120,9 @@ const login = async () => {
     loginError.value = '';
     loginUser.value.email = '';
     loginUser.value.password = '';
+    trackButtonClick('Login','Auth','Navigation')
 
   } catch (error) {
-    // Handle error, e.g., display an error message
     console.error("Login error:", error.response ? error.response.data : error.message);
     loginError.value = 'Incorrect password or email';
   }
@@ -135,6 +135,7 @@ const sendConfirmationEmail = async () => {
     registerUser.value.receiver = '';
     await router.push('/auth/login');
     registerSuccess.value = 'E-mail sent successfully'
+    trackButtonClick('Confirmation email','Auth','Feature')
 
   } catch (error) {
     // Handle error, e.g., display an error message

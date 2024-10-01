@@ -59,6 +59,9 @@ import {computed, onMounted, ref} from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 const router = useRouter();
 const route = useRoute();
@@ -114,11 +117,12 @@ const sendUserInformation = async () => {
     loginInformation.value.password = userInformation.value.password
     const response = await axios.post(backend.construct("auth/signin"), loginInformation.value);
     console.log(response.data);
-    // Handle success response, e.g., navigate to another route or display a success message
+
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('refreshToken', response.data.refreshToken);
     localStorage.setItem('userId', response.data.userId);
     await router.push('/tabs/home');
+    trackButtonClick('Register','Auth','Navigation')
   } catch (error) {
     console.error("Failed send user information:", error);
   }

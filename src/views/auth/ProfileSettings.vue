@@ -159,6 +159,9 @@ import axios from "axios";
 import {camera, pencilOutline} from "ionicons/icons";
 import {usePhotoGallery} from '@/composables/usePhotoGallery';
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 onMounted(() => {
   fetchUserSettings();
@@ -244,6 +247,8 @@ const updateUserInformation = async () => {
       localStorage.setItem("refreshToken", response.data.refreshToken);
       token.value = response.data.accessToken;
     }
+    trackButtonClick('Update user information','Profile','Feature')
+
   } catch (error) {
     updateSuccess.value ='';
     updateError.value="Failed to update information";
@@ -263,6 +268,9 @@ async function updatePassword() {
     passwordChange.value.oldpassword = '';
     passwordChange.value.newpassword = '';
     passwordChange.value.confirmpassword = '';
+
+    trackButtonClick('Change password','Profile','Feature')
+
   } catch (error) {
     console.error("Failed to fetch user details:", error);
     changePasswordSuccess.value = '';
@@ -302,6 +310,9 @@ const toggleTheme = () => {
 
   document.body.classList.toggle('dark', !isCurrentlyDark);
   localStorage.setItem('theme', newTheme);
+
+  trackButtonClick('Toggle light/dark mode','Profile','Feature')
+
 };
 
 const actionSheetButtons = [
@@ -329,7 +340,7 @@ const actionSheetButtons = [
 
         if (uploadResponse.status === 200) {
           console.log('Upload successful');
-
+          trackButtonClick('Change profile picture','Profile','Feature')
           await fetchUserSettings();
 
         }

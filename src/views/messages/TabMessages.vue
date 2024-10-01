@@ -140,6 +140,9 @@ import {add} from "ionicons/icons";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import backend from "/backend.config.ts";
+import {googleanalytics} from "@/composables/googleanalytics.js";
+
+const { trackButtonClick } = googleanalytics();
 
 dayjs.extend(relativeTime);
 
@@ -172,6 +175,7 @@ const submitForm = async () => {
       localStorage.setItem("refreshToken", response.data.refreshToken);
       token.value = response.data.accessToken;
     }
+  trackButtonClick('Post message','Messages','Feature')
   } catch (error) {
     postError.value = "Failed to post the message!";
     console.error("Failed to fetch user details:", error);
@@ -195,6 +199,7 @@ const setVisibleMessage = async (id) => {
   await axios.get(
       backend.construct(`message/read/${activeMessage.value.id}`),
       { headers: {Authorization: `Bearer ${token.value}`}});
+  trackButtonClick('Select message','Messages','Feature')
 }
 
 const openPostMessage = () => {
@@ -231,7 +236,7 @@ const deleteMessage = async () => {
       },
     ],
   });
-
+  trackButtonClick('Delete message','Messages','Feature')
   await alert.present();
 }
 

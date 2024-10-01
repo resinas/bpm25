@@ -92,7 +92,9 @@ import router from "@/router";
 import { debounce } from 'lodash';
 import {onBeforeRouteUpdate, useRoute} from 'vue-router'
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
 
+const { trackButtonClick } = googleanalytics();
 const { takePhotoGallery } = usePhotoGallery();
 
 const token = ref(localStorage.getItem("accessToken"))
@@ -100,7 +102,7 @@ const route = useRoute();
 
 const images = ref<string[]>([]);
 const hasMore = ref(true);
-let pageNr =ref(0);
+const pageNr =ref(0);
 const pageSize = 100;
 
 const showFilterOptions = ref(false);
@@ -143,6 +145,7 @@ const applyFilter = () => {
   pageNr.value = 0;
   showFilterOptions.value = false; // Close the popover
   fetchGalleryMetadata()
+  trackButtonClick('Apply filter, gallery','Gallery','Feature')
 };
 
 const actionSheet = ref<HTMLIonActionSheetElement | null>(null);
@@ -153,6 +156,7 @@ const openActionSheet = async () => {
       text: 'Go to My Gallery',
       handler: () => {
         router.push('/tabs/images/myGallery');
+        trackButtonClick('My Gallery','Gallery','Navigation')
       }
     }, {
       text: 'Select Images',
@@ -265,6 +269,7 @@ const uploadGalleryImage = async () => {
       });
       await toast.present();
       await reloadPage();
+      trackButtonClick('Upload gallery image','Gallery','Feature')
     }
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -284,6 +289,7 @@ const downloadImage = (filePath:string) => {
         a.click();
         window.URL.revokeObjectURL(url);
         self.postMessage('Download complete');
+        trackButtonClick('Download gallery image','Gallery','Feature')
       })
       .catch(() => self.postMessage('Download failed'));
 }
@@ -314,6 +320,7 @@ const untoggleSelectImage = () => {
 
 const goToImage = (imageId:string) => {
   router.push(`/tabs/singleimage/${imageId}`);
+  trackButtonClick('Single image','Gallery','Navigation')
 }
 </script>
 

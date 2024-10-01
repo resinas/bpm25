@@ -46,7 +46,9 @@ import HeaderBar from "@/components/HeaderBar.vue";
 import router from "@/router";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
 
+const { trackButtonClick } = googleanalytics();
 const { takePhotoGallery } = usePhotoGallery();
 const token = ref(localStorage.getItem("accessToken"))
 
@@ -83,6 +85,7 @@ const openActionSheet = async () => {
       text: 'Go to Gallery',
       handler: () => {
         router.push('/tabs/images');
+        trackButtonClick('Gallery','Main Feature','Navigation')
       }
     }, {
       text: 'Select Images',
@@ -133,6 +136,7 @@ const uploadGalleryImage = async () => {
     });
     if (uploadResponse.status === 200) {
       console.log('Upload successful');
+      trackButtonClick('Upload gallery image','Gallery','Feature')
     }
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -155,6 +159,7 @@ const deleteGalleryImage = async () => {
     });
     imagesListMyGallery.value = imagesListMyGallery.value.filter(image => !imagesSelectedList.value.includes(image));
     imagesSelectedList.value = [];
+    trackButtonClick('Delete gallery image','Gallery','Feature')
   } catch (error) {
     console.error('Error deleting image:', error);
   }
@@ -173,6 +178,7 @@ const downloadImage = (filePath:string) => {
         a.click();
         window.URL.revokeObjectURL(url);
         self.postMessage('Download complete');
+        trackButtonClick('Download gallery image','Gallery','Feature')
       })
       .catch(() => self.postMessage('Download failed'));
 }
@@ -197,6 +203,7 @@ const getImageJPG = (filepath:string) => {
 
 const goToImage = (imageId:string) => {
   router.push(`/tabs/singleimage/${imageId}`);
+  trackButtonClick('Single Image','Gallery','Navigation')
 }
 
 const selectImage = (imageId:string) => {

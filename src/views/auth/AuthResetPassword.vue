@@ -47,6 +47,9 @@ import {
 import {ref} from "vue";
 import axios from "axios";
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 const resetEmailError = ref('');
 const resetEmailSuccess = ref('');
@@ -61,6 +64,7 @@ const sendResetEmail = async () => {
     await axios.post(backend.construct("auth/resetPassword"), resetUser.value);
     resetUser.value.receiver = '';
     resetEmailSuccess.value = 'Email send successfully'
+    trackButtonClick('Reset password','Auth','Feature')
 
   } catch (error) {
     // Handle error, e.g., display an error message

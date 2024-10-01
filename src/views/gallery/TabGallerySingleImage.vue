@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/images"></ion-back-button>
+          <ion-back-button defaultHref="/tabs/images" @click="trackButtonClick('images','Main Feature','Navigation')"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ imagePath }}</ion-title>
       </ion-toolbar>
@@ -71,6 +71,9 @@ import {thumbsUpOutline, thumbsUp, trashOutline} from "ionicons/icons";
 import backend from "../../../backend.config";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 dayjs.extend(relativeTime);
 
@@ -122,6 +125,7 @@ const changeLikeStatus = async () => {
       path: imagePath
     }, { headers: { Authorization: `Bearer ${token.value}` } })
     imageData.value.imageIsLiked = !imageData.value.imageIsLiked;
+    trackButtonClick('Like image','Gallery','Feature')
     if (imageData.value.imageIsLiked) {
       imageData.value.imageLikes = imageData.value.imageLikes + 1;
     } else {
@@ -178,6 +182,7 @@ const deletePicture = async () => {
   });
 
   await alert.present();
+trackButtonClick('Delete image','Gallery','Feature')
 }
 
 </script>

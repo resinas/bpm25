@@ -47,6 +47,9 @@ import {ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
 import axios from "axios";
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 const route = useRoute();
 const router = useRouter();
@@ -71,6 +74,7 @@ const resetPassword = async () => {
     localStorage.setItem('resetToken', '');
 
     await router.push('/auth/login');
+    trackButtonClick('Reset password','Auth','Feature')
   } catch (error) {
     resetError.value = "Failed to reset password"
     console.error("Failed to reset password", error);
