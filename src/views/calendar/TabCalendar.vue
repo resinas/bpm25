@@ -60,7 +60,7 @@ import { useRouter } from 'vue-router';
 import { star } from 'ionicons/icons';
 import { useRoute } from 'vue-router';
 import backend from "/backend.config.ts";
-import {googleanalytics} from "@/composables/googleanalytics.js";
+import {googleanalytics} from "@/composables/googleanalytics.ts";
 
 const{trackButtonClick} = googleanalytics()
 

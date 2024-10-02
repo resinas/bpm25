@@ -5,11 +5,11 @@
         <div class="login-header">
           <img :src="logo" alt="ICPM Logo" class="logo"/>
           <ion-segment v-model="selectedSegment" value="login">
-            <ion-segment-button value="login">
-              <ion-label>Log in</ion-label>
+            <ion-segment-button value="login" @click="trackButtonClick('Login Segment', 'Auth', 'Navigation')">
+            <ion-label>Log in</ion-label>
             </ion-segment-button>
-            <ion-segment-button value="register">
-              <ion-label>Register</ion-label>
+            <ion-segment-button value="register" @click="trackButtonClick('Register Segment', 'Auth', 'Navigation')">
+            <ion-label>Register</ion-label>
             </ion-segment-button>
           </ion-segment>
         </div>
@@ -36,10 +36,10 @@
             </ion-input>
           </ion-item>
           <p class="ion-text-right">
-            <router-link to="/auth/login/resetpassword" class="forgot-password">Forgot password?</router-link>
+            <router-link to="/auth/login/resetpassword" class="forgot-password" @click="trackButtonClick('Forgot Password Link', 'Auth', 'Navigation')"></router-link>
           </p>
           <p class="ion-text-center">
-            <ion-button type="submit" expand="block" class="login-button">Sign in</ion-button>
+            <ion-button type="submit" expand="block" class="login-button" @click="trackButtonClick('Sign in Button', 'Auth', 'Feature')"></ion-button>
           </p>
           <!-- Display error message if login fails -->
           <p v-if="loginError" class="error-message">{{ loginError }}</p>
@@ -58,17 +58,19 @@
                 required>
             </ion-input>
           </ion-item>
-          <ion-button type="submit" expand="block" class="ion-margin-top">Send Confirmation Email</ion-button>
+          <ion-button type="submit" expand="block" class="ion-margin-top" @click="trackButtonClick('Send Confirmation Email Button', 'Auth', 'Feature')"></ion-button>
           <p v-if="registerError" class="error-message">{{ registerError }}</p>
           <p v-if="registerSuccess" class="success-message">{{ registerSuccess }}</p>
 
-          <p class="ion-text-right"><ion-button fill="clear" @click="openPrivacy">Privacy note</ion-button></p>
+          <p class="ion-text-right"><ion-button fill="clear" @click="() => { trackButtonClick('Privacy Note Link', 'Auth', 'Feature'); openPrivacy(); }"></ion-button></p>
           <PrivacyNote :isOpen="isPrivacyOpen" @update:isOpen="isPrivacyOpen = $event" />
         </form>
       </div>
     </ion-content>
   </ion-page>
 </template>
+
+
 
 <script setup lang="js">
 import {IonPage, IonContent, IonButton, IonInput, IonLabel, IonSegment, IonSegmentButton, IonItem} from "@ionic/vue";
@@ -79,7 +81,7 @@ import logoLight from '@/assets/images/icpm-logo-1.png';
 import logoDark from '@/assets/images/icpm-logo-2.png';
 import backend from "/backend.config.ts";
 import PrivacyNote from "@/components/PrivacyNote.vue";
-import {googleanalytics} from "@/composables/googleanalytics.js";
+import {googleanalytics} from "@/composables/googleanalytics.ts";
 
 const { trackButtonClick } = googleanalytics();
 
@@ -120,7 +122,7 @@ const login = async () => {
     loginError.value = '';
     loginUser.value.email = '';
     loginUser.value.password = '';
-    trackButtonClick('Login','Auth','Navigation')
+
 
   } catch (error) {
     console.error("Login error:", error.response ? error.response.data : error.message);
@@ -135,7 +137,7 @@ const sendConfirmationEmail = async () => {
     registerUser.value.receiver = '';
     await router.push('/auth/login');
     registerSuccess.value = 'E-mail sent successfully'
-    trackButtonClick('Confirmation email','Auth','Feature')
+
 
   } catch (error) {
     // Handle error, e.g., display an error message

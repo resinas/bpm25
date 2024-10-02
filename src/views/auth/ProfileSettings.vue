@@ -70,7 +70,7 @@
               <span class="toggle-text">Share user information with other attendees*</span>
             </ion-item>
 
-            <ion-button type="submit" expand="block" class="ion-margin-vertical">Update information</ion-button>
+            <ion-button type="submit" expand="block" class="ion-margin-vertical" @click="trackButtonClick('Update Information Button', 'Auth', 'Feature')">Update information</ion-button>
             <p v-if="updateError" class="error-message">{{ updateError }}</p>
             <p v-if="updateSuccess" class="error-message">{{ updateSuccess }}</p>
             <p>* name is always shared with other attendees</p>
@@ -108,7 +108,7 @@
                 type="password"
             ></ion-input>
           </ion-item>
-          <ion-button type="submit" expand="block" shape="round" class="button" @click="updatePassword">Update password</ion-button>
+          <ion-button type="submit" expand="block" shape="round" class="button" @click="() => { trackButtonClick('Update Password Button', 'Auth', 'Feature'); updatePassword(); }">Update password</ion-button>
           <p v-if="changePasswordSuccess" class="error-message">{{ changePasswordSuccess }}</p>
           <p v-if="changePasswordError" class="success-message">{{ changePasswordError }}</p>
         </ion-card-content>
@@ -122,7 +122,7 @@
         <ion-card-content v-if="showThemeInformation">
           <ion-item>
             <div class="toggle-theme">
-              <ion-toggle :checked="isDarkMode" @ionChange="toggleTheme"></ion-toggle>
+              <ion-toggle :checked="isDarkMode" @ionChange="() => { trackButtonClick('Dark Mode Toggle', 'Auth', 'Feature'); toggleTheme(); }"></ion-toggle>
               <span class="toggle-label">Dark mode </span>
             </div>
           </ion-item>
@@ -247,7 +247,6 @@ const updateUserInformation = async () => {
       localStorage.setItem("refreshToken", response.data.refreshToken);
       token.value = response.data.accessToken;
     }
-    trackButtonClick('Update user information','Profile','Feature')
 
   } catch (error) {
     updateSuccess.value ='';
@@ -269,7 +268,6 @@ async function updatePassword() {
     passwordChange.value.newpassword = '';
     passwordChange.value.confirmpassword = '';
 
-    trackButtonClick('Change password','Profile','Feature')
 
   } catch (error) {
     console.error("Failed to fetch user details:", error);
@@ -310,9 +308,6 @@ const toggleTheme = () => {
 
   document.body.classList.toggle('dark', !isCurrentlyDark);
   localStorage.setItem('theme', newTheme);
-
-  trackButtonClick('Toggle light/dark mode','Profile','Feature')
-
 };
 
 const actionSheetButtons = [

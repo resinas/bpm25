@@ -12,19 +12,19 @@
         <p>Welcome {{ name.firstname }} {{name.lastname}}</p>
       </div>
       <ion-list lines="full">
-        <ion-item button :routerLink="'/profile/settings/'"  @click="trackButtonClick('Profile page','Main feature','Navigation')">
+        <ion-item button :routerLink="'/profile/settings/'" @click="trackButtonClick('Profile page', 'Home', 'Navigation')">
           <ion-label>
             <ion-icon :icon="settingsOutline" slot="start" />
             Settings
           </ion-label>
         </ion-item>
-        <ion-item button :routerLink="'/tabs/about/'" @click="trackButtonClick('About page','Main feature','Navigation')">
+        <ion-item button :routerLink="'/tabs/about/'" @click="trackButtonClick('About page', 'Home', 'Navigation')">
           <ion-label>
             <ion-icon :icon="informationCircleOutline" slot="start" />
             About the app
           </ion-label>
         </ion-item>
-        <ion-item button @click="logout">
+        <ion-item button @click="() => { trackButtonClick('Logout Button', 'Home', 'Feature'); logout(); }">
           <ion-label>
             <ion-icon :icon="logOutOutline" slot="start" />
             Logout
@@ -70,9 +70,6 @@ const logout = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('userId');
-
-  trackButtonClick('Logout','Auth','Navigation')
-
   router.push('/auth/login');
 }
 

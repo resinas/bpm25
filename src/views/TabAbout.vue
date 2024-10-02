@@ -22,7 +22,7 @@ import {IonPage, IonContent, IonButton} from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import PrivacyNote from "@/components/PrivacyNote.vue";
 import {ref} from "vue";
-import {googleanalytics} from "@/composables/googleanalytics.js";
+import {googleanalytics} from "@/composables/googleanalytics.ts";
 
 const{trackButtonClick} = googleanalytics()
 

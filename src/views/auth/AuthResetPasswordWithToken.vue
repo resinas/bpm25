@@ -31,9 +31,11 @@
           </ion-item>
           <ion-button
               type="submit"
-              expand="block">
-              Reset password
+              expand="block"
+              @click="trackButtonClick('Reset Password Button', 'Auth', 'Feature')">
+            Reset password
           </ion-button>
+
           <p v-if="resetError" class="error-message">{{ resetError }}</p>
         </form>
       </div>
@@ -74,7 +76,6 @@ const resetPassword = async () => {
     localStorage.setItem('resetToken', '');
 
     await router.push('/auth/login');
-    trackButtonClick('Reset password','Auth','Feature')
   } catch (error) {
     resetError.value = "Failed to reset password"
     console.error("Failed to reset password", error);

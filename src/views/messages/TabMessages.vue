@@ -165,7 +165,7 @@ import {add} from "ionicons/icons";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import backend from "/backend.config.ts";
-import {googleanalytics} from "@/composables/googleanalytics.js";
+import {googleanalytics} from "@/composables/googleanalytics.ts";
 
 const { trackButtonClick } = googleanalytics();
 

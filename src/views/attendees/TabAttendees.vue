@@ -47,7 +47,7 @@ import { watch, reactive, onMounted } from 'vue';
 import { debounce } from 'lodash';
 import axios from 'axios';
 import backend from "/backend.config.ts";
-import {googleanalytics} from "@/composables/googleanalytics.js";
+import {googleanalytics} from "@/composables/googleanalytics.ts";
 
 const{trackButtonClick} = googleanalytics()
 

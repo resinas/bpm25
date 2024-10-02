@@ -46,7 +46,7 @@
           <ion-toggle :checked="true" v-model="userInformation.sharingChoice" label-placement="end">
             Share user information with other attendees
           </ion-toggle><br /><br />
-          <ion-button type="submit" expand="block">Sign up</ion-button>
+          <ion-button type="submit" expand="block" @click="trackButtonClick('Sign up Button', 'Auth', 'Feature')">Sign up</ion-button>
         </form>
       </div>
     </ion-content>
@@ -122,7 +122,6 @@ const sendUserInformation = async () => {
     localStorage.setItem('refreshToken', response.data.refreshToken);
     localStorage.setItem('userId', response.data.userId);
     await router.push('/tabs/home');
-    trackButtonClick('Register','Auth','Navigation')
   } catch (error) {
     console.error("Failed send user information:", error);
   }

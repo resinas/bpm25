@@ -23,7 +23,7 @@
                 required>
             </ion-input>
           </ion-item>
-          <ion-button type="submit" expand="block" shape="round">Send reset email</ion-button>
+          <ion-button type="submit" expand="block" shape="round" @click="trackButtonClick('Send Reset Email Button', 'Auth', 'Feature')">Send reset email</ion-button>
           <p v-if="resetEmailError" class="error-message">{{ resetEmailError }}</p>
           <p v-if="resetEmailSuccess" class="success-message">{{ resetEmailSuccess }}</p>
         </form>
@@ -64,7 +64,6 @@ const sendResetEmail = async () => {
     await axios.post(backend.construct("auth/resetPassword"), resetUser.value);
     resetUser.value.receiver = '';
     resetEmailSuccess.value = 'Email send successfully'
-    trackButtonClick('Reset password','Auth','Feature')
 
   } catch (error) {
     // Handle error, e.g., display an error message
