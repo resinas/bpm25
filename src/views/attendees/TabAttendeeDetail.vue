@@ -26,7 +26,10 @@
         <p v-if="attendee.email"><a :href="`mailto:${attendee.email}`">{{ attendee.email }}</a></p>
       </div>
 
-      <ion-button expand="block" @click="() => router.push(`/tabs/calendar/${attendeeId}`)">
+      <ion-button expand="block" @click="() => {
+        trackButtonClick('Access Personal Agenda', 'Attendee List', 'Feature')
+        router.push(`/tabs/calendar/${attendeeId}`)
+      }">
         <ion-icon aria-hidden="true" :icon="calendar" class="ion-margin-end" />
         See Personalized Agenda
       </ion-button>
@@ -52,7 +55,9 @@ import {
 } from '@ionic/vue';
 import backend from "/backend.config.ts";
 import {calendar} from "ionicons/icons";
+import {googleanalytics} from "@/composables/googleanalytics.js";
 
+const{trackButtonClick} = googleanalytics()
 
 const router = useRouter();
 const route = useRoute();

@@ -3,7 +3,9 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/images" @click="trackButtonClick('images','Main Feature','Navigation')"></ion-back-button>
+          <ion-back-button defaultHref="/tabs/images" @click="() => {
+            trackButtonClick('Go Back to Images', 'Image Detail', 'Navigation');
+          }"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ imagePath }}</ion-title>
       </ion-toolbar>
@@ -14,7 +16,9 @@
         <ion-card-content>
           <p class="Published-text">
             Published by:
-            <ion-chip :router-link="`/attendee/${imageData.authorId}`" >
+            <ion-chip :router-link="`/attendee/${imageData.authorId}`" @click="() => {
+              trackButtonClick('View Author Profile', 'Image Detail', 'Navigation');
+            }">
               <ion-avatar>
                 <img :src="imageData.imageAuthorAvatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
               </ion-avatar>
@@ -32,12 +36,21 @@
           <ion-grid>
             <ion-row>
               <ion-col>
-                <ion-icon v-if="imageData.imageIsLiked" :icon="thumbsUp" class="like-icon" @click="changeLikeStatus"></ion-icon>
-                <ion-icon v-else :icon="thumbsUpOutline" class="like-icon" @click="changeLikeStatus"></ion-icon>
+                <ion-icon v-if="imageData.imageIsLiked" :icon="thumbsUp" class="like-icon" @click="() => {
+                  trackButtonClick('Unlike Image', 'Image Detail', 'Feature');
+                  changeLikeStatus();
+                }"></ion-icon>
+                <ion-icon v-else :icon="thumbsUpOutline" class="like-icon" @click="() => {
+                  trackButtonClick('Like Image', 'Image Detail', 'Feature');
+                  changeLikeStatus();
+                }"></ion-icon>
               </ion-col>
               <ion-col>
                 <p class="ion-text-right" v-if="Number(userId) == imageData.authorId">
-                  <ion-button color="danger" @click="deletePicture()">
+                  <ion-button color="danger" @click="() => {
+                    trackButtonClick('Delete Image', 'Image Detail', 'Feature');
+                    deletePicture();
+                  }">
                     <ion-icon :icon="trashOutline"></ion-icon> Delete
                   </ion-button>
                 </p>
@@ -49,6 +62,7 @@
     </ion-content>
   </ion-page>
 </template>
+
 
 <script setup lang="ts">
 import {
@@ -125,7 +139,6 @@ const changeLikeStatus = async () => {
       path: imagePath
     }, { headers: { Authorization: `Bearer ${token.value}` } })
     imageData.value.imageIsLiked = !imageData.value.imageIsLiked;
-    trackButtonClick('Like image','Gallery','Feature')
     if (imageData.value.imageIsLiked) {
       imageData.value.imageLikes = imageData.value.imageLikes + 1;
     } else {
@@ -182,7 +195,6 @@ const deletePicture = async () => {
   });
 
   await alert.present();
-trackButtonClick('Delete image','Gallery','Feature')
 }
 
 </script>

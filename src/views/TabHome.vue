@@ -20,7 +20,12 @@
         Pages
       </p>
       <ion-list lines="full">
-        <ion-item button v-for="page in pages" :key="page.id" :routerLink="`/tabs/page/${page.id}`">
+        <ion-item
+            button
+            v-for="page in pages"
+            :key="page.id"
+            :routerLink="`/tabs/page/${page.id}`"
+            @click="() => trackButtonClick('Navigate to Page', 'Home Page', 'Feature')">
           <ion-label >{{ page.name }}</ion-label>
           <ion-badge v-if="page.label" color="danger">{{ page.label }}</ion-badge>
         </ion-item>
@@ -49,7 +54,9 @@ import { onMounted, reactive } from 'vue';
 import axios from 'axios';
 import {onBeforeRouteLeave} from "vue-router";
 import backend from "/backend.config.ts";
+import {googleanalytics} from "@/composables/googleanalytics.js";
 
+const{trackButtonClick} = googleanalytics()
 const pages = reactive([]);
 const token = localStorage.getItem("accessToken")
 

@@ -3,12 +3,18 @@
     <HeaderBar name="Messages" @reloadPage="reloadPage" />
     <ion-content id="main-content" :fullscreen="true">
 
-      <ion-refresher slot="fixed" @ionRefresh="reloadPage">
+      <ion-refresher slot="fixed" @ionRefresh="() => {
+        trackButtonClick('Refresh Messages', 'Messages Page', 'Feature');
+        reloadPage();
+      }">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
       <ion-list lines="full">
-        <ion-item button v-for="message in messages" :key="message.id" @click="setVisibleMessage(message.id)">
+        <ion-item button v-for="message in messages" :key="message.id" @click="() => {
+          trackButtonClick('Open Message', 'Messages Page', 'Feature');
+          setVisibleMessage(message.id);
+        }">
           <ion-label>
             <h2 :class="{bold :!message.read}">
               <ion-icon
@@ -25,7 +31,10 @@
       </ion-list>
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
-        <ion-fab-button @click="openPostMessage()">
+        <ion-fab-button @click="() => {
+          trackButtonClick('Post New Message', 'Messages Page', 'Feature');
+          openPostMessage();
+        }">
           <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
@@ -34,7 +43,10 @@
         <ion-header>
           <ion-toolbar>
             <ion-buttons slot="start">
-              <ion-back-button defaultHref="/tabs/messages" @click="closeMessage()"></ion-back-button>
+              <ion-back-button defaultHref="/tabs/messages" @click="() => {
+                trackButtonClick('Close Message', 'Messages Page', 'Feature');
+                closeMessage();
+              }"></ion-back-button>
             </ion-buttons>
             <ion-title>Message</ion-title>
           </ion-toolbar>
@@ -49,7 +61,10 @@
                 </p>
               </ion-col>
               <ion-col class="ion-text-right">
-                <ion-chip :router-link="`/attendee/${activeMessage.authorId}`" @click="closeMessage()">
+                <ion-chip :router-link="`/attendee/${activeMessage.authorId}`" @click="() => {
+                  trackButtonClick('Open Author Profile', 'Messages Page', 'Feature');
+                  closeMessage();
+                }">
                   <ion-avatar>
                     <img :src="activeMessage.avatar || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
                   </ion-avatar>
@@ -62,7 +77,10 @@
             <h1>{{ activeMessage.title }}</h1>
             <p style="white-space: pre-wrap">{{ activeMessage.message }}</p>
             <p class="ion-text-right" v-if="userId == activeMessage.authorId">
-              <ion-button color="danger" @click="deleteMessage()">
+              <ion-button color="danger" @click="() => {
+                trackButtonClick('Delete Message', 'Messages Page', 'Feature');
+                deleteMessage();
+              }">
                 <ion-icon :icon="trashOutline"></ion-icon> Delete
               </ion-button>
             </p>
@@ -73,33 +91,40 @@
         <ion-header>
           <ion-toolbar>
             <ion-buttons slot="start">
-              <ion-back-button defaultHref="/tabs/messages" @click="closePostMessage()"></ion-back-button>
+              <ion-back-button defaultHref="/tabs/messages" @click="() => {
+                trackButtonClick('Close Post New Message', 'Messages Page', 'Feature');
+                closePostMessage();
+              }"></ion-back-button>
             </ion-buttons>
             <ion-title>Post new message</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-          <form @submit.prevent="submitForm">
-              <ion-input
-                  v-model="formData.title"
-                  type="text" required
-                  label="Title"
-                  placeholder="Message title"
-                  label-placement="stacked"></ion-input>
-              <ion-textarea
-                  v-model="formData.message" required
-                  label="Message"
-                  placeholder="Write here the text of your message..."
-                  label-placement="stacked"
-                  rows="20"></ion-textarea>
-              <p v-if="postError" class="error-message">{{ postError }}</p>
-              <ion-button expand="full" type="submit" class="ion-margin-top">Post Message</ion-button>
+          <form @submit.prevent="() => {
+            trackButtonClick('Submit New Message', 'Messages Page', 'Feature');
+            submitForm();
+          }">
+            <ion-input
+                v-model="formData.title"
+                type="text" required
+                label="Title"
+                placeholder="Message title"
+                label-placement="stacked"></ion-input>
+            <ion-textarea
+                v-model="formData.message" required
+                label="Message"
+                placeholder="Write here the text of your message..."
+                label-placement="stacked"
+                rows="20"></ion-textarea>
+            <p v-if="postError" class="error-message">{{ postError }}</p>
+            <ion-button expand="full" type="submit" class="ion-margin-top">Post Message</ion-button>
           </form>
         </ion-content>
       </ion-modal>
     </ion-content>
   </ion-page>
 </template>
+
 
 <script setup lang="js">
 import {
@@ -175,7 +200,6 @@ const submitForm = async () => {
       localStorage.setItem("refreshToken", response.data.refreshToken);
       token.value = response.data.accessToken;
     }
-  trackButtonClick('Post message','Messages','Feature')
   } catch (error) {
     postError.value = "Failed to post the message!";
     console.error("Failed to fetch user details:", error);
@@ -199,7 +223,6 @@ const setVisibleMessage = async (id) => {
   await axios.get(
       backend.construct(`message/read/${activeMessage.value.id}`),
       { headers: {Authorization: `Bearer ${token.value}`}});
-  trackButtonClick('Select message','Messages','Feature')
 }
 
 const openPostMessage = () => {
@@ -236,7 +259,6 @@ const deleteMessage = async () => {
       },
     ],
   });
-  trackButtonClick('Delete message','Messages','Feature')
   await alert.present();
 }
 

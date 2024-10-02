@@ -4,7 +4,10 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/calendar" @click="closeModal()"></ion-back-button>
+          <ion-back-button defaultHref="/tabs/calendar" @click="() => {
+            trackButtonClick('Close Session Detail', 'Agenda', 'Feature')
+            closeModal()
+          }"></ion-back-button>
         </ion-buttons>
         <ion-title>Session Detail</ion-title>
       </ion-toolbar>
@@ -36,6 +39,9 @@ import { reactive, ref} from 'vue';
 import axios from 'axios';
 import dayjs from "dayjs";
 import backend from "/backend.config.ts";
+import {googleanalytics} from "@/composables/googleanalytics.js";
+
+const{trackButtonClick} = googleanalytics()
 
 const props = defineProps({
   isOpen: {

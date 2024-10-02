@@ -2,9 +2,20 @@
   <ion-page>
     <HeaderBar name="Attendees" />
     <ion-content :fullscreen="true">
-      <ion-searchbar v-model="state.searchQuery" @ionChange="fetchAttendees" placeholder="Search attendees..."></ion-searchbar>
+      <ion-searchbar
+          v-model="state.searchQuery"
+          @ionChange="fetchAttendees"
+          @ionblur="() => trackButtonClick('Search Bar', 'Attendee List', 'Feature')"
+          placeholder="Search attendees...">
+      </ion-searchbar>
       <ion-list lines="full">
-        <ion-item v-for="person in state.persons" :key="person.id" :router-link="`/attendee/${person.id}`" button>
+        <ion-item
+            v-for="person in state.persons"
+            :key="person.id"
+            :router-link="`/attendee/${person.id}`"
+            button
+            @click="() => trackButtonClick('Specific Attendee', 'Attendee List', 'Feature')">
+
           <ion-avatar slot="start">
             <img :src="person.imageURL || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile picture" />
           </ion-avatar>
@@ -36,6 +47,9 @@ import { watch, reactive, onMounted } from 'vue';
 import { debounce } from 'lodash';
 import axios from 'axios';
 import backend from "/backend.config.ts";
+import {googleanalytics} from "@/composables/googleanalytics.js";
+
+const{trackButtonClick} = googleanalytics()
 
 const state = reactive({
   persons: [],

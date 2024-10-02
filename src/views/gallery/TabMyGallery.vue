@@ -1,30 +1,47 @@
 <template>
   <ion-page>
-    <HeaderBar name="My Gallery" @openActionSheet="openActionSheet" @reloadPage="reloadPage"></HeaderBar>
+    <HeaderBar name="My Gallery" @openActionSheet="openActionSheet" @reloadPage="() => {
+      trackButtonClick('Reload Gallery', 'My Gallery', 'Feature');
+      reloadPage();
+    }"></HeaderBar>
 
     <ion-content :fullscreen="true" ref="content">
       <ion-grid>
         <ion-row>
           <ion-col size="4" v-for="(image, index) in imagesListMyGallery" :key="index">
-            <ion-img :src="getImageWebP(image)" class="gallery-image" :class="{ 'selected-image': imagesSelectedList.includes(image) }" @click="selectMultiple ? selectImage(image) : goToImage(image)"></ion-img>
+            <ion-img :src="getImageWebP(image)" class="gallery-image" :class="{ 'selected-image': imagesSelectedList.includes(image) }"
+                     @click="() => {
+              trackButtonClick(selectMultiple ? 'Select Image' : 'Open Image', 'My Gallery', 'Feature');
+              selectMultiple ? selectImage(image) : goToImage(image);
+            }"></ion-img>
           </ion-col>
         </ion-row>
       </ion-grid>
 
       <ion-fab v-if="selectMultiple" vertical="bottom" horizontal="center" slot="fixed" class="custom-fab">
-        <ion-fab-button  @click="untoggleSelectImage">
+        <ion-fab-button @click="() => {
+          trackButtonClick('Deselect Images', 'My Gallery', 'Feature');
+          untoggleSelectImage();
+        }">
           <ion-icon :icon="close"></ion-icon>
         </ion-fab-button>
-        <ion-fab-button color="danger"  @click="deleteGalleryImage">
+        <ion-fab-button color="danger" @click="() => {
+          trackButtonClick('Delete Selected Images', 'My Gallery', 'Feature');
+          deleteGalleryImage();
+        }">
           <ion-icon :icon="trashOutline"></ion-icon>
         </ion-fab-button>
-        <ion-fab-button  @click="downloadImages">
+        <ion-fab-button @click="() => {
+          trackButtonClick('Download Selected Images', 'My Gallery', 'Feature');
+          downloadImages();
+        }">
           <ion-icon :icon="download"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
   </ion-page>
 </template>
+
 <script setup lang="ts">
 import {
   IonPage,
@@ -85,7 +102,6 @@ const openActionSheet = async () => {
       text: 'Go to Gallery',
       handler: () => {
         router.push('/tabs/images');
-        trackButtonClick('Gallery','Main Feature','Navigation')
       }
     }, {
       text: 'Select Images',
@@ -136,7 +152,6 @@ const uploadGalleryImage = async () => {
     });
     if (uploadResponse.status === 200) {
       console.log('Upload successful');
-      trackButtonClick('Upload gallery image','Gallery','Feature')
     }
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -159,7 +174,6 @@ const deleteGalleryImage = async () => {
     });
     imagesListMyGallery.value = imagesListMyGallery.value.filter(image => !imagesSelectedList.value.includes(image));
     imagesSelectedList.value = [];
-    trackButtonClick('Delete gallery image','Gallery','Feature')
   } catch (error) {
     console.error('Error deleting image:', error);
   }
@@ -178,7 +192,6 @@ const downloadImage = (filePath:string) => {
         a.click();
         window.URL.revokeObjectURL(url);
         self.postMessage('Download complete');
-        trackButtonClick('Download gallery image','Gallery','Feature')
       })
       .catch(() => self.postMessage('Download failed'));
 }
@@ -203,7 +216,6 @@ const getImageJPG = (filepath:string) => {
 
 const goToImage = (imageId:string) => {
   router.push(`/tabs/singleimage/${imageId}`);
-  trackButtonClick('Single Image','Gallery','Navigation')
 }
 
 const selectImage = (imageId:string) => {

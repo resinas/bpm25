@@ -4,11 +4,17 @@
 
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button @click="changeMonth(-1)">Prev</ion-button>
+        <ion-button @click="() => {
+          trackButtonClick('Previous Month Calendar', 'Agenda', 'Feature')
+          changeMonth(-1)
+        }">Prev</ion-button>
       </ion-buttons>
       <ion-title class="ion-text-center">{{ currentMonthName }} {{ state.currentYear }}</ion-title>
       <ion-buttons slot="end">
-        <ion-button @click="changeMonth(1)">Next</ion-button>
+        <ion-button @click="() => {
+          trackButtonClick('Next Month Calendar', 'Agenda', 'Feature')
+          changeMonth(1)
+        }">Next</ion-button>
       </ion-buttons>
     </ion-toolbar>
 
@@ -21,7 +27,10 @@
             v-for="day in state.daysOfMonth"
             :key="day.dateString"
             :class="{ 'not-current': !day.isCurrentMonth }"
-            @click="day.hasSession ? dateClicked(day): null"
+            @click="() => {
+              trackButtonClick('Calendar Date', 'Agenda', 'Feature')
+              day.hasSession ? dateClicked(day): null
+            }"
         >
           <div class="date-text">{{ day.date }}</div>
           <ion-icon :icon="star" v-if="day.hasSession" class="session-dot"></ion-icon>
@@ -51,8 +60,9 @@ import { useRouter } from 'vue-router';
 import { star } from 'ionicons/icons';
 import { useRoute } from 'vue-router';
 import backend from "/backend.config.ts";
+import {googleanalytics} from "@/composables/googleanalytics.js";
 
-
+const{trackButtonClick} = googleanalytics()
 
 const route = useRoute();
 const router = useRouter();
