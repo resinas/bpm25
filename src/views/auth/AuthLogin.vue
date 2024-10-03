@@ -36,10 +36,10 @@
             </ion-input>
           </ion-item>
           <p class="ion-text-right">
-            <router-link to="/auth/login/resetpassword" class="forgot-password" @click="trackButtonClick('Forgot Password Link', 'Auth', 'Navigation')"></router-link>
+            <router-link to="/auth/login/resetpassword" class="forgot-password" @click="trackButtonClick('Forgot Password Link', 'Auth', 'Navigation')">Forgot password?</router-link>
           </p>
           <p class="ion-text-center">
-            <ion-button type="submit" expand="block" class="login-button" @click="trackButtonClick('Sign in Button', 'Auth', 'Feature')"></ion-button>
+            <ion-button type="submit" expand="block" class="login-button" @click="trackButtonClick('Sign in Button', 'Auth', 'Feature')">Sign in</ion-button>
           </p>
           <!-- Display error message if login fails -->
           <p v-if="loginError" class="error-message">{{ loginError }}</p>
@@ -58,11 +58,15 @@
                 required>
             </ion-input>
           </ion-item>
-          <ion-button type="submit" expand="block" class="ion-margin-top" @click="trackButtonClick('Send Confirmation Email Button', 'Auth', 'Feature')"></ion-button>
+          <ion-button type="submit" expand="block" class="ion-margin-top" @click="trackButtonClick('Send Confirmation Email Button', 'Auth', 'Feature')">
+            Send Confirmation Email
+          </ion-button>
           <p v-if="registerError" class="error-message">{{ registerError }}</p>
           <p v-if="registerSuccess" class="success-message">{{ registerSuccess }}</p>
 
-          <p class="ion-text-right"><ion-button fill="clear" @click="() => { trackButtonClick('Privacy Note Link', 'Auth', 'Feature'); openPrivacy(); }"></ion-button></p>
+          <p class="ion-text-right">
+            <ion-button fill="clear" @click="() => { trackButtonClick('Privacy Note Link', 'Auth', 'Feature'); openPrivacy(); }">Privacy note</ion-button>
+          </p>
           <PrivacyNote :isOpen="isPrivacyOpen" @update:isOpen="isPrivacyOpen = $event" />
         </form>
       </div>
