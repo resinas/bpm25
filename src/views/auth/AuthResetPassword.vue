@@ -23,7 +23,7 @@
                 required>
             </ion-input>
           </ion-item>
-          <ion-button type="submit" expand="block" shape="round">Send reset email</ion-button>
+          <ion-button type="submit" expand="block" shape="round" @click="trackButtonClick('Send Reset Email Button', 'Auth', 'Feature')">Send reset email</ion-button>
           <p v-if="resetEmailError" class="error-message">{{ resetEmailError }}</p>
           <p v-if="resetEmailSuccess" class="success-message">{{ resetEmailSuccess }}</p>
         </form>
@@ -47,6 +47,9 @@ import {
 import {ref} from "vue";
 import axios from "axios";
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 const resetEmailError = ref('');
 const resetEmailSuccess = ref('');

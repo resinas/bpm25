@@ -46,7 +46,7 @@
           <ion-toggle :checked="true" v-model="userInformation.sharingChoice" label-placement="end">
             Share user information with other attendees
           </ion-toggle><br /><br />
-          <ion-button type="submit" expand="block">Sign up</ion-button>
+          <ion-button type="submit" expand="block" @click="trackButtonClick('Sign up Button', 'Auth', 'Feature')">Sign up</ion-button>
         </form>
       </div>
     </ion-content>
@@ -59,6 +59,9 @@ import {computed, onMounted, ref} from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 const router = useRouter();
 const route = useRoute();
@@ -114,7 +117,7 @@ const sendUserInformation = async () => {
     loginInformation.value.password = userInformation.value.password
     const response = await axios.post(backend.construct("auth/signin"), loginInformation.value);
     console.log(response.data);
-    // Handle success response, e.g., navigate to another route or display a success message
+
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('refreshToken', response.data.refreshToken);
     localStorage.setItem('userId', response.data.userId);

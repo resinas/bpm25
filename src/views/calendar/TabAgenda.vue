@@ -5,12 +5,18 @@
     <!-- ICPM/Personal Segment Bar -->
     <ion-toolbar class="agenda-type-bar">
       <ion-segment color="dark" :value="agendaSegmentValue" class="full-width-segment">
-        <ion-segment-button value="all" @click="navigateToAgendaType('all')" class="half-width-segment-button">
+        <ion-segment-button value="all" @click="() => {
+          trackButtonClick('ICPM Agenda Toggle', 'Agenda', 'Feature')
+          navigateToAgendaType('all')
+        }" class="half-width-segment-button">
           <ion-label class="segment-label">
             <span>Full Agenda</span>
           </ion-label>
         </ion-segment-button>
-        <ion-segment-button value="personal" @click="navigateToAgendaType('personal')" class="half-width-segment-button">
+        <ion-segment-button value="personal" @click="() =>{
+          trackButtonClick('Personal Agenda Toggle', 'Agenda', 'Feature')
+          navigateToAgendaType('personal')
+        }" class="half-width-segment-button">
           <ion-label class="segment-label">
             <span>Personalized Agenda</span>
           </ion-label>
@@ -24,7 +30,10 @@
             :value="day.value"
             :key="day.value"
             :class="{'day-without-session': !day.hasSession, 'day-with-session': day.hasSession}"
-            @click="day.hasSession ? selectDay(day.value) : null"
+            @click="() => {
+              trackButtonClick('Day Selection', 'Agenda', 'Feature')
+              day.hasSession ? selectDay(day.value) : null
+            }"
         >
           <ion-label>
             <span class="day-name">{{ day.label.split(', ')[0] }}</span>
@@ -33,7 +42,10 @@
         </ion-segment-button>
       </ion-segment>
       <ion-buttons slot="end">
-        <ion-button @click="goToCalendar">
+        <ion-button @click="() =>{
+          trackButtonClick('Monthly Calendar Access', 'Agenda', 'Feature')
+          goToCalendar
+        }">
           <ion-icon :icon="calendarIcon" class="larger-icon" />
         </ion-button>
       </ion-buttons>
@@ -50,12 +62,22 @@
               <h2>{{ timeSlot }}</h2>
             </ion-label>
           </ion-item-divider>
-          <ion-item button v-for="session in group" :key="session.id" @click="showSession(session.id)">
+          <ion-item
+              button
+              v-for="session in group"
+              :key="session.id"
+              @click="() => {
+                trackButtonClick('Access Single Session', 'Agenda', 'Feature')
+                showSession(session.id)
+              }">
             <ion-note slot="end" class="ion-text-right">
               <ion-icon
                   :icon="session.isLiked ? heart : heartOutline"
                   :color="session.isLiked ? 'danger' : 'medium'"
-                  @click.stop="toggleLike(session)"
+                  @click.stop="() => {
+                    trackButtonClick('Session Like', 'Agenda', 'Feature')
+                    toggleLike(session)
+                  }"
                   style="font-size: 2.5em"
               ></ion-icon><br>
               <span v-if="session.likes > 0">
@@ -100,7 +122,9 @@ import { heart, heartOutline, calendarNumber } from 'ionicons/icons';
 import HeaderBar from '@/components/HeaderBar.vue';
 import TabSessionDetails from "@/views/calendar/TabSessionDetails.vue";
 import backend from "/backend.config.ts";
+import {googleanalytics} from "@/composables/googleanalytics.ts";
 
+const{trackButtonClick} = googleanalytics()
 const router = useRouter();
 const route = useRoute();
 

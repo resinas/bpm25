@@ -17,7 +17,7 @@
         </ion-item>
       </ion-list>
       <div class="applyFilterButton">
-        <ion-button expand="block" @click="applyFilter" class="applyButtonText">Apply</ion-button>
+        <ion-button expand="block" @click="() => { trackButtonClick('Apply Filter Button', 'Gallery', 'Feature'); applyFilter(); }" class="applyButtonText">Apply</ion-button>
       </div>
     </ion-popover>
     <ion-content :fullscreen="true" ref="content">
@@ -30,7 +30,7 @@
       <ion-grid>
         <ion-row>
           <ion-col size="4" v-for="(image, index) in images" :key="index">
-            <ion-img :src="getImageUrl(image)" class="gallery-image" :class="{ 'selected-image': imagesSelectedList.includes(image) }" @click="selectMultiple ? selectImage(image) : goToImage(image)"></ion-img>
+            <ion-img :src="getImageUrl(image)" class="gallery-image" :class="{ 'selected-image': imagesSelectedList.includes(image) }" @click="() => { trackButtonClick('Gallery Image Click', 'Gallery', 'Feature'); selectMultiple ? selectImage(image) : goToImage(image); }"></ion-img>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -46,12 +46,12 @@
         <ion-fab-button  @click="untoggleSelectImage">
           <ion-icon :icon="close"></ion-icon>
         </ion-fab-button>
-        <ion-fab-button  @click="downloadImages">
+        <ion-fab-button @click="() => { trackButtonClick('Download Images Button', 'Gallery', 'Feature'); downloadImages(); }">
           <ion-icon :icon="download"></ion-icon>
         </ion-fab-button>
       </ion-fab>
       <ion-fab  v-if="!selectMultiple" vertical="bottom" horizontal="end" slot="fixed" class="custom-fab">
-        <ion-fab-button @click="uploadGalleryImage">
+        <ion-fab-button @click="() => { trackButtonClick('Upload Gallery Image Button', 'Gallery', 'Feature'); uploadGalleryImage(); }">
           <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
@@ -92,7 +92,9 @@ import router from "@/router";
 import { debounce } from 'lodash';
 import {onBeforeRouteUpdate, useRoute} from 'vue-router'
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
 
+const { trackButtonClick } = googleanalytics();
 const { takePhotoGallery } = usePhotoGallery();
 
 const token = ref(localStorage.getItem("accessToken"))
@@ -100,7 +102,7 @@ const route = useRoute();
 
 const images = ref<string[]>([]);
 const hasMore = ref(true);
-let pageNr =ref(0);
+const pageNr =ref(0);
 const pageSize = 100;
 
 const showFilterOptions = ref(false);
@@ -153,6 +155,7 @@ const openActionSheet = async () => {
       text: 'Go to My Gallery',
       handler: () => {
         router.push('/tabs/images/myGallery');
+        trackButtonClick('My Gallery','Gallery','Navigation')
       }
     }, {
       text: 'Select Images',
@@ -211,13 +214,13 @@ const debouncedFetchAttendees = debounce(fetchGalleryMetadata, 300);  // 300ms d
 watch(
     () => filterAndSearch.value.searchInput,
     async (newQuery, oldQuery) => {
-  if (newQuery !== oldQuery) {
-    images.value = [];
-    hasMore.value = true;
-    pageNr.value = 0;
-    debouncedFetchAttendees();
-  }
-}, { immediate: false });
+      if (newQuery !== oldQuery) {
+        images.value = [];
+        hasMore.value = true;
+        pageNr.value = 0;
+        debouncedFetchAttendees();
+      }
+    }, { immediate: false });
 
 const getImageUrl = (filepath:string) => {
   return backend.construct(`gallery/images/${filepath}?format=webp`);

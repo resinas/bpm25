@@ -2,6 +2,7 @@ import {createApp, ref} from 'vue'
 import App from './App.vue'
 import router from './router';
 import axios from "axios";
+import VueGtag from "vue-gtag";
 
 import { IonicVue } from '@ionic/vue';
 
@@ -48,8 +49,12 @@ applyTheme();
 
 
 const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
+    .use(IonicVue)
+    .use(router)
+    .use(VueGtag, {
+        config: { id: "G-4ZSK67CV8L" }
+    });
+
 
 const isOffline = ref(false);
 app.provide('isOffline', isOffline);

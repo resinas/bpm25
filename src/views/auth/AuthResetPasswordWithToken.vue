@@ -31,9 +31,11 @@
           </ion-item>
           <ion-button
               type="submit"
-              expand="block">
-              Reset password
+              expand="block"
+              @click="trackButtonClick('Reset Password Button', 'Auth', 'Feature')">
+            Reset password
           </ion-button>
+
           <p v-if="resetError" class="error-message">{{ resetError }}</p>
         </form>
       </div>
@@ -47,6 +49,9 @@ import {ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
 import axios from "axios";
 import backend from "../../../backend.config";
+import {googleanalytics} from "@/composables/googleanalytics";
+
+const { trackButtonClick } = googleanalytics();
 
 const route = useRoute();
 const router = useRouter();
