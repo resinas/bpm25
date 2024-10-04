@@ -71,6 +71,8 @@ const userInformation = ref({
   firstname: '',
   lastname: '',
   password: '',
+  company: '',
+  country: '',
   confirmPassword: '',
   sharingChoice: true
 })
@@ -101,6 +103,8 @@ const getUserInformation = async () => {
     userInformation.value.email = response.data.email;
     userInformation.value.firstname = response.data.firstname;
     userInformation.value.lastname = response.data.lastname;
+    userInformation.value.company = response.data.company;
+    userInformation.value.country = response.data.country;
   } catch (error) {
     console.error("Failed to fetch user settings:", error);
     await router.push('/auth/login');
