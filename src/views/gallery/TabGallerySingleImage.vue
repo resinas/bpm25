@@ -3,9 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/images" @click="() => {
-            trackButtonClick('Go Back to Images', 'Image Detail', 'Navigation');
-          }"></ion-back-button>
+          <ion-back-button defaultHref="/tabs/images"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ imagePath }}</ion-title>
       </ion-toolbar>
