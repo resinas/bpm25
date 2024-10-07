@@ -24,6 +24,9 @@
       <ion-buttons v-if="name == 'Messages'" slot="end" id="click-trigger" class="gallery-dropdown" >
         <ion-icon :icon="reload" style="font-size: 26px;margin-right: 14px;" @click="$emit('reloadPage')"></ion-icon>
       </ion-buttons>
+      <ion-buttons v-if="showReload" slot="end" id="click-trigger" class="gallery-dropdown" >
+        <ion-icon :icon="reload" style="font-size: 26px;margin-right: 14px;" @click="$emit('reloadPage')"></ion-icon>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
   <SettingsMenu v-if="name == 'Home'" />
@@ -43,6 +46,7 @@ import {ellipsisVertical, reload, options} from 'ionicons/icons';
 
 defineProps({
   name: String,
+  showReload: Boolean
 });
 
 const emits = defineEmits(['openActionSheet', 'reloadPage', 'openFilter']);

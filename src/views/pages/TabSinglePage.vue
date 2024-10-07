@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <HeaderBar :name="pageData.title" />
+    <HeaderBar :name="pageData.title" :showReload="true" @reloadPage="reload" />
 
     <ion-content id="main-content" :fullscreen="true">
       <div v-if = "pageData.layoutId === 1" class="ion-padding" v-html="pageData.content"></div>
@@ -11,7 +11,7 @@
         </ion-item>
       </ion-list>
 
-
+      <iframe v-else-if = "pageData.layoutId === 3" class="full-page" ref="iframeRef" :src="pageData.content" />
     </ion-content>
   </ion-page>
 </template>
@@ -20,7 +20,7 @@
 import {IonPage, IonContent, IonList, IonItem, IonLabel} from '@ionic/vue';
 import HeaderBar from "@/components/HeaderBar.vue";
 import { useRoute } from 'vue-router';
-import { onMounted, reactive } from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import axios from 'axios';
 import backend from "/backend.config.ts";
 
@@ -37,5 +37,23 @@ onMounted(async () => {
     // Handle error appropriately
   }
 });
+
+const iframeRef = ref(null);
+const reload = () => {
+  const iframeSrc = iframeRef.value.src;
+  iframeRef.value.src = ''; // Temporarily clear the src
+  setTimeout(() => {
+    iframeRef.value.src = iframeSrc; // Reassign the original URL after a short delay
+  }, 0);
+}
 </script>
 
+<style scoped>
+.full-page {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+</style>
