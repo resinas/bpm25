@@ -3,10 +3,7 @@
     <HeaderBar name="Messages" @reloadPage="reloadPage" />
     <ion-content id="main-content" :fullscreen="true">
 
-      <ion-refresher slot="fixed" @ionRefresh="() => {
-        trackButtonClick('Refresh Messages', 'Messages Page', 'Feature');
-        reloadPage();
-      }">
+      <ion-refresher slot="fixed" @ionRefresh="reloadPage">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
