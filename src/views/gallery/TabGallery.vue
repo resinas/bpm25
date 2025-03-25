@@ -267,7 +267,7 @@ const uploadGalleryImage = async () => {
         positionAnchor: 'footer'
       });
       await toast.present();
-      await reloadPage();
+      await reloadPage(null);
     }
   } catch (error) {
     console.error('Error uploading image:', error);
