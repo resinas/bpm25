@@ -3,17 +3,16 @@
     <HeaderBar name="Home" />
 
     <ion-content id="main-content" :fullscreen="true">
-      <img src="https://icpmconference.org/2024/wp-content/uploads/sites/9/2023/09/cph.jpg"  alt=""/>
+      <img src="https://www.bpm2025seville.org/assets/cathedral.D2XoYRI5_1wANXk.webp"  alt=""/>
 
       <ion-card>
         <ion-card-header>
           <div id="logo-large" />
-          <ion-card-title>ICPM 2024</ion-card-title>
+          <ion-card-title>BPM 2025</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          October 14-18, 2024<br>
-          Technical University of Denmark<br>
-          Kgs. Lyngby, Denmark
+          August 31 - September 5, 2025<br>
+          Seville, Spain
         </ion-card-content>
       </ion-card>
       <p class="ion-padding" style="font-size: 1.5rem; margin-bottom: 0">
@@ -88,17 +87,17 @@ onMounted(async () => {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  height: 50px;
+  height: 150px;
   width: 100%;
   margin-bottom: 10px;
 }
 /* Light Mode */
 body:not(.dark) #logo-large {
-  background-image: url('@/assets/images/icpm-logo-1.png');
+  background-image: url('@/assets/images/logo-1.svg');
 }
 
 /* Dark Mode */
 body.dark #logo-large {
-  background-image: url('@/assets/images/icpm-logo-2.png');
+  background-image: url('@/assets/images/logo-1.svg');
 }
 </style>

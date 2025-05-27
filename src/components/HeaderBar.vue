@@ -57,20 +57,20 @@ const emits = defineEmits(['openActionSheet', 'reloadPage', 'openFilter']);
 #logo {
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: right;
-  height: 30px;
-  width: 100px;
+  background-position: center;
+  height: 40px;
+  width: 40px;
   margin-left: 8px;
   margin-top: 4px;
 }
 /* Light Mode */
 body:not(.dark) #logo {
-  background-image: url('@/assets/images/icpm-logo-1.png');
+  background-image: url('@/assets/images/logo-1.svg');
 }
 
 /* Dark Mode */
 body.dark #logo {
-  background-image: url('@/assets/images/icpm-logo-2.png');
+  background-image: url('@/assets/images/logo-2.svg');
 }
 .gallery-dropdown {
   margin-right: 15px;

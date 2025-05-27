@@ -80,17 +80,17 @@ const logout = () => {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  height: 50px;
+  height: 100px;
   width: 100%;
   margin-bottom: 10px;
 }
 /* Light Mode */
 body:not(.dark) #logo-large {
-  background-image: url('@/assets/images/icpm-logo-1.png');
+  background-image: url('@/assets/images/logo-1.svg');
 }
 
 /* Dark Mode */
 body.dark #logo-large {
-  background-image: url('@/assets/images/icpm-logo-2.png');
+  background-image: url('@/assets/images/logo-2.svg');
 }
 </style>
