@@ -82,7 +82,7 @@ import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import logoLight from '@/assets/images/logo-1.svg';
-import logoDark from '@/assets/images/icpm-logo-2.png';
+// import logoDark from '@/assets/images/logo-2.svg';
 import backend from "/backend.config.ts";
 import PrivacyNote from "@/components/PrivacyNote.vue";
 import {googleanalytics} from "@/composables/googleanalytics.ts";
