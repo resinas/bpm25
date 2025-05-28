@@ -25,7 +25,6 @@
           <strong>Location:</strong> {{ pageData.location }}
         </p>
         <div v-html="pageData.content"></div>
-        <img src="@/assets/images/map.png" class="ion-margin-top" />
       </div>
     </ion-content>
   </ion-modal>
