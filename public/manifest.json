@@ -1,7 +1,7 @@
 {
-  "name": "ICPM Conference",
-  "short_name": "ICPM",
-  "description": "The 2024 International Conference on Process Mining",
+  "name": "BPM Conference",
+  "short_name": "BPM",
+  "description": "International Conference on Business Process Management",
   "icons": [
     {
       "src": "manifest_icons/64.png",
